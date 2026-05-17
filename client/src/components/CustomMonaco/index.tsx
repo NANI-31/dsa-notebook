@@ -3,6 +3,7 @@ import Editor, {
   type EditorProps,
   type OnMount,
   type BeforeMount,
+  loader,
 } from "@monaco-editor/react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../app/store";
@@ -10,6 +11,13 @@ import { EDITOR_CONSTANTS } from "../../constants/editor";
 import { useEditorHeight } from "../../hooks/useEditorHeight";
 import { useSemanticHighlighter } from "./useSemanticHighlighter";
 import { defineEditorThemes, THEME_LAYOUT_COLORS } from "./editorThemes";
+
+// Pinned version configured to match Monaco CDN Asset Pre-caching Service Worker
+loader.config({
+  paths: {
+    vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/min/vs",
+  },
+});
 
 interface CustomMonacoProps extends Omit<EditorProps, "theme"> {
   autoHeight?: boolean;

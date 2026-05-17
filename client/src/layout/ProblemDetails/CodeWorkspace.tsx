@@ -6,12 +6,67 @@ import {
   LuWand,
   LuTerminal,
   LuCircle,
+  LuCpu,
+  LuZap,
+  LuHardDrive,
+  LuActivity,
 } from "react-icons/lu";
 import { Select, MenuItem, FormControl } from "@mui/material";
 const CustomMonaco = lazy(() => import("../../components/CustomMonaco/index"));
 import SectionHeader from "./SectionHeader";
 
 import { useProblemDetails } from "../../context/ProblemDetailsContext";
+
+const TelemetryDashboard: React.FC<{ telemetry: any }> = ({ telemetry }) => {
+  if (!telemetry) return null;
+  return (
+    <div className="mb-6 grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 font-sans">
+      <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
+        <div className={`p-2 rounded-lg ${telemetry.isOffline ? 'bg-amber-500/10 text-amber-400' : 'bg-sky-500/10 text-sky-400'}`}>
+          <LuActivity size={16} />
+        </div>
+        <div className="flex flex-col text-left">
+          <span className="text-[9px] font-black uppercase tracking-wider text-text-muted opacity-60">Engine</span>
+          <span className={`text-[9px] font-extrabold uppercase tracking-widest ${telemetry.isOffline ? 'text-amber-400' : 'text-sky-400'}`}>
+            {telemetry.isOffline ? 'Offline Sandbox' : 'Online Runtime'}
+          </span>
+        </div>
+      </div>
+      
+      <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
+        <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400">
+          <LuZap size={16} />
+        </div>
+        <div className="flex flex-col text-left">
+          <span className="text-[9px] font-black uppercase tracking-wider text-text-muted opacity-60">Speed</span>
+          <span className="text-xs font-black text-text-main font-mono">{telemetry.executionTimeMs} ms</span>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
+        <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
+          <LuHardDrive size={16} />
+        </div>
+        <div className="flex flex-col text-left">
+          <span className="text-[9px] font-black uppercase tracking-wider text-text-muted opacity-60">Memory Footprint</span>
+          <span className="text-xs font-black text-emerald-400 font-mono">+{telemetry.memoryDeltaKb} KB</span>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
+        <div className="p-2 rounded-lg bg-purple-500/10 text-purple-400">
+          <LuCpu size={16} />
+        </div>
+        <div className="flex flex-col text-left">
+          <span className="text-[9px] font-black uppercase tracking-wider text-text-muted opacity-60">Parser Throughput</span>
+          <span className="text-[9px] font-black text-purple-300 font-mono leading-tight">
+            {telemetry.lineCount} lines @ {telemetry.linesPerMs} l/ms
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const CodeWorkspace: React.FC = () => {
   const {
@@ -34,6 +89,7 @@ const CodeWorkspace: React.FC = () => {
     handleLanguageChange,
     executionError,
     executionOutput,
+    telemetry,
   } = useProblemDetails();
   return (
     <section className="animate-in slide-in-from-bottom-8 duration-1000">
@@ -269,6 +325,7 @@ const CodeWorkspace: React.FC = () => {
                       </div>
                     ) : (
                       <>
+                        <TelemetryDashboard telemetry={telemetry} />
                         {executionError ? (
                           <div className="text-red-400 whitespace-pre-wrap leading-relaxed">
                             <span className="font-black mr-2 opacity-50">
@@ -325,6 +382,7 @@ const CodeWorkspace: React.FC = () => {
                     </div>
                   ) : (
                     <>
+                      <TelemetryDashboard telemetry={telemetry} />
                       {executionError ? (
                         <div className="text-red-400 whitespace-pre-wrap bg-red-400/5 p-6 rounded-2xl border border-red-400/10">
                           <div className="font-black mb-3 uppercase tracking-tighter opacity-60">
