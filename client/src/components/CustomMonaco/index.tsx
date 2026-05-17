@@ -44,7 +44,33 @@ const CustomMonaco: React.FC<CustomMonacoProps> = ({
   } = useSelector((state: RootState) => state.settings);
 
   const editorRef = useRef<any>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [monacoInstance, setMonacoInstance] = useState<any>(null);
+  const [isIntersecting, setIsIntersecting] = useState(false);
+
+  // IntersectionObserver to delay initialization until component is near the viewport
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsIntersecting(true);
+          observer.disconnect();
+        }
+      },
+      {
+        rootMargin: "150px", // Pre-load slightly before scrolling into view
+        threshold: 0.01,
+      }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   const { dynamicHeight, updateHeight } = useEditorHeight({
     autoHeight,
@@ -126,22 +152,65 @@ const CustomMonaco: React.FC<CustomMonacoProps> = ({
     ...props.options,
   };
 
+  const renderSkeleton = () => (
+    <div 
+      className="w-full h-full flex flex-col p-6 animate-pulse"
+      style={{
+        backgroundColor: "var(--editor-bg)",
+        color: "var(--editor-text)",
+        fontFamily: EDITOR_CONSTANTS.FONT_FAMILY,
+      }}
+    >
+      <div className="flex flex-col gap-4 opacity-30">
+        <div className="flex gap-4">
+          <div className="w-8 h-4 bg-current/20 rounded-md" />
+          <div className="w-48 h-4 bg-current/10 rounded-md" />
+        </div>
+        <div className="flex gap-4">
+          <div className="w-8 h-4 bg-current/20 rounded-md" />
+          <div className="w-64 h-4 bg-current/10 rounded-md" />
+        </div>
+        <div className="flex gap-4">
+          <div className="w-8 h-4 bg-current/20 rounded-md" />
+          <div className="w-32 h-4 bg-current/10 rounded-md" />
+        </div>
+        <div className="flex gap-4">
+          <div className="w-8 h-4 bg-current/20 rounded-md" />
+          <div className="w-20 h-4 bg-current/15 rounded-md" />
+        </div>
+        <div className="flex gap-4 mt-4">
+          <div className="w-8 h-4 bg-current/20 rounded-md" />
+          <div className="w-80 h-4 bg-current/10 rounded-md" />
+        </div>
+        <div className="flex gap-4">
+          <div className="w-8 h-4 bg-current/20 rounded-md" />
+          <div className="w-40 h-4 bg-current/10 rounded-md" />
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div
+      ref={containerRef}
       style={{
         height: autoHeight ? dynamicHeight : props.height || "100%",
         transition: `height ${EDITOR_CONSTANTS.TRANSITION_SPEED} ${EDITOR_CONSTANTS.TRANSITION_TIMING}`,
         overflow: "hidden",
       }}
     >
-      <Editor
-        {...props}
-        height="100%"
-        theme={getEditorTheme()}
-        beforeMount={handleBeforeMount}
-        onMount={handleEditorMount}
-        options={defaultOptions}
-      />
+      {isIntersecting ? (
+        <Editor
+          {...props}
+          height="100%"
+          theme={getEditorTheme()}
+          beforeMount={handleBeforeMount}
+          onMount={handleEditorMount}
+          options={defaultOptions}
+        />
+      ) : (
+        renderSkeleton()
+      )}
     </div>
   );
 };
