@@ -169,14 +169,14 @@ const CodeWorkspace: React.FC = () => {
                 borderColor: "var(--editor-border)",
                 color: "var(--editor-text)",
               }}
-              className="rounded-3xl border overflow-hidden shadow-2xl transition-all duration-300"
+              className="rounded-3xl border overflow-hidden shadow-2xl transition-editor-all transition-all duration-300"
             >
               <div 
                 style={{
                   backgroundColor: "var(--editor-header-bg)",
                   borderColor: "var(--editor-border)",
                 }}
-                className="px-5 py-3 border-b flex items-center justify-between transition-all duration-300"
+                className="px-5 py-3 border-b flex items-center justify-between transition-editor-all transition-all duration-300"
               >
                 <div className="flex gap-1.5">
                   <div className="w-2.5 h-2.5 rounded-full bg-red-500/90" />

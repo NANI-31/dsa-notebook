@@ -210,7 +210,7 @@ const SolutionEditor: React.FC<SolutionEditorProps> = ({
             backgroundColor: "var(--editor-bg)",
             borderColor: "var(--editor-border)",
           }}
-          className="flex-1 rounded-2xl border overflow-hidden relative shadow-2xl transition-all duration-300"
+          className="flex-1 rounded-2xl border overflow-hidden relative shadow-2xl transition-editor-all transition-all duration-300"
         >
           <CustomMonaco
             height="100%"
