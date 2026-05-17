@@ -298,6 +298,25 @@ export const ProblemDetailsProvider: React.FC<{ slug: string | undefined; childr
     }
   };
 
+  // Listen to global window keyboard shortcut events for running code & toggling terminal
+  useEffect(() => {
+    const handleGlobalRun = () => {
+      handleRun();
+    };
+
+    const handleGlobalToggleTerminal = () => {
+      setShowTerminal((prev) => !prev);
+    };
+
+    window.addEventListener("dsa-run-code", handleGlobalRun);
+    window.addEventListener("dsa-toggle-terminal", handleGlobalToggleTerminal);
+
+    return () => {
+      window.removeEventListener("dsa-run-code", handleGlobalRun);
+      window.removeEventListener("dsa-toggle-terminal", handleGlobalToggleTerminal);
+    };
+  }, [variants, activeVariantIndex, stdin]);
+
   const value: ProblemDetailsContextType = {
     problem,
     loading,

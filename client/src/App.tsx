@@ -45,6 +45,8 @@ import {
   setEditorFontSize,
   setEditorFontLigatures,
   setEditorFontFamily,
+  setShortcut,
+  toggleTheme,
 } from "./features/settings/settingsSlice";
 import ToastContainer from "./components/ToastContainer";
 import { fetchCategories } from "./features/categories/categoriesSlice";
@@ -53,10 +55,55 @@ import { LuMenu, LuCode } from "react-icons/lu";
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
-  const { theme, accentColor, syncWithSystem } = useSelector(
+  const { theme, accentColor, syncWithSystem, editorFontSize, shortcuts } = useSelector(
     (state: RootState) => state.settings,
   );
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Global Tactile Keyboard Shortcut Event Handler Pipeline
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger shortcuts if user is currently mapping/recording a keycombo
+      if ((window as any).isRecordingShortcut) return;
+
+      // Construct dynamic hotkey combination string representation
+      const parts: string[] = [];
+      if (e.ctrlKey || e.metaKey) parts.push("Ctrl");
+      if (e.altKey) parts.push("Alt");
+      if (e.shiftKey) parts.push("Shift");
+
+      let keyName = e.key;
+      if (keyName === " ") keyName = "Space";
+      
+      // Append the primary key only if it's not a standalone modifier key
+      if (!["Control", "Shift", "Alt", "Meta"].includes(e.key)) {
+        parts.push(keyName.length === 1 ? keyName.toUpperCase() : keyName);
+      }
+
+      const pressedCombo = parts.join("+");
+
+      // Inspect matching bindings against the active customized schema map
+      if (pressedCombo === shortcuts.runCode) {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent("dsa-run-code"));
+      } else if (pressedCombo === shortcuts.toggleTheme) {
+        e.preventDefault();
+        dispatch(toggleTheme());
+      } else if (pressedCombo === shortcuts.increaseFontSize) {
+        e.preventDefault();
+        dispatch(setEditorFontSize(Math.min(24, editorFontSize + 1)));
+      } else if (pressedCombo === shortcuts.decreaseFontSize) {
+        e.preventDefault();
+        dispatch(setEditorFontSize(Math.max(10, editorFontSize - 1)));
+      } else if (pressedCombo === shortcuts.toggleTerminal) {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent("dsa-toggle-terminal"));
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [dispatch, shortcuts, editorFontSize]);
 
   // Monitor network connection status and run offline synchronization recovery
   useEffect(() => {
@@ -121,6 +168,9 @@ function App() {
           break;
         case "settings/setEditorFontFamily":
           dispatch(setEditorFontFamily(payload));
+          break;
+        case "settings/setShortcut":
+          dispatch(setShortcut(payload));
           break;
         default:
           break;

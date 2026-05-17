@@ -12,6 +12,7 @@ import {
   setEditorFontLigatures,
   setEditorFontFamily,
   syncSettings,
+  setShortcut,
   type SettingsState,
 } from "../features/settings/settingsSlice";
 import {
@@ -38,6 +39,7 @@ import {
   LuAccessibility,
   LuCode,
   LuType,
+  LuKeyboard,
 } from "react-icons/lu";
 
 const THEME_ACCENT_MAP: Record<string, string> = {
@@ -152,6 +154,7 @@ const Settings: React.FC = () => {
     editorFontFamily,
     isOnline,
     syncStatus,
+    shortcuts,
   } = useSelector((state: RootState) => state.settings);
   const categories = useSelector((state: RootState) => state.categories.list);
   const techniques = useSelector((state: RootState) => state.techniques.list);
@@ -161,6 +164,54 @@ const Settings: React.FC = () => {
   const [newSubName, setNewSubName] = useState("");
   const [newTechName, setNewTechName] = useState("");
   const [activeTab, setActiveTab] = useState<"general" | "data">("general");
+  const [recordingAction, setRecordingAction] = useState<string | null>(null);
+
+  // Keyboard shortcut intercepting recorder hook
+  React.useEffect(() => {
+    if (!recordingAction) return;
+
+    const handleRecord = (e: KeyboardEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      // Escape terminates key combo recording immediately
+      if (e.key === "Escape") {
+        setRecordingAction(null);
+        (window as any).isRecordingShortcut = false;
+        return;
+      }
+
+      // Skip standalone modifier key down triggers
+      if (["Control", "Shift", "Alt", "Meta"].includes(e.key)) {
+        return;
+      }
+
+      const parts: string[] = [];
+      if (e.ctrlKey || e.metaKey) parts.push("Ctrl");
+      if (e.altKey) parts.push("Alt");
+      if (e.shiftKey) parts.push("Shift");
+
+      let keyName = e.key;
+      if (keyName === " ") keyName = "Space";
+      
+      parts.push(keyName.length === 1 ? keyName.toUpperCase() : keyName);
+      const newCombo = parts.join("+");
+
+      // Update in store and broadcast to other active tabs
+      dispatch(setShortcut({ actionId: recordingAction, keyCombo: newCombo }));
+      
+      setRecordingAction(null);
+      (window as any).isRecordingShortcut = false;
+    };
+
+    (window as any).isRecordingShortcut = true;
+    window.addEventListener("keydown", handleRecord, true);
+
+    return () => {
+      window.removeEventListener("keydown", handleRecord, true);
+      (window as any).isRecordingShortcut = false;
+    };
+  }, [recordingAction, dispatch]);
 
   const handleSettingChange = (
     key: keyof SettingsState,
@@ -581,6 +632,108 @@ const Settings: React.FC = () => {
                     <br />
                     <span className="text-text-muted/40">// Verification of Ligatures: !=, ===, &gt;=, -&gt;</span>
                   </div>
+                </div>
+              </div>
+            </SettingSection>
+
+            <SettingSection title="Tactile Keyboard Shortcuts" icon={LuKeyboard} fullWidth>
+              <div className="bg-sidebar/20 border border-border-subtle/50 rounded-3xl p-6 md:p-8 space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border-subtle/30">
+                  <div>
+                    <h3 className="text-sm font-black uppercase tracking-widest text-text-main">
+                      Interactive Shortcut mapper
+                    </h3>
+                    <p className="text-[10px] text-text-muted leading-relaxed font-bold uppercase tracking-tight opacity-60 mt-1">
+                      Configure customized tactile hotkeys to control IDE compilation sandboxes, layout toggles, themes, and accessibility settings.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      dispatch(setShortcut({ actionId: "runCode", keyCombo: "Ctrl+Enter" }));
+                      dispatch(setShortcut({ actionId: "toggleTheme", keyCombo: "Ctrl+l" }));
+                      dispatch(setShortcut({ actionId: "increaseFontSize", keyCombo: "Ctrl+ArrowUp" }));
+                      dispatch(setShortcut({ actionId: "decreaseFontSize", keyCombo: "Ctrl+ArrowDown" }));
+                      dispatch(setShortcut({ actionId: "toggleTerminal", keyCombo: "Ctrl+`" }));
+                    }}
+                    className="px-5 py-2.5 rounded-xl bg-black/30 hover:bg-black/50 border border-border-subtle text-[9px] font-black uppercase tracking-widest text-text-muted hover:text-text-main active:scale-95 transition-all self-start sm:self-center"
+                  >
+                    Reset to Defaults
+                  </button>
+                </div>
+
+                <div className="divide-y divide-border-subtle/20">
+                  {[
+                    { id: "runCode", name: "Run Execution Sandbox", desc: "Execute/run active code workspace compiler natively." },
+                    { id: "toggleTheme", name: "Cycle Visual Theme", desc: "Toggle Monochrome Light mode or Midnight Dark theme instantly." },
+                    { id: "increaseFontSize", name: "Increment Font Size", desc: "Scale typography size larger for code viewport." },
+                    { id: "decreaseFontSize", name: "Decrement Font Size", desc: "Scale typography size smaller for code viewport." },
+                    { id: "toggleTerminal", name: "Toggle Diagnostics Drawer", desc: "Show/hide console output drawers and execution latency reports." },
+                  ].map((act) => {
+                    const combo = shortcuts[act.id] || "";
+                    const isRecording = recordingAction === act.id;
+                    
+                    const renderKeycaps = (comboString: string) => {
+                      if (!comboString) return <span className="text-[9px] text-text-muted font-bold">UNBOUND</span>;
+                      const keys = comboString.split("+");
+                      const keyLabels: Record<string, string> = {
+                        "Ctrl": "Ctrl",
+                        "Alt": "Alt",
+                        "Shift": "Shift",
+                        "Enter": "Enter",
+                        "Space": "Space",
+                        "ArrowUp": "▲ Up",
+                        "ArrowDown": "▼ Down",
+                        "ArrowLeft": "◀ Left",
+                        "ArrowRight": "▶ Right",
+                      };
+                      return (
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          {keys.map((k, idx) => (
+                            <React.Fragment key={idx}>
+                              {idx > 0 && <span className="text-text-muted/40 font-black text-xs font-mono">+</span>}
+                              <kbd className="px-3 py-1.5 rounded-xl bg-black/45 border-t border-x border-white/5 border-b-[3px] border-black/80 text-[9px] font-mono text-text-main tracking-widest font-black uppercase shadow-lg select-none min-w-[28px] text-center inline-block transform transition-all duration-100">
+                                {keyLabels[k] || k}
+                              </kbd>
+                            </React.Fragment>
+                          ))}
+                        </div>
+                      );
+                    };
+
+                    return (
+                      <div key={act.id} className="flex flex-col md:flex-row md:items-center justify-between gap-6 py-5 first:pt-0 last:pb-0">
+                        <div className="space-y-1">
+                          <h4 className="text-xs font-black uppercase tracking-widest text-text-main flex items-center gap-2">
+                            <span>{act.name}</span>
+                            {isRecording && (
+                              <span className="h-2 w-2 rounded-full bg-amber-500 animate-ping" />
+                            )}
+                          </h4>
+                          <p className="text-[10px] text-text-muted font-bold uppercase tracking-tight opacity-55 max-w-xl">
+                            {act.desc}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center gap-6 justify-between md:justify-end">
+                          <div className="min-w-[120px] flex justify-start">
+                            {isRecording ? (
+                              <span className="text-[9px] font-black uppercase tracking-wider text-amber-500 animate-pulse bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 rounded-xl">
+                                Recording Keypress (Esc to Exit)...
+                              </span>
+                            ) : (
+                              renderKeycaps(combo)
+                            )}
+                          </div>
+                          <button
+                            onClick={() => setRecordingAction(act.id)}
+                            className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all active:scale-95 cursor-pointer ${isRecording ? "bg-amber-500 border-amber-500 text-white shadow-xl shadow-amber-500/20" : "bg-black/20 hover:bg-black/40 border-border-subtle text-text-main hover:border-brand/40"}`}
+                          >
+                            {isRecording ? "Recording..." : "Rebind"}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </SettingSection>

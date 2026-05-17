@@ -22,6 +22,9 @@ export interface SettingsState {
   // Offline-first sync status
   isOnline: boolean;
   syncStatus: "synced" | "syncing" | "offline" | "error";
+
+  // Customizable hotkeys for tactile keyboard shortcut manager
+  shortcuts: Record<string, string>;
 }
 
 const initialState: SettingsState = {
@@ -40,6 +43,21 @@ const initialState: SettingsState = {
   error: null,
   isOnline: typeof navigator !== "undefined" ? navigator.onLine : true,
   syncStatus: "synced",
+  shortcuts: (() => {
+    try {
+      const saved = localStorage.getItem("editorShortcuts");
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.warn("Failed to load shortcuts:", e);
+    }
+    return {
+      runCode: "Ctrl+Enter",
+      toggleTheme: "Ctrl+l",
+      increaseFontSize: "Ctrl+ArrowUp",
+      decreaseFontSize: "Ctrl+ArrowDown",
+      toggleTerminal: "Ctrl+`",
+    };
+  })(),
 };
 
 // Global BroadcastChannel to sync settings cross-tab
@@ -276,6 +294,14 @@ const settingsSlice = createSlice({
     setSyncStatus: (state, action: PayloadAction<"synced" | "syncing" | "offline" | "error">) => {
       state.syncStatus = action.payload;
     },
+    setShortcut: (state, action: PayloadAction<{ actionId: string; keyCombo: string }>) => {
+      const { actionId, keyCombo } = action.payload;
+      state.shortcuts[actionId] = keyCombo;
+      localStorage.setItem("editorShortcuts", JSON.stringify(state.shortcuts));
+      if (settingsChannel) {
+        settingsChannel.postMessage({ type: "settings/setShortcut", payload: action.payload });
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -329,5 +355,6 @@ export const {
   setEditorFontFamily,
   setOnline,
   setSyncStatus,
+  setShortcut,
 } = settingsSlice.actions;
 export default settingsSlice.reducer;
