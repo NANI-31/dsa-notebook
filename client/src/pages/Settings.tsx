@@ -150,6 +150,8 @@ const Settings: React.FC = () => {
     editorFontSize,
     editorFontLigatures,
     editorFontFamily,
+    isOnline,
+    syncStatus,
   } = useSelector((state: RootState) => state.settings);
   const categories = useSelector((state: RootState) => state.categories.list);
   const techniques = useSelector((state: RootState) => state.techniques.list);
@@ -226,15 +228,53 @@ const Settings: React.FC = () => {
     { name: "Pink", color: "#ec4899" },
   ];
 
+  const renderSyncBadge = () => {
+    let iconColor = "bg-green-500 shadow-green-500/20";
+    let textColor = "text-green-500 border-green-500/20";
+    let label = "Synced with Cloud";
+    let pulse = "";
+
+    if (syncStatus === "syncing") {
+      iconColor = "bg-amber-500 shadow-amber-500/20";
+      textColor = "text-amber-500 border-amber-500/20";
+      label = "Saving changes...";
+      pulse = "animate-ping";
+    } else if (syncStatus === "offline" || !isOnline) {
+      iconColor = "bg-gray-400 shadow-gray-400/20";
+      textColor = "text-gray-400 border-gray-400/20";
+      label = "Offline (Saved locally)";
+    } else if (syncStatus === "error") {
+      iconColor = "bg-rose-500 shadow-rose-500/20";
+      textColor = "text-rose-500 border-rose-500/20";
+      label = "Sync Error (Retrying)";
+      pulse = "animate-bounce";
+    }
+
+    return (
+      <div className={`flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-sidebar/50 border ${textColor} shadow-xl backdrop-blur-xl transition-all duration-300 w-fit select-none`}>
+        <div className="relative flex h-2 w-2">
+          {pulse && <span className={`absolute inline-flex h-full w-full rounded-full opacity-75 ${iconColor} ${pulse}`}></span>}
+          <span className={`relative inline-flex rounded-full h-2 w-2 ${iconColor}`}></span>
+        </div>
+        <span className={`text-[9px] font-black uppercase tracking-widest font-mono`}>
+          {label}
+        </span>
+      </div>
+    );
+  };
+
   return (
     <div className="max-w-6xl mx-auto py-8 px-4">
-      <header className="mb-12 space-y-2">
-        <h1 className="text-4xl md:text-5xl font-black text-text-main tracking-tighter leading-tight">
-          System Preferences
-        </h1>
-        <p className="text-text-muted font-medium opacity-60 max-w-xl">
-          Configure global environment parameters and architectural taxonomy.
-        </p>
+      <header className="mb-12 flex flex-col md:flex-row md:items-center md:justify-between gap-6 border-b border-border-subtle/50 pb-8">
+        <div className="space-y-2">
+          <h1 className="text-4xl md:text-5xl font-black text-text-main tracking-tighter leading-tight">
+            System Preferences
+          </h1>
+          <p className="text-text-muted font-medium opacity-60 max-w-xl">
+            Configure global environment parameters and architectural taxonomy.
+          </p>
+        </div>
+        {renderSyncBadge()}
       </header>
 
       {/* Tab Navigation */}
@@ -511,17 +551,36 @@ const Settings: React.FC = () => {
                   </div>
                 </div>
                 
-                {/* Live Preview Block */}
-                <div className="mt-6 p-4 rounded-2xl bg-black/20 border border-border-subtle font-mono text-xs text-text-muted/80 leading-relaxed select-none transition-all duration-500 overflow-hidden max-h-[80px] flex items-center justify-between"
-                     style={{ fontFamily: `'${editorFontFamily || "Fira Code"}', monospace` }}>
-                  <div>
-                    <span className="text-emerald-400 font-bold">const</span> solution = <span className="text-brand">(x) =&gt;</span> x * <span className="text-amber-500">2</span>;
-                    <br />
-                    <span className="text-text-muted/40">// Beautiful ligatures check: x !== null &amp;&amp; a -&gt; b</span>
+                {/* Dynamic Premium Typographic Live Preview Block */}
+                <div 
+                  className="mt-6 p-6 rounded-2xl bg-sidebar/50 border border-border-subtle font-mono transition-all duration-300 overflow-hidden relative shadow-inner group flex flex-col gap-3 min-h-[140px]"
+                  style={{ 
+                    fontFamily: `'${editorFontFamily || "Fira Code"}', monospace`,
+                    fontSize: `${editorFontSize}px`,
+                    fontVariantLigatures: editorFontLigatures ? "contextual" : "none",
+                  }}
+                >
+                  <div className="flex items-center justify-between pb-3 border-b border-border-subtle/50 text-[10px] text-text-muted/50 select-none font-sans font-bold uppercase tracking-widest">
+                    <span>Active Buffer Preview</span>
+                    <span className="px-2.5 py-1 bg-brand/10 text-brand rounded-lg">
+                      {editorFontFamily || "Fira Code"} - {editorFontSize}px
+                    </span>
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 bg-brand/10 text-brand rounded-lg hidden sm:inline-block">
-                    Live Preview
-                  </span>
+                  <div className="leading-relaxed select-none">
+                    <span className="text-emerald-400 font-bold">const</span> computeSolution = <span className="text-brand">(val: number) =&gt;</span> &#123;
+                    <br />
+                    &nbsp;&nbsp;<span className="text-purple-400">if</span> (val !== <span className="text-amber-400">null</span> &amp;&amp; val &gt;= <span className="text-amber-500">0</span>) &#123;
+                    <br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-sky-400">return</span> val === <span className="text-amber-500">0</span> ? <span className="text-amber-500">1</span> : val * <span className="text-rose-400">3</span>;
+                    <br />
+                    &nbsp;&nbsp;&#125;
+                    <br />
+                    &nbsp;&nbsp;<span className="text-sky-400">return</span> <span className="text-amber-500">-1</span>;
+                    <br />
+                    &#125;;
+                    <br />
+                    <span className="text-text-muted/40">// Verification of Ligatures: !=, ===, &gt;=, -&gt;</span>
+                  </div>
                 </div>
               </div>
             </SettingSection>

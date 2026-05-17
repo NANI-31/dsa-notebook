@@ -3,7 +3,9 @@ export interface Solution {
   name: string;
   code: string;
   language: string;
+  codes?: Record<string, string>;
 }
+
 
 export interface Problem {
   _id: string;

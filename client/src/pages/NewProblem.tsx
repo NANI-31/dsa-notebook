@@ -119,6 +119,7 @@ const NewProblem: React.FC = () => {
           name: "Main Solution",
           language: "typescript",
           code: "",
+          codes: {},
         },
       ],
     };

@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, lazy, Suspense } from "react";
 import {
   LuCode,
   LuPlus,
   LuTrash2,
   LuType,
 } from "react-icons/lu";
-import CustomMonaco from "./CustomMonaco/index";
+const CustomMonaco = lazy(() => import("./CustomMonaco/index"));
 import { Select, MenuItem, FormControl } from "@mui/material";
 import type { Solution } from "../types/problem";
 
@@ -25,6 +25,7 @@ const SolutionEditor: React.FC<SolutionEditorProps> = ({
       name: `Variant ${variants.length + 1}`,
       code: "",
       language: variants[activeIndex]?.language || "typescript",
+      codes: {},
     };
     onChange([...variants, newVariant]);
     setactiveIndex(variants.length);
@@ -48,6 +49,45 @@ const SolutionEditor: React.FC<SolutionEditorProps> = ({
     variants && variants.length > 0
       ? variants[activeIndex] || variants[0]
       : null;
+
+  const handleCodeChange = (value: string) => {
+    if (!activeVariant) return;
+    const currentLanguage = activeVariant.language;
+    const currentCodes = activeVariant.codes || { [currentLanguage]: activeVariant.code };
+    const nextCodes = {
+      ...currentCodes,
+      [currentLanguage]: value,
+    };
+    updateVariant(activeIndex, {
+      code: value,
+      codes: nextCodes,
+    });
+  };
+
+  const handleLanguageChange = (newLanguage: string) => {
+    if (!activeVariant) return;
+    const currentLanguage = activeVariant.language;
+    const currentCode = activeVariant.code;
+    const currentCodes = activeVariant.codes || { [currentLanguage]: currentCode };
+    
+    // Save active code to the current language slot
+    const updatedCodes = {
+      ...currentCodes,
+      [currentLanguage]: currentCode,
+    };
+    
+    // Load code from the new language slot (or default to a blank string if none exists)
+    const newCode = updatedCodes[newLanguage] !== undefined ? updatedCodes[newLanguage] : "";
+    
+    updateVariant(activeIndex, {
+      language: newLanguage,
+      code: newCode,
+      codes: {
+        ...updatedCodes,
+        [newLanguage]: newCode,
+      },
+    });
+  };
 
   if (!activeVariant) {
     return (
@@ -154,11 +194,7 @@ const SolutionEditor: React.FC<SolutionEditorProps> = ({
           <FormControl size="small" sx={{ minWidth: 160 }}>
             <Select
               value={activeVariant.language}
-              onChange={(e) =>
-                updateVariant(activeIndex, {
-                  language: e.target.value as string,
-                })
-              }
+              onChange={(e) => handleLanguageChange(e.target.value as string)}
               sx={{
                 backgroundColor: "var(--app-bg)",
                 color: "var(--text-main)",
@@ -212,14 +248,31 @@ const SolutionEditor: React.FC<SolutionEditorProps> = ({
           }}
           className="flex-1 rounded-2xl border overflow-hidden relative shadow-2xl transition-editor-all transition-all duration-300"
         >
-          <CustomMonaco
-            height="100%"
-            language={activeVariant.language}
-            value={activeVariant.code}
-            onChange={(value) =>
-              updateVariant(activeIndex, { code: value || "" })
-            }
-          />
+          <Suspense fallback={
+            <div className="w-full h-full flex flex-col p-6 animate-pulse bg-sidebar/50 backdrop-blur-md rounded-2xl min-h-[300px]">
+              <div className="flex flex-col gap-4 opacity-30">
+                <div className="flex gap-4">
+                  <div className="w-8 h-4 bg-text-muted/20 rounded-md" />
+                  <div className="w-48 h-4 bg-text-muted/10 rounded-md" />
+                </div>
+                <div className="flex gap-4">
+                  <div className="w-8 h-4 bg-text-muted/20 rounded-md" />
+                  <div className="w-64 h-4 bg-text-muted/10 rounded-md" />
+                </div>
+                <div className="flex gap-4">
+                  <div className="w-8 h-4 bg-text-muted/20 rounded-md" />
+                  <div className="w-32 h-4 bg-text-muted/10 rounded-md" />
+                </div>
+              </div>
+            </div>
+          }>
+            <CustomMonaco
+              height="100%"
+              language={activeVariant.language}
+              value={activeVariant.code}
+              onChange={(value) => handleCodeChange(value || "")}
+            />
+          </Suspense>
         </div>
       </div>
     </div>

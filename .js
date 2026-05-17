@@ -13,6 +13,7 @@ function longestPalindrome(s: string): string {
     return max;
 }
 
+
 function isPalindrome(s: string): boolean {
     let l = 0, r = s.length - 1;
     while (l < r) {

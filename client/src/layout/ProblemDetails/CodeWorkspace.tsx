@@ -1,4 +1,4 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import {
   LuKeyboard,
   LuPlay,
@@ -8,7 +8,7 @@ import {
   LuCircle,
 } from "react-icons/lu";
 import { Select, MenuItem, FormControl } from "@mui/material";
-import CustomMonaco from "../../components/CustomMonaco/index";
+const CustomMonaco = lazy(() => import("../../components/CustomMonaco/index"));
 import SectionHeader from "./SectionHeader";
 
 import { useProblemDetails } from "../../context/ProblemDetailsContext";
@@ -201,21 +201,40 @@ const CodeWorkspace: React.FC = () => {
                             : "c"}
                 </span>
               </div>
-              <CustomMonaco
-                height={
-                  terminalLayout === "sidebar" && showTerminal
-                    ? "600px"
-                    : "500px"
-                }
-                language={activeVariant.language}
-                value={activeVariant.code}
-                onChange={handleCodeChange}
-                onMount={handleEditorDidMount}
-                options={{
-                  lineNumbers: "on",
-                  readOnly: false,
-                }}
-              />
+              <Suspense fallback={
+                <div className="w-full flex flex-col p-6 animate-pulse bg-sidebar/50 backdrop-blur-md rounded-3xl min-h-[400px]">
+                  <div className="flex flex-col gap-4 opacity-30">
+                    <div className="flex gap-4">
+                      <div className="w-8 h-4 bg-text-muted/20 rounded-md" />
+                      <div className="w-48 h-4 bg-text-muted/10 rounded-md" />
+                    </div>
+                    <div className="flex gap-4">
+                      <div className="w-8 h-4 bg-text-muted/20 rounded-md" />
+                      <div className="w-64 h-4 bg-text-muted/10 rounded-md" />
+                    </div>
+                    <div className="flex gap-4">
+                      <div className="w-8 h-4 bg-text-muted/20 rounded-md" />
+                      <div className="w-32 h-4 bg-text-muted/10 rounded-md" />
+                    </div>
+                  </div>
+                </div>
+              }>
+                <CustomMonaco
+                  height={
+                    terminalLayout === "sidebar" && showTerminal
+                      ? "600px"
+                      : "500px"
+                  }
+                  language={activeVariant.language}
+                  value={activeVariant.code}
+                  onChange={handleCodeChange}
+                  onMount={handleEditorDidMount}
+                  options={{
+                    lineNumbers: "on",
+                    readOnly: false,
+                  }}
+                />
+              </Suspense>
             </div>
 
             {/* Stacked Terminal Output */}

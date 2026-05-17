@@ -101,7 +101,8 @@ export const getProblemBySlug = async (
         id: s._id.toString(),
         name: s.name,
         code: s.code,
-        language: s.language
+        language: s.language,
+        codes: s.codes ? Object.fromEntries(s.codes) : {}
       }))
     };
 
@@ -140,7 +141,8 @@ export const updateProblemCode = async (req: Request, res: Response): Promise<vo
         problemId: problem._id,
         name: v.name,
         code: v.code,
-        language: v.language
+        language: v.language,
+        codes: v.codes || {}
       }));
       await Solution.insertMany(solutionDocs);
     }
@@ -164,7 +166,8 @@ export const createProblem = async (req: Request, res: Response) => {
         problemId: newProblem._id,
         name: v.name,
         code: v.code,
-        language: v.language
+        language: v.language,
+        codes: v.codes || {}
       }));
       await Solution.insertMany(solutionDocs);
     }

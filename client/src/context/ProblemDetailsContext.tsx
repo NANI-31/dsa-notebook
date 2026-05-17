@@ -6,7 +6,15 @@ import {
   fetchProblemBySlug,
   saveProblemVariants,
   updateLocalVariants,
+  setCurrentProblem,
 } from "../features/problems/problemsSlice";
+import {
+  saveProblemOffline,
+  getProblemOffline,
+  saveSolutionOffline,
+  getSolutionOffline,
+  executeCodeOffline,
+} from "../services/sandboxStore";
 import type { Solution } from "../types/problem";
 
 interface ProblemDetailsContextType {
@@ -85,10 +93,52 @@ export const ProblemDetailsProvider: React.FC<{ slug: string | undefined; childr
 
   // Fetch problem on mount or slug change
   useEffect(() => {
-    if (slug) {
-      dispatch(fetchProblemBySlug(slug));
-    }
+    const load = async () => {
+      if (slug) {
+        const isClientOnline = typeof navigator !== "undefined" ? navigator.onLine : true;
+        if (!isClientOnline) {
+          console.log("[IndexedDB Sandbox] Hydrating offline from IndexedDB sandbox store...");
+          const offlineProb = await getProblemOffline(slug);
+          if (offlineProb) {
+            dispatch(setCurrentProblem(offlineProb));
+            
+            // Now retrieve offline cached solutions for each variant
+            const updatedVariants = [...offlineProb.variants];
+            let modified = false;
+            for (let i = 0; i < updatedVariants.length; i++) {
+              const cachedSol = await getSolutionOffline(slug, i);
+              if (cachedSol) {
+                updatedVariants[i] = {
+                  ...updatedVariants[i],
+                  code: cachedSol.code,
+                  language: cachedSol.language,
+                  codes: cachedSol.codes || { [cachedSol.language]: cachedSol.code },
+                };
+                modified = true;
+              }
+            }
+            if (modified) {
+              dispatch(updateLocalVariants(updatedVariants));
+            }
+          }
+        } else {
+          dispatch(fetchProblemBySlug(slug));
+        }
+      }
+    };
+    load();
   }, [slug, dispatch]);
+
+  // Offline Sandbox Cache Synchronizer
+  useEffect(() => {
+    if (problem && problem.slug) {
+      saveProblemOffline(problem.slug, problem);
+      // Cache initial variants in IndexedDB sandbox
+      problem.variants.forEach((v: any, idx: number) => {
+        saveSolutionOffline(problem.slug, idx, v.code, v.language, v.codes);
+      });
+    }
+  }, [problem]);
 
   // Handle scroll persistence
   useEffect(() => {
@@ -111,21 +161,64 @@ export const ProblemDetailsProvider: React.FC<{ slug: string | undefined; childr
   };
 
   const handleCodeChange = (value: string | undefined) => {
-    if (value === undefined || !variants.length) return;
+    if (value === undefined || !variants.length || !activeVariant) return;
+    const currentLanguage = activeVariant.language;
+    const currentCodes = activeVariant.codes || { [currentLanguage]: activeVariant.code };
+    const nextCodes = {
+      ...currentCodes,
+      [currentLanguage]: value,
+    };
+
     const newVariants = [...variants];
     newVariants[activeVariantIndex] = {
       ...newVariants[activeVariantIndex],
       code: value,
+      codes: nextCodes,
     };
     dispatch(updateLocalVariants(newVariants));
     setIsSaved(false);
+
+    // Save to offline solutions sandbox instantly
+    if (problem?.slug) {
+      saveSolutionOffline(problem.slug, activeVariantIndex, value, currentLanguage, nextCodes);
+    }
   };
 
   const handleLanguageChange = (lang: string) => {
-    if (!variants.length) return;
+    if (!variants.length || !activeVariant) return;
+    const currentLanguage = activeVariant.language;
+    const currentCode = activeVariant.code;
+    const currentCodes = activeVariant.codes || { [currentLanguage]: currentCode };
+
+    // Save active code to the current language slot
+    const updatedCodes = {
+      ...currentCodes,
+      [currentLanguage]: currentCode,
+    };
+
+    // Load code from the new language slot (or default to a blank string if none exists)
+    const newCode = updatedCodes[lang] !== undefined ? updatedCodes[lang] : "";
+
     const newVariants = [...variants];
-    newVariants[activeVariantIndex] = { ...newVariants[activeVariantIndex], language: lang };
+    newVariants[activeVariantIndex] = {
+      ...newVariants[activeVariantIndex],
+      language: lang,
+      code: newCode,
+      codes: {
+        ...updatedCodes,
+        [lang]: newCode,
+      },
+    };
     dispatch(updateLocalVariants(newVariants));
+    setIsSaved(false);
+
+    // Save to offline solutions sandbox instantly
+    if (problem?.slug) {
+      saveSolutionOffline(problem.slug, activeVariantIndex, newCode, lang, {
+        ...updatedCodes,
+        [lang]: newCode,
+      });
+    }
   };
 
   const formatCode = () => {
@@ -138,6 +231,22 @@ export const ProblemDetailsProvider: React.FC<{ slug: string | undefined; childr
     setShowTerminal(true);
     setExecutionOutput("");
     setExecutionError("");
+
+    const isClientOnline = typeof navigator !== "undefined" ? navigator.onLine : true;
+
+    if (!isClientOnline) {
+      try {
+        console.log("[IndexedDB Sandbox] Running sandbox execution offline...");
+        const result = await executeCodeOffline(activeVariant.code, activeVariant.language, stdin);
+        setExecutionOutput(result.stdout);
+        setExecutionError(result.stderr);
+      } catch (err: any) {
+        setExecutionError(`Sandbox execution exception: ${err.message}`);
+      } finally {
+        setIsRunning(false);
+      }
+      return;
+    }
 
     try {
       const response = await axios.post(

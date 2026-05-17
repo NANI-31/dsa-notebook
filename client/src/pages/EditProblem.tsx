@@ -125,7 +125,7 @@ const EditProblem: React.FC = () => {
         techniques: [] as string[],
         explanation: "",
         notes: "",
-        variants: [{ name: "Main Solution", language: "typescript", code: "" }],
+        variants: [{ name: "Main Solution", language: "typescript", code: "", codes: {} }],
       };
     }
 
@@ -133,8 +133,11 @@ const EditProblem: React.FC = () => {
       problem.variants &&
       Array.isArray(problem.variants) &&
       problem.variants.length > 0
-        ? problem.variants
-        : [{ name: "Main Solution", language: "typescript", code: "" }];
+        ? problem.variants.map((v: any) => ({
+            ...v,
+            codes: v.codes || { [v.language]: v.code }
+          }))
+        : [{ name: "Main Solution", language: "typescript", code: "", codes: {} }];
 
     return {
       title: problem.title || "",
