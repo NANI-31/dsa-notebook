@@ -1,0 +1,177 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-brand: var(--brand);
+  --color-sidebar: var(--sidebar-bg);
+  --color-app-bg: var(--app-bg);
+  --color-text-main: var(--text-main);
+  --color-text-muted: var(--text-muted);
+  --color-border-subtle: var(--border-subtle);
+
+  --animate-rotate-180: rotate180 0.5s ease-in-out;
+}
+
+@keyframes rotate180 {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(180deg);
+  }
+}
+
+:root {
+  --brand: #6366f1;
+  /* Current Default */
+
+  /* Light Mode Tokens */
+  --app-bg: #f8fafc;
+  --sidebar-bg: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-subtle: #e2e8f0;
+}
+
+:root.dark {
+  /* Dark Mode Tokens */
+  --app-bg: #1f1f1f;
+  --sidebar-bg: #111111;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-subtle: #373737;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--app-bg);
+  color: var(--text-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+* {
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* SVG Icon Animations & Filters */
+.ds-svg-icon {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 0;
+  transition:
+    stroke-dashoffset 1.2s ease,
+    transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+    filter 0.3s ease;
+  will-change: transform, filter;
+}
+
+.ds-svg-gap {
+  stroke-dasharray: 4;
+}
+
+.ds-icon-glow-group {
+  filter: drop-shadow(0 0 0px var(--brand));
+  transition: filter 0.3s ease;
+}
+
+.group:hover .ds-icon-glow-group {
+  filter: drop-shadow(0 0 4px var(--brand));
+}
+
+.group:hover .ds-svg-icon {
+  stroke-dashoffset: 0;
+  /* Completely removed motion to ensure path stability */
+}
+
+.ds-icon-detail {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.group:hover .ds-icon-detail {
+  animation: ds-pulse-detail 2s ease-in-out 1 forwards;
+}
+
+@keyframes ds-float {
+
+  0%,
+  100% {
+    transform: translate(var(--mx, 0), var(--my, -4px)) rotate(0deg);
+  }
+
+  50% {
+    transform: translate(var(--mx, 0), calc(var(--my, -4px) - 4px)) rotate(2deg);
+  }
+}
+
+@keyframes ds-pulse-detail {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.6;
+    transform: scale(0.9);
+  }
+}
+
+/* Skeleton animation */
+.skeleton-pulse {
+  background: var(--border-subtle);
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: .5;
+  }
+}
+
+/* Hack to color true/false/null/undefined in Monaco Editor */
+.custom-boolean-color {
+  color: #d19a66 !important;
+}
+
+/* Hack to color operators in Monaco Editor */
+.custom-operator-color {
+  color: #34c9ff !important;
+}
+
+/* Hack to color function names in Monaco Editor */
+.custom-function-color {
+  color: #61afef !important;
+}
+
+/* Hack to color object properties in Monaco Editor */
+.custom-property-color {
+  color: #e06c75 !important;
+}

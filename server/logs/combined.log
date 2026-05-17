@@ -1,0 +1,714 @@
+{"level":"info","message":"\t✅ MongoDB connected","timestamp":"2026-04-18 10:28:37"}
+{"level":"info","message":"\t🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 10:28:43"}
+{"level":"info","message":"\t✅ MongoDB connected","timestamp":"2026-04-18 10:28:44"}
+{"level":"info","message":"\t🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 10:28:51"}
+{"level":"info","message":"\t✅ MongoDB connected","timestamp":"2026-04-18 10:28:51"}
+{"level":"info","message":"\t🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 10:29:02"}
+{"level":"info","message":"\t✅ MongoDB connected","timestamp":"2026-04-18 10:29:02"}
+{"level":"info","message":"\t🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 10:29:09"}
+{"level":"info","message":"\t✅ MongoDB connected","timestamp":"2026-04-18 10:29:09"}
+{"level":"info","message":"\t🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 10:29:19"}
+{"level":"info","message":"\t✅ MongoDB connected","timestamp":"2026-04-18 10:29:19"}
+{"level":"info","message":"\t🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 10:29:42"}
+{"level":"info","message":"\t✅ MongoDB connected","timestamp":"2026-04-18 10:29:43"}
+{"level":"info","message":"\t🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 10:29:57"}
+{"level":"info","message":"\t✅ MongoDB connected","timestamp":"2026-04-18 10:29:58"}
+{"level":"info","message":"\t🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 10:30:10"}
+{"level":"info","message":"\t✅ MongoDB connected","timestamp":"2026-04-18 10:30:11"}
+{"level":"info","message":"\t🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 10:30:25"}
+{"level":"info","message":"\t✅ MongoDB connected","timestamp":"2026-04-18 10:30:26"}
+{"level":"info","message":"\t🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 10:34:03"}
+{"level":"info","message":"\t✅ MongoDB connected","timestamp":"2026-04-18 10:34:04"}
+{"level":"info","message":"\t::1 - - [18/Apr/2026:05:05:31 +0000] \"GET /api/settings HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"","timestamp":"2026-04-18 10:35:31"}
+{"level":"info","message":"\t::1 - - [18/Apr/2026:05:05:31 +0000] \"GET /api/categories HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"","timestamp":"2026-04-18 10:35:31"}
+{"level":"info","message":"\t::1 - - [18/Apr/2026:05:05:31 +0000] \"GET /api/techniques HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"","timestamp":"2026-04-18 10:35:31"}
+{"level":"info","message":"\t::1 - - [18/Apr/2026:05:05:31 +0000] \"GET /api/settings HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"","timestamp":"2026-04-18 10:35:31"}
+{"level":"info","message":"\t::1 - - [18/Apr/2026:05:05:31 +0000] \"GET /api/categories HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"","timestamp":"2026-04-18 10:35:31"}
+{"level":"info","message":"\t::1 - - [18/Apr/2026:05:05:31 +0000] \"GET /api/techniques HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"","timestamp":"2026-04-18 10:35:31"}
+{"level":"info","message":"\t::1 - - [18/Apr/2026:05:05:31 +0000] \"GET /api/problems/two-sum HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"","timestamp":"2026-04-18 10:35:31"}
+{"level":"info","message":"\t::1 - - [18/Apr/2026:05:05:31 +0000] \"GET /api/problems/two-sum HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"","timestamp":"2026-04-18 10:35:31"}
+{"level":"info","message":"\t::1 - - [18/Apr/2026:05:07:56 +0000] \"GET /api/problems/two-sum HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"","timestamp":"2026-04-18 10:37:56"}
+{"level":"info","message":"\t::1 - - [18/Apr/2026:05:07:56 +0000] \"GET /api/problems/two-sum HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"","timestamp":"2026-04-18 10:37:56"}
+{"level":"info","message":"\t::1 - - [18/Apr/2026:05:08:06 +0000] \"OPTIONS /api/problems/two-sum HTTP/1.1\" 204 0 \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"","timestamp":"2026-04-18 10:38:06"}
+{"level":"info","message":"\t::1 - - [18/Apr/2026:05:08:06 +0000] \"PUT /api/problems/two-sum HTTP/1.1\" 200 1616 \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"","timestamp":"2026-04-18 10:38:06"}
+{"level":"info","message":"\t::1 - - [18/Apr/2026:05:08:06 +0000] \"GET /api/problems/two-sum HTTP/1.1\" 200 1616 \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"","timestamp":"2026-04-18 10:38:06"}
+{"level":"info","message":"\t::1 - - [18/Apr/2026:05:08:06 +0000] \"GET /api/problems/two-sum HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"","timestamp":"2026-04-18 10:38:06"}
+{"level":"info","message":"\t🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 10:43:49"}
+{"level":"info","message":"\t✅ MongoDB connected","timestamp":"2026-04-18 10:43:50"}
+{"level":"info","message":"\t::1 - - [18/Apr/2026:05:14:38 +0000] \"GET /api/settings HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"","timestamp":"2026-04-18 10:44:38","type":"http"}
+{"level":"info","message":"\t::1 - - [18/Apr/2026:05:14:38 +0000] \"GET /api/techniques HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"","timestamp":"2026-04-18 10:44:38","type":"http"}
+{"level":"info","message":"\t::1 - - [18/Apr/2026:05:14:38 +0000] \"GET /api/categories HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"","timestamp":"2026-04-18 10:44:38","type":"http"}
+{"level":"info","message":"\t::1 - - [18/Apr/2026:05:14:38 +0000] \"GET /api/settings HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"","timestamp":"2026-04-18 10:44:38","type":"http"}
+{"level":"info","message":"\t::1 - - [18/Apr/2026:05:14:38 +0000] \"GET /api/techniques HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"","timestamp":"2026-04-18 10:44:38","type":"http"}
+{"level":"info","message":"\t::1 - - [18/Apr/2026:05:14:38 +0000] \"GET /api/problems/two-sum HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"","timestamp":"2026-04-18 10:44:38","type":"http"}
+{"level":"info","message":"\t::1 - - [18/Apr/2026:05:14:38 +0000] \"GET /api/categories HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"","timestamp":"2026-04-18 10:44:38","type":"http"}
+{"level":"info","message":"\t::1 - - [18/Apr/2026:05:14:38 +0000] \"GET /api/problems/two-sum HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"","timestamp":"2026-04-18 10:44:38","type":"http"}
+{"level":"info","message":"\t🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 10:44:53"}
+{"level":"info","message":"\t✅ MongoDB connected","timestamp":"2026-04-18 10:44:53"}
+{"level":"info","message":"\t🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 10:46:15"}
+{"level":"info","message":"\t✅ MongoDB connected","timestamp":"2026-04-18 10:46:15"}
+{"level":"info","message":"\tGET /api/settings","timestamp":"2026-04-18 10:48:32"}
+{"level":"info","message":"\tGET /api/categories","timestamp":"2026-04-18 10:48:32"}
+{"level":"info","message":"\tGET /api/techniques","timestamp":"2026-04-18 10:48:32"}
+{"level":"info","message":"\tGET /api/settings","timestamp":"2026-04-18 10:48:32"}
+{"level":"info","message":"\tGET /api/categories","timestamp":"2026-04-18 10:48:32"}
+{"level":"info","message":"\tGET /api/problems/two-sum","timestamp":"2026-04-18 10:48:32"}
+{"level":"info","message":"\tGET /api/techniques","timestamp":"2026-04-18 10:48:32"}
+{"level":"info","message":"\tGET /api/problems/two-sum","timestamp":"2026-04-18 10:48:33"}
+{"level":"info","message":"\tGET /api/settings","timestamp":"2026-04-18 10:49:13"}
+{"level":"info","message":"\tGET /api/categories","timestamp":"2026-04-18 10:49:13"}
+{"level":"info","message":"\tGET /api/techniques","timestamp":"2026-04-18 10:49:13"}
+{"level":"info","message":"\tGET /api/problems/two-sum","timestamp":"2026-04-18 10:49:13"}
+{"level":"info","message":"\tGET /api/settings","timestamp":"2026-04-18 10:49:27"}
+{"level":"info","message":"\tGET /api/categories","timestamp":"2026-04-18 10:49:27"}
+{"level":"info","message":"\tGET /api/techniques","timestamp":"2026-04-18 10:49:27"}
+{"level":"info","message":"\tGET /api/settings","timestamp":"2026-04-18 10:51:54"}
+{"level":"info","message":"\tGET /api/categories","timestamp":"2026-04-18 10:51:54"}
+{"level":"info","message":"\tGET /api/techniques","timestamp":"2026-04-18 10:51:54"}
+{"level":"info","message":"🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 10:52:58"}
+{"level":"info","message":"✅ MongoDB connected","timestamp":"2026-04-18 10:52:59"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 10:53:37"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 10:53:37"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 10:53:37"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-04-18 10:53:43"}
+{"level":"info","message":"GET /api/problems/two-sum","timestamp":"2026-04-18 10:53:47"}
+{"level":"info","message":"GET /api/problems/two-sum","timestamp":"2026-04-18 10:53:52"}
+{"level":"info","message":"🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 11:05:52"}
+{"level":"info","message":"✅ MongoDB connected","timestamp":"2026-04-18 11:05:53"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 11:06:15"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 11:06:15"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 11:06:15"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 11:06:24"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 11:06:24"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 11:06:24"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 11:10:45"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-04-18 11:12:37"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 11:12:39"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 11:13:07"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 11:13:07"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 11:13:07"}
+{"level":"info","message":"GET /api/problems/two-sum","timestamp":"2026-04-18 11:13:07"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 11:13:10"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 11:17:01"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-04-18 11:19:17"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 11:19:18"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 11:24:06"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 11:24:06"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 11:24:06"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 11:24:06"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 11:24:16"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 11:24:16"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 11:24:16"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 11:24:16"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 11:24:36"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 11:24:36"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 11:24:36"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 11:24:36"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 11:24:47"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 11:24:47"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 11:24:47"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 11:24:47"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 12:16:53"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 12:16:53"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 12:16:53"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 12:16:53"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 12:16:54"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-04-18 12:16:57"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 12:17:01"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 12:20:05"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 12:45:57"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 13:24:07"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 13:24:07"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 13:24:07"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 13:24:07"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 13:24:11"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-04-18 13:25:16"}
+{"level":"info","message":"GET /api/problems/two-sum","timestamp":"2026-04-18 13:25:19"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-04-18 13:25:24"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 13:25:26"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 13:25:32"}
+{"level":"info","message":"🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 13:26:52"}
+{"level":"info","message":"✅ MongoDB connected","timestamp":"2026-04-18 13:26:53"}
+{"level":"info","message":"🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 13:27:24"}
+{"level":"info","message":"✅ MongoDB connected","timestamp":"2026-04-18 13:27:24"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 13:29:34"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 14:20:02"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 14:20:02"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 14:20:02"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 14:20:09"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 14:20:09"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 14:20:09"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 14:20:11"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 14:20:11"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 14:20:11"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 14:20:11"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 14:20:22"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 14:27:19"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 14:29:20"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 14:29:20"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 14:29:20"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 14:29:20"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 14:29:31"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 14:29:34"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 14:31:43"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 14:32:23"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 14:32:23"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 14:32:23"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 14:32:23"}
+{"level":"info","message":"🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 14:36:34"}
+{"level":"info","message":"✅ MongoDB connected","timestamp":"2026-04-18 14:36:34"}
+{"level":"info","message":"🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 14:37:22"}
+{"level":"info","message":"✅ MongoDB connected","timestamp":"2026-04-18 14:37:22"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 14:37:58"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&page=1&limit=12","timestamp":"2026-04-18 14:38:06"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-04-18 14:38:14"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 14:38:19"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&page=1&limit=12","timestamp":"2026-04-18 14:38:21"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 14:38:26"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&page=1&limit=12","timestamp":"2026-04-18 14:38:33"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-04-18 14:38:39"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&page=1&limit=12","timestamp":"2026-04-18 14:38:41"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-04-18 14:38:45"}
+{"level":"info","message":"GET /api/problems/word-search-ii","timestamp":"2026-04-18 14:38:47"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 14:39:02"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&page=1&limit=12","timestamp":"2026-04-18 14:39:03"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 14:39:05"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 14:43:50"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 14:43:50"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 14:43:50"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 14:43:50"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 14:44:00"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 14:44:00"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 14:44:00"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 14:44:00"}
+{"level":"info","message":"🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 14:47:57"}
+{"level":"info","message":"✅ MongoDB connected","timestamp":"2026-04-18 14:47:57"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 14:48:59"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 14:48:59"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 14:48:59"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 14:48:59"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&categoryName=Data+Structures&page=2&limit=12","timestamp":"2026-04-18 14:49:01"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-18 14:49:01"}
+{"level":"info","message":"GET /api/problems/contains-duplicate","timestamp":"2026-04-18 14:49:03"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-04-18 14:49:10"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 14:49:14"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 14:50:34"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 14:50:57"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 14:56:00"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 14:57:48"}
+{"level":"error","message":"Error fetching taxonomy stats: getaddrinfo ENOTFOUND project-ks-shard-00-00.r7toy.mongodb.net","timestamp":"2026-04-18 14:59:43"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 14:59:43"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 15:49:00"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 15:50:33"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-18 15:50:40"}
+{"level":"info","message":"GET /api/problems/contains-duplicate","timestamp":"2026-04-18 15:50:42"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 15:50:46"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-18 15:50:46"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-18 15:50:48"}
+{"level":"info","message":"GET /api/problems/contains-duplicate","timestamp":"2026-04-18 15:50:50"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 15:51:00"}
+{"level":"info","message":"GET /api/problems?categories=Queue&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-18 15:51:02"}
+{"level":"info","message":"GET /api/problems/design-hit-counter","timestamp":"2026-04-18 15:51:03"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 15:51:14"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 15:51:17"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-18 15:51:19"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-18 15:51:22"}
+{"level":"info","message":"GET /api/problems?categories=Strings&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-18 15:51:24"}
+{"level":"info","message":"GET /api/problems/longest-substring-without-repeating-characters","timestamp":"2026-04-18 15:51:26"}
+{"level":"info","message":"OPTIONS /api/execute","timestamp":"2026-04-18 15:52:13"}
+{"level":"info","message":"POST /api/execute","timestamp":"2026-04-18 15:52:16"}
+{"level":"info","message":"OPTIONS /api/execute","timestamp":"2026-04-18 15:52:36"}
+{"level":"info","message":"POST /api/execute","timestamp":"2026-04-18 15:52:37"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 16:37:09"}
+{"level":"info","message":"GET /api/problems/longest-substring-without-repeating-characters","timestamp":"2026-04-18 16:37:09"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 16:37:09"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 16:37:09"}
+{"level":"info","message":"OPTIONS /api/execute","timestamp":"2026-04-18 16:38:14"}
+{"level":"info","message":"POST /api/execute","timestamp":"2026-04-18 16:38:15"}
+{"level":"info","message":"OPTIONS /api/execute","timestamp":"2026-04-18 16:38:35"}
+{"level":"info","message":"POST /api/execute","timestamp":"2026-04-18 16:38:36"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 16:38:54"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&categoryName=Data+Structures&page=2&limit=12","timestamp":"2026-04-18 16:39:12"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-18 16:39:12"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-18 16:39:15"}
+{"level":"info","message":"GET /api/problems/contains-duplicate","timestamp":"2026-04-18 16:39:16"}
+{"level":"info","message":"🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 16:40:48"}
+{"level":"info","message":"✅ MongoDB connected","timestamp":"2026-04-18 16:40:49"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 16:41:08"}
+{"level":"info","message":"🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 16:41:48"}
+{"level":"info","message":"✅ MongoDB connected","timestamp":"2026-04-18 16:41:48"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 16:42:17"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 16:42:17"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 16:42:17"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 16:42:17"}
+{"level":"info","message":"GET /api/problems?categories=Strings&categoryName=Data+Structures&page=2&limit=12","timestamp":"2026-04-18 16:42:19"}
+{"level":"info","message":"GET /api/problems?categories=Strings&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-18 16:42:20"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-04-18 16:42:22"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-04-18 16:42:45"}
+{"level":"info","message":"OPTIONS /api/problems/longest-palindromic-substring","timestamp":"2026-04-18 16:42:56"}
+{"level":"info","message":"PUT /api/problems/longest-palindromic-substring","timestamp":"2026-04-18 16:42:57"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 16:42:57"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-04-18 16:42:57"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 16:43:06"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 16:43:06"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 16:43:06"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-04-18 16:43:06"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 16:43:47"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 16:43:47"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 16:43:47"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-04-18 16:43:47"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 16:44:00"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&categoryName=Data+Structures&page=2&limit=12","timestamp":"2026-04-18 16:44:02"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-18 16:44:02"}
+{"level":"info","message":"GET /api/problems/contains-duplicate","timestamp":"2026-04-18 16:44:03"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 16:44:15"}
+{"level":"info","message":"GET /api/problems?categories=Strings&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-18 16:44:16"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-04-18 16:44:20"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 16:48:09"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 16:48:09"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 16:48:09"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-04-18 16:48:09"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-04-18 16:48:16"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-04-18 16:48:24"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-04-18 16:48:45"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 16:48:45"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-18 16:48:48"}
+{"level":"info","message":"GET /api/problems/contains-duplicate","timestamp":"2026-04-18 16:48:49"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-04-18 16:48:54"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-04-18 16:48:55"}
+{"level":"info","message":"🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 16:51:32"}
+{"level":"info","message":"✅ MongoDB connected","timestamp":"2026-04-18 16:51:33"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 16:51:34"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 16:51:34"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 16:51:34"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-04-18 16:51:34"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-04-18 16:52:20"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-04-18 16:52:30"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 16:53:42"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 16:53:42"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 16:53:42"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-04-18 16:53:42"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-04-18 16:53:46"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-04-18 16:53:48"}
+{"level":"info","message":"OPTIONS /api/settings","timestamp":"2026-04-18 16:54:34"}
+{"level":"info","message":"PATCH /api/settings","timestamp":"2026-04-18 16:54:35"}
+{"level":"info","message":"PATCH /api/settings","timestamp":"2026-04-18 16:54:36"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 16:54:38"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-18 16:54:41"}
+{"level":"info","message":"GET /api/problems?categories=Strings&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-18 16:54:44"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-04-18 16:54:44"}
+{"level":"info","message":"OPTIONS /api/execute","timestamp":"2026-04-18 16:55:05"}
+{"level":"info","message":"POST /api/execute","timestamp":"2026-04-18 16:55:07"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 16:55:20"}
+{"level":"info","message":"OPTIONS /api/settings","timestamp":"2026-04-18 16:55:25"}
+{"level":"info","message":"PATCH /api/settings","timestamp":"2026-04-18 16:55:25"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 16:55:27"}
+{"level":"info","message":"GET /api/problems?categories=Queue&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-18 16:55:28"}
+{"level":"info","message":"GET /api/problems/design-hit-counter","timestamp":"2026-04-18 16:55:29"}
+{"level":"info","message":"OPTIONS /api/execute","timestamp":"2026-04-18 16:55:32"}
+{"level":"info","message":"POST /api/execute","timestamp":"2026-04-18 16:55:34"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-04-18 16:55:44"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-04-18 16:56:47"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 16:59:47"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 16:59:47"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 16:59:47"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 17:00:07"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 17:00:07"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 17:00:07"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 17:00:30"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 17:00:30"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 17:00:31"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 17:05:43"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&categoryName=Data+Structures&page=2&limit=12","timestamp":"2026-04-18 17:05:46"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-18 17:05:46"}
+{"level":"info","message":"GET /api/problems/contains-duplicate","timestamp":"2026-04-18 17:05:47"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 17:05:52"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 17:05:52"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 17:05:52"}
+{"level":"info","message":"GET /api/problems/contains-duplicate","timestamp":"2026-04-18 17:05:52"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 17:05:55"}
+{"level":"info","message":"GET /api/problems?categories=Strings&categoryName=Data+Structures&page=2&limit=12","timestamp":"2026-04-18 17:05:57"}
+{"level":"info","message":"GET /api/problems?categories=Strings&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-18 17:05:57"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-04-18 17:05:58"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 17:06:53"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 17:06:57"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 17:06:57"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 17:06:57"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 17:08:06"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 17:08:06"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 17:08:06"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 17:08:42"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 17:08:42"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 17:08:42"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-04-18 17:09:28"}
+{"level":"info","message":"GET /api/problems?page=2&limit=12","timestamp":"2026-04-18 17:09:32"}
+{"level":"info","message":"GET /api/problems?page=3&limit=12","timestamp":"2026-04-18 17:09:34"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-04-18 17:23:18"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 17:23:19"}
+{"level":"info","message":"GET /api/problems?categories=Strings&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-18 17:23:21"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-04-18 17:23:22"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 17:23:25"}
+{"level":"info","message":"GET /api/problems?categories=Strings&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-18 17:23:27"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-04-18 17:23:28"}
+{"level":"warn","message":"⚠️ MongoDB disconnected","timestamp":"2026-04-18 20:44:48"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 20:47:25"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 20:47:25"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 20:47:25"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 21:27:25"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 21:27:26"}
+{"level":"info","message":"GET /api/problems?categories=Sorting&categoryName=Algorithms&page=2&limit=12","timestamp":"2026-04-18 21:27:29"}
+{"level":"info","message":"GET /api/problems?categories=Sorting&categoryName=Algorithms&page=1&limit=12","timestamp":"2026-04-18 21:27:29"}
+{"level":"info","message":"GET /api/problems/quick-sort","timestamp":"2026-04-18 21:27:30"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 21:27:42"}
+{"level":"info","message":"GET /api/problems?categories=Sorting&categoryName=Algorithms&page=1&limit=12","timestamp":"2026-04-18 21:27:42"}
+{"level":"info","message":"GET /api/problems/merge-sort","timestamp":"2026-04-18 21:27:43"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 21:27:50"}
+{"level":"info","message":"GET /api/problems?categories=Sorting&categoryName=Algorithms&page=1&limit=12","timestamp":"2026-04-18 21:27:50"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 21:27:58"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-04-18 21:28:02"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 21:28:05"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 21:29:17"}
+{"level":"info","message":"GET /api/problems?categories=DP&categoryName=Algorithms&page=1&limit=12","timestamp":"2026-04-18 21:29:21"}
+{"level":"info","message":"GET /api/problems/longest-common-subsequence","timestamp":"2026-04-18 21:29:24"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 21:29:52"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 21:29:53"}
+{"level":"info","message":"GET /api/problems?categories=Searching&categoryName=Algorithms&page=1&limit=12","timestamp":"2026-04-18 21:29:58"}
+{"level":"info","message":"GET /api/problems/search-in-rotated-sorted-array","timestamp":"2026-04-18 21:30:01"}
+{"level":"info","message":"OPTIONS /api/problems/search-in-rotated-sorted-array","timestamp":"2026-04-18 21:30:22"}
+{"level":"info","message":"PUT /api/problems/search-in-rotated-sorted-array","timestamp":"2026-04-18 21:30:23"}
+{"level":"info","message":"🚀 Server is running on http://localhost:5000","timestamp":"2026-04-18 21:33:03"}
+{"level":"info","message":"✅ MongoDB connected","timestamp":"2026-04-18 21:33:03"}
+{"level":"info","message":"GET /api/problems/search-in-rotated-sorted-array","timestamp":"2026-04-18 21:33:04"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 21:33:24"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-18 21:34:29"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-18 21:34:32"}
+{"level":"info","message":"GET /api/problems/contains-duplicate","timestamp":"2026-04-18 21:34:32"}
+{"level":"info","message":"GET /api/problems/contains-duplicate","timestamp":"2026-04-18 21:39:04"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 21:39:40"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 21:39:40"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 21:39:40"}
+{"level":"info","message":"GET /api/problems/contains-duplicate","timestamp":"2026-04-18 21:39:40"}
+{"level":"info","message":"OPTIONS /api/execute","timestamp":"2026-04-18 21:41:06"}
+{"level":"info","message":"POST /api/execute","timestamp":"2026-04-18 21:41:08"}
+{"level":"info","message":"OPTIONS /api/execute","timestamp":"2026-04-18 21:41:58"}
+{"level":"info","message":"POST /api/execute","timestamp":"2026-04-18 21:42:00"}
+{"level":"info","message":"GET /api/problems/contains-duplicate","timestamp":"2026-04-18 21:44:42"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 21:45:35"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 21:45:35"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 21:45:35"}
+{"level":"info","message":"GET /api/problems/contains-duplicate","timestamp":"2026-04-18 21:45:35"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 21:58:22"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 21:58:22"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 21:58:22"}
+{"level":"info","message":"GET /api/problems/contains-duplicate","timestamp":"2026-04-18 21:58:22"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 22:21:26"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 22:21:26"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 22:21:26"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 22:37:02"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 22:37:02"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 22:37:02"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-18 22:43:58"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-18 22:43:58"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-18 22:43:58"}
+{"level":"info","message":"🚀 Server is running on http://localhost:5000","timestamp":"2026-04-19 09:46:24"}
+{"level":"info","message":"✅ MongoDB connected","timestamp":"2026-04-19 09:46:24"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-04-19 09:47:04"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-19 09:47:05"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-04-19 10:56:39"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-04-19 10:56:39"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-04-19 10:56:39"}
+{"level":"info","message":"OPTIONS /api/problems","timestamp":"2026-04-19 10:57:02"}
+{"body":{"category":"69e1c73b783ece044aef8780","description":"","difficulty":"Easy","explanation":"","notes":"","spaceComplexity":"","subCategory":"Arrays","techniques":[],"timeComplexity":"0(n)","title":"testing","variants":[{"code":"console.log(\"hi\");","language":"typescript","name":"Main Solution"}]},"level":"error","message":"Error creating problem: Problem validation failed: slug: Path `slug` is required.","timestamp":"2026-04-19 10:57:02"}
+{"level":"info","message":"POST /api/problems","timestamp":"2026-04-19 10:57:02"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-04-19 10:57:09"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-19 10:57:11"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-19 10:57:13"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-04-19 10:57:23"}
+{"level":"info","message":"GET /api/problems?categories=Arrays&categoryName=Data+Structures&page=1&limit=12","timestamp":"2026-04-19 10:57:24"}
+{"level":"info","message":"OPTIONS /api/problems","timestamp":"2026-04-19 10:57:51"}
+{"body":{"category":"69e1c73b783ece044aef8780","description":"","difficulty":"Easy","explanation":"","notes":"","spaceComplexity":"","subCategory":"Arrays","techniques":[],"timeComplexity":"0(n)","title":"testing","variants":[{"code":"console.log(\"hi\");","language":"typescript","name":"Main Solution"}]},"level":"error","message":"Error creating problem: Problem validation failed: slug: Path `slug` is required.","timestamp":"2026-04-19 10:57:51"}
+{"level":"info","message":"POST /api/problems","timestamp":"2026-04-19 10:57:51"}
+{"body":{"category":"69e1c73b783ece044aef8780","description":"","difficulty":"Easy","explanation":"","notes":"","spaceComplexity":"","subCategory":"Arrays","techniques":[],"timeComplexity":"0(n)","title":"testing","variants":[{"code":"console.log(\"hi\");","language":"typescript","name":"Main Solution"}]},"level":"error","message":"Error creating problem: Problem validation failed: slug: Path `slug` is required.","timestamp":"2026-04-19 10:57:52"}
+{"level":"info","message":"POST /api/problems","timestamp":"2026-04-19 10:57:52"}
+{"body":{"category":"69e1c73b783ece044aef8780","description":"","difficulty":"Easy","explanation":"","notes":"","spaceComplexity":"","subCategory":"Arrays","techniques":[],"timeComplexity":"0(n)","title":"testing","variants":[{"code":"console.log(\"hi\");","language":"typescript","name":"Main Solution"}]},"level":"error","message":"Error creating problem: Problem validation failed: slug: Path `slug` is required.","timestamp":"2026-04-19 10:57:52"}
+{"level":"info","message":"POST /api/problems","timestamp":"2026-04-19 10:57:52"}
+{"level":"info","message":"OPTIONS /api/problems","timestamp":"2026-04-19 10:58:38"}
+{"body":{"category":"69e1c73b783ece044aef8780","description":"anyuabpiae","difficulty":"Easy","explanation":"asfvadfvadf","notes":"","spaceComplexity":"","subCategory":"Arrays","techniques":["69e1de66ea7e9d56a1be812c","69e1de66ea7e9d56a1be8133"],"timeComplexity":"0(n)","title":"testing","variants":[{"code":"console.log(\"hi\");","language":"typescript","name":"Main Solution"}]},"level":"error","message":"Error creating problem: Problem validation failed: slug: Path `slug` is required.","timestamp":"2026-04-19 10:58:38"}
+{"level":"info","message":"POST /api/problems","timestamp":"2026-04-19 10:58:38"}
+{"level":"info","message":"🚀 Server is running on http://localhost:5000","timestamp":"2026-04-19 11:55:06"}
+{"level":"info","message":"✅ MongoDB connected","timestamp":"2026-04-19 11:55:07"}
+{"level":"info","message":"🚀 Server is running on http://localhost:5000","timestamp":"2026-05-17 17:25:24"}
+{"level":"error","message":"Error fetching problems: Operation `problems.find()` buffering timed out after 10000ms","stack":"MongooseError: Operation `problems.find()` buffering timed out after 10000ms\n    at Timeout._onTimeout (D:\\Data\\GitHub\\dsa-notebook\\server\\node_modules\\mongoose\\lib\\drivers\\node-mongodb-native\\collection.js:142:25)\n    at listOnTimeout (node:internal/timers:605:17)\n    at processTimers (node:internal/timers:541:7)","timestamp":"2026-05-17 17:25:37"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-05-17 17:25:37"}
+{"level":"error","message":"❌ MongoDB connection failed: Could not connect to any servers in your MongoDB Atlas cluster. One common reason is that you're trying to access the database from an IP that isn't whitelisted. Make sure your current IP address is on your Atlas cluster's IP whitelist: https://www.mongodb.com/docs/atlas/security-whitelist/","timestamp":"2026-05-17 17:25:54"}
+{"level":"info","message":"🚀 Server is running on http://localhost:5000","timestamp":"2026-05-17 17:27:16"}
+{"level":"info","message":"✅ MongoDB connected","timestamp":"2026-05-17 17:27:16"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-05-17 17:27:21"}
+{"level":"info","message":"GET /api/problems?page=2&limit=12","timestamp":"2026-05-17 17:27:25"}
+{"level":"info","message":"GET /api/problems?page=3&limit=12","timestamp":"2026-05-17 17:27:26"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 17:27:30"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-05-17 17:27:52"}
+{"level":"info","message":"GET /api/problems/longest-common-subsequence","timestamp":"2026-05-17 17:27:53"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-05-17 17:27:58"}
+{"level":"info","message":"GET /api/problems/climbing-stairs","timestamp":"2026-05-17 17:27:58"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-05-17 17:28:00"}
+{"level":"info","message":"GET /api/problems/search-in-rotated-sorted-array","timestamp":"2026-05-17 17:28:01"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-05-17 17:28:03"}
+{"level":"info","message":"GET /api/problems/binary-search","timestamp":"2026-05-17 17:28:04"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-05-17 17:28:05"}
+{"level":"info","message":"GET /api/problems/quick-sort","timestamp":"2026-05-17 17:28:06"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-05-17 17:32:29"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 17:32:30"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-05-17 17:32:33"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 17:32:35"}
+{"level":"info","message":"OPTIONS /api/settings","timestamp":"2026-05-17 17:32:58"}
+{"level":"info","message":"PATCH /api/settings","timestamp":"2026-05-17 17:32:59"}
+{"level":"info","message":"GET /api/problems?page=2&limit=12","timestamp":"2026-05-17 17:33:01"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-05-17 17:33:02"}
+{"level":"info","message":"GET /api/problems?page=2&limit=12","timestamp":"2026-05-17 17:33:02"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 17:33:08"}
+{"level":"info","message":"OPTIONS /api/execute","timestamp":"2026-05-17 17:33:10"}
+{"level":"info","message":"POST /api/execute","timestamp":"2026-05-17 17:33:12"}
+{"level":"info","message":"OPTIONS /api/execute","timestamp":"2026-05-17 17:34:10"}
+{"level":"info","message":"POST /api/execute","timestamp":"2026-05-17 17:34:12"}
+{"level":"info","message":"OPTIONS /api/settings","timestamp":"2026-05-17 17:34:45"}
+{"level":"info","message":"PATCH /api/settings","timestamp":"2026-05-17 17:34:45"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-05-17 17:34:46"}
+{"level":"info","message":"GET /api/problems?page=2&limit=12","timestamp":"2026-05-17 17:34:46"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 17:34:47"}
+{"level":"info","message":"OPTIONS /api/execute","timestamp":"2026-05-17 17:35:11"}
+{"level":"info","message":"POST /api/execute","timestamp":"2026-05-17 17:35:13"}
+{"level":"info","message":"OPTIONS /api/execute","timestamp":"2026-05-17 17:36:45"}
+{"level":"info","message":"POST /api/execute","timestamp":"2026-05-17 17:36:45"}
+{"level":"info","message":"OPTIONS /api/settings","timestamp":"2026-05-17 17:38:25"}
+{"level":"info","message":"PATCH /api/settings","timestamp":"2026-05-17 17:38:25"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-05-17 17:38:29"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 17:38:29"}
+{"level":"info","message":"OPTIONS /api/execute","timestamp":"2026-05-17 17:38:36"}
+{"level":"info","message":"POST /api/execute","timestamp":"2026-05-17 17:38:36"}
+{"level":"info","message":"OPTIONS /api/execute","timestamp":"2026-05-17 17:52:28"}
+{"level":"info","message":"POST /api/execute","timestamp":"2026-05-17 17:52:28"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:13:08"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:13:08"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:13:08"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:13:08"}
+{"level":"info","message":"OPTIONS /api/execute","timestamp":"2026-05-17 18:13:16"}
+{"level":"info","message":"POST /api/execute","timestamp":"2026-05-17 18:13:16"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:19:01"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:19:01"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:19:01"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:19:01"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:21:19"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:21:19"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:21:19"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:21:19"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:21:31"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:21:31"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:21:31"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:21:31"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:21:41"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:21:41"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:21:41"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:21:41"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:30:28"}
+{"level":"info","message":"OPTIONS /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:30:51"}
+{"level":"info","message":"PUT /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:30:51"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-05-17 18:30:51"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:30:51"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:31:15"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:31:15"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:31:15"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:31:15"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:31:22"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:31:22"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:31:22"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:31:22"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:32:11"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:32:11"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:32:11"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:32:11"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:32:23"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:32:23"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:32:23"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:32:23"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:32:25"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:32:25"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:32:25"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:32:25"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:32:25"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:32:36"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:32:36"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:32:36"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:32:36"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:32:36"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:32:44"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:32:44"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:32:44"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:32:44"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:33:48"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:33:48"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:33:48"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:33:48"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:36:10"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:36:10"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:36:10"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:36:10"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:36:40"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:36:40"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:36:40"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:36:40"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:38:04"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:38:04"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:38:04"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:38:04"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:39:27"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:39:27"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:39:27"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:39:27"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:39:54"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:39:54"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:39:54"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:39:54"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:40:23"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:40:23"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:40:23"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:40:24"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:42:59"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:42:59"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:42:59"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:42:59"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:43:05"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:43:05"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:43:05"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:43:05"}
+{"level":"info","message":"🚀 Server is running on http://localhost:5000","timestamp":"2026-05-17 18:48:29"}
+{"level":"info","message":"✅ MongoDB connected","timestamp":"2026-05-17 18:48:29"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-05-17 18:48:40"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:48:41"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:51:02"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:51:02"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:51:02"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:51:02"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:54:59"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:54:59"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:54:59"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:54:59"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:55:15"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:55:15"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:55:15"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-05-17 18:55:18"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:55:18"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:56:41"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:56:41"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:56:41"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:56:41"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:56:50"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:56:50"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:56:50"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:56:50"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:58:19"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:58:19"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:58:19"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:58:19"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 18:59:47"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 18:59:47"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 18:59:47"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 18:59:47"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 19:00:10"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 19:00:10"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 19:00:10"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 19:00:10"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 19:01:28"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 19:01:28"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 19:01:28"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 19:01:28"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 19:02:44"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 19:02:44"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 19:02:44"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 19:02:44"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 19:04:13"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 19:04:13"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 19:04:13"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 19:04:13"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 19:08:49"}
+{"level":"info","message":"OPTIONS /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 19:09:11"}
+{"level":"info","message":"PUT /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 19:09:12"}
+{"level":"info","message":"GET /api/categories/stats","timestamp":"2026-05-17 19:09:12"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 19:09:12"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 19:14:07"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 19:14:07"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 19:14:07"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 19:14:07"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 19:22:21"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 19:22:21"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 19:22:21"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 19:22:21"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 20:04:14"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 20:04:14"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 20:04:14"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 20:04:14"}
+{"level":"info","message":"🚀 Server is running on http://localhost:5000","timestamp":"2026-05-17 20:10:38"}
+{"level":"info","message":"✅ MongoDB connected","timestamp":"2026-05-17 20:10:39"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 20:11:40"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 20:11:40"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 20:11:40"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 20:11:40"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 20:12:16"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 20:12:16"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 20:12:16"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 20:12:16"}
+{"level":"info","message":"OPTIONS /api/settings","timestamp":"2026-05-17 20:12:38"}
+{"level":"info","message":"PATCH /api/settings","timestamp":"2026-05-17 20:12:38"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-05-17 20:12:42"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 20:12:43"}
+{"level":"info","message":"OPTIONS /api/settings","timestamp":"2026-05-17 20:13:00"}
+{"level":"info","message":"PATCH /api/settings","timestamp":"2026-05-17 20:13:00"}
+{"level":"info","message":"GET /api/problems?page=2&limit=12","timestamp":"2026-05-17 20:13:02"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-05-17 20:13:02"}
+{"level":"info","message":"GET /api/problems?page=2&limit=12","timestamp":"2026-05-17 20:13:02"}
+{"level":"info","message":"GET /api/problems/binary-tree-inorder-traversal","timestamp":"2026-05-17 20:13:03"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-05-17 20:13:08"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 20:13:10"}
+{"level":"info","message":"OPTIONS /api/settings","timestamp":"2026-05-17 20:13:23"}
+{"level":"info","message":"PATCH /api/settings","timestamp":"2026-05-17 20:13:23"}
+{"level":"info","message":"GET /api/problems?page=2&limit=12","timestamp":"2026-05-17 20:13:25"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-05-17 20:13:25"}
+{"level":"info","message":"GET /api/problems?page=2&limit=12","timestamp":"2026-05-17 20:13:25"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 20:13:28"}
+{"level":"info","message":"OPTIONS /api/settings","timestamp":"2026-05-17 20:13:35"}
+{"level":"info","message":"PATCH /api/settings","timestamp":"2026-05-17 20:13:35"}
+{"level":"info","message":"GET /api/problems?page=3&limit=12","timestamp":"2026-05-17 20:13:36"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-05-17 20:13:37"}
+{"level":"info","message":"GET /api/problems?page=2&limit=12","timestamp":"2026-05-17 20:13:37"}
+{"level":"info","message":"GET /api/problems?page=3&limit=12","timestamp":"2026-05-17 20:13:37"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 20:13:41"}
+{"level":"info","message":"OPTIONS /api/settings","timestamp":"2026-05-17 20:13:52"}
+{"level":"info","message":"PATCH /api/settings","timestamp":"2026-05-17 20:13:52"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-05-17 20:13:54"}
+{"level":"info","message":"GET /api/problems?page=2&limit=12","timestamp":"2026-05-17 20:13:54"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 20:13:56"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-05-17 20:13:58"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 20:13:59"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-05-17 20:14:04"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 20:14:06"}
+{"level":"info","message":"OPTIONS /api/settings","timestamp":"2026-05-17 20:14:10"}
+{"level":"info","message":"PATCH /api/settings","timestamp":"2026-05-17 20:14:10"}
+{"level":"info","message":"GET /api/problems?page=2&limit=12","timestamp":"2026-05-17 20:14:11"}
+{"level":"info","message":"GET /api/problems?page=3&limit=12","timestamp":"2026-05-17 20:14:12"}
+{"level":"info","message":"GET /api/problems?page=1&limit=12","timestamp":"2026-05-17 20:14:12"}
+{"level":"info","message":"GET /api/problems?page=2&limit=12","timestamp":"2026-05-17 20:14:12"}
+{"level":"info","message":"GET /api/problems?page=3&limit=12","timestamp":"2026-05-17 20:14:12"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 20:14:14"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 20:15:45"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 20:15:45"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 20:15:45"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 20:15:45"}
+{"level":"info","message":"🚀 Server is running on http://localhost:5000","timestamp":"2026-05-17 20:16:55"}
+{"level":"info","message":"✅ MongoDB connected","timestamp":"2026-05-17 20:16:55"}
+{"level":"info","message":"GET /api/settings","timestamp":"2026-05-17 20:17:01"}
+{"level":"info","message":"GET /api/categories","timestamp":"2026-05-17 20:17:01"}
+{"level":"info","message":"GET /api/techniques","timestamp":"2026-05-17 20:17:01"}
+{"level":"info","message":"GET /api/problems/longest-palindromic-substring","timestamp":"2026-05-17 20:17:01"}
+{"level":"info","message":"OPTIONS /api/settings","timestamp":"2026-05-17 20:17:40"}
+{"level":"info","message":"PATCH /api/settings","timestamp":"2026-05-17 20:17:40"}
+{"level":"info","message":"PATCH /api/settings","timestamp":"2026-05-17 20:17:41"}
