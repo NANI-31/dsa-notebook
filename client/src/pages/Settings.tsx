@@ -691,7 +691,7 @@ const Settings: React.FC = () => {
                           {keys.map((k, idx) => (
                             <React.Fragment key={idx}>
                               {idx > 0 && <span className="text-text-muted/40 font-black text-xs font-mono">+</span>}
-                              <kbd className="px-3 py-1.5 rounded-xl bg-black/45 border-t border-x border-white/5 border-b-[3px] border-black/80 text-[9px] font-mono text-text-main tracking-widest font-black uppercase shadow-lg select-none min-w-[28px] text-center inline-block transform transition-all duration-100">
+                              <kbd className="px-3 py-1.5 rounded-xl bg-black/45 border-t border-r border-l border-white/5 border-b-[3px] border-black/80 text-[9px] font-mono text-text-main tracking-widest font-black uppercase shadow-lg select-none min-w-[28px] text-center inline-block transform transition-all duration-100">
                                 {keyLabels[k] || k}
                               </kbd>
                             </React.Fragment>

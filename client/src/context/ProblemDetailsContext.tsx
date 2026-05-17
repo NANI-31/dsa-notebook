@@ -276,12 +276,21 @@ export const ProblemDetailsProvider: React.FC<{ slug: string | undefined; childr
       const linesPerMs = executionTimeMs > 0 ? parseFloat((lineCount / executionTimeMs).toFixed(2)) : lineCount;
       const memoryDeltaKb = parseFloat(((activeVariant.code.length * 0.1) + (stdin.length * 0.03) + Math.random() * 4).toFixed(2));
 
+      const heapUsedBytes = (performance as any).memory?.usedJSHeapSize || 0;
+      const heapTotalBytes = (performance as any).memory?.totalJSHeapSize || 0;
+      const heapLimitBytes = (performance as any).memory?.jsHeapSizeLimit || 0;
+
       setTelemetry({
         executionTimeMs,
         memoryDeltaKb,
         lineCount,
         linesPerMs,
         isOffline: false,
+        heapUsedBytes,
+        heapTotalBytes,
+        heapLimitBytes,
+        cpuLeakWarning: executionTimeMs > 1000,
+        ramLeakWarning: memoryDeltaKb > 5000 || (heapUsedBytes > 0.8 * heapLimitBytes),
       });
     } catch (error: any) {
       setExecutionError(

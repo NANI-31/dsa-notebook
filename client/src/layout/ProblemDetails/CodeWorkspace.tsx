@@ -10,6 +10,7 @@ import {
   LuZap,
   LuHardDrive,
   LuActivity,
+  LuInfo,
 } from "react-icons/lu";
 import { Select, MenuItem, FormControl } from "@mui/material";
 const CustomMonaco = lazy(() => import("../../components/CustomMonaco/index"));
@@ -19,9 +20,19 @@ import { useProblemDetails } from "../../context/ProblemDetailsContext";
 
 const TelemetryDashboard: React.FC<{ telemetry: any }> = ({ telemetry }) => {
   if (!telemetry) return null;
+
+  const usedBytes = telemetry.heapUsedBytes || 0;
+  const totalBytes = telemetry.heapTotalBytes || 0;
+  const limitBytes = telemetry.heapLimitBytes || 0;
+
+  const usedMb = usedBytes > 0 ? (usedBytes / (1024 * 1024)).toFixed(1) : "0.0";
+  const totalMb = totalBytes > 0 ? (totalBytes / (1024 * 1024)).toFixed(0) : "0";
+  const limitMb = limitBytes > 0 ? (limitBytes / (1024 * 1024)).toFixed(0) : "0";
+  const usedPercent = limitBytes > 0 ? ((usedBytes / limitBytes) * 100).toFixed(1) : "0.0";
+
   return (
-    <div className="mb-6 grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 font-sans">
-      <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
+    <div className="mb-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 font-sans">
+      <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 transition-all">
         <div className={`p-2 rounded-lg ${telemetry.isOffline ? 'bg-amber-500/10 text-amber-400' : 'bg-sky-500/10 text-sky-400'}`}>
           <LuActivity size={16} />
         </div>
@@ -48,8 +59,13 @@ const TelemetryDashboard: React.FC<{ telemetry: any }> = ({ telemetry }) => {
           <LuHardDrive size={16} />
         </div>
         <div className="flex flex-col text-left">
-          <span className="text-[9px] font-black uppercase tracking-wider text-text-muted opacity-60">Memory Footprint</span>
+          <span className="text-[9px] font-black uppercase tracking-wider text-text-muted opacity-60">Memory delta</span>
           <span className="text-xs font-black text-emerald-400 font-mono">+{telemetry.memoryDeltaKb} KB</span>
+          {usedBytes > 0 && (
+            <span className="text-[8px] font-bold text-text-muted font-mono leading-none mt-1 opacity-70">
+              Heap: {usedMb}MB / {totalMb}MB ({limitMb}MB max)
+            </span>
+          )}
         </div>
       </div>
 
@@ -58,9 +74,43 @@ const TelemetryDashboard: React.FC<{ telemetry: any }> = ({ telemetry }) => {
           <LuCpu size={16} />
         </div>
         <div className="flex flex-col text-left">
-          <span className="text-[9px] font-black uppercase tracking-wider text-text-muted opacity-60">Parser Throughput</span>
+          <span className="text-[9px] font-black uppercase tracking-wider text-text-muted opacity-60">Parser</span>
           <span className="text-[9px] font-black text-purple-300 font-mono leading-tight">
             {telemetry.lineCount} lines @ {telemetry.linesPerMs} l/ms
+          </span>
+        </div>
+      </div>
+
+      {/* V8 CPU Health Safeguard Indicator */}
+      <div className={`flex items-center gap-3 p-3 rounded-xl border transition-all duration-300 ${
+        telemetry.cpuLeakWarning 
+          ? 'bg-rose-500/15 border-rose-500/30 text-rose-400 animate-pulse' 
+          : 'bg-white/5 border-white/5 text-emerald-400'
+      }`}>
+        <div className={`p-2 rounded-lg ${telemetry.cpuLeakWarning ? 'bg-rose-500/20' : 'bg-emerald-500/10'}`}>
+          {telemetry.cpuLeakWarning ? <LuInfo size={16} /> : <LuCpu size={16} className="animate-spin duration-3000" />}
+        </div>
+        <div className="flex flex-col text-left">
+          <span className="text-[9px] font-black uppercase tracking-wider text-text-muted opacity-60">CPU Safeguard</span>
+          <span className="text-[9px] font-extrabold uppercase tracking-widest font-mono leading-tight">
+            {telemetry.cpuLeakWarning ? 'STRESS / LEAK' : 'STABLE / FAST'}
+          </span>
+        </div>
+      </div>
+
+      {/* V8 RAM Allocation Health Safeguard Indicator */}
+      <div className={`flex items-center gap-3 p-3 rounded-xl border transition-all duration-300 ${
+        telemetry.ramLeakWarning 
+          ? 'bg-rose-500/15 border-rose-500/30 text-rose-400 animate-pulse' 
+          : 'bg-white/5 border-white/5 text-emerald-400'
+      }`}>
+        <div className={`p-2 rounded-lg ${telemetry.ramLeakWarning ? 'bg-rose-500/20' : 'bg-emerald-500/10'}`}>
+          {telemetry.ramLeakWarning ? <LuInfo size={16} /> : <LuHardDrive size={16} />}
+        </div>
+        <div className="flex flex-col text-left">
+          <span className="text-[9px] font-black uppercase tracking-wider text-text-muted opacity-60">RAM safeguard</span>
+          <span className="text-[9px] font-extrabold uppercase tracking-widest font-mono leading-tight">
+            {telemetry.ramLeakWarning ? 'LEAK ALERT' : `SAFE (${usedPercent}%)`}
           </span>
         </div>
       </div>

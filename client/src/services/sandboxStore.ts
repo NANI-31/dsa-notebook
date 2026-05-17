@@ -100,6 +100,11 @@ export interface ExecutionTelemetry {
   lineCount: number;
   linesPerMs: number;
   isOffline: boolean;
+  heapUsedBytes?: number;
+  heapTotalBytes?: number;
+  heapLimitBytes?: number;
+  cpuLeakWarning?: boolean;
+  ramLeakWarning?: boolean;
 }
 
 export interface OfflineExecutionResult {
@@ -118,6 +123,18 @@ export const executeCodeOffline = async (
 ): Promise<OfflineExecutionResult> => {
   const startTime = performance.now();
   const startMem = (performance as any).memory?.usedJSHeapSize || 0;
+
+  let asyncHeapBytes: number | undefined = undefined;
+  if (typeof (performance as any).measureUserAgentSpecificMemory === "function") {
+    try {
+      (performance as any).measureUserAgentSpecificMemory().then((report: any) => {
+        if (report && typeof report.bytes === "number") {
+          console.log("[V8 Sandbox Memory Profiler] async heap size:", report.bytes);
+          asyncHeapBytes = report.bytes;
+        }
+      }).catch(() => {});
+    } catch (e) {}
+  }
 
   if (language === "javascript" || language === "typescript") {
     const workerCode = `
@@ -170,6 +187,10 @@ export const executeCodeOffline = async (
         const memoryDeltaKb = parseFloat(((code.length * 0.08) + (stdin.length * 0.04) + Math.random() * 5).toFixed(2));
         const linesPerMs = executionTimeMs > 0 ? parseFloat((lineCount / executionTimeMs).toFixed(2)) : lineCount;
 
+        const heapUsedBytes = asyncHeapBytes || (performance as any).memory?.usedJSHeapSize || 0;
+        const heapTotalBytes = (performance as any).memory?.totalJSHeapSize || 0;
+        const heapLimitBytes = (performance as any).memory?.jsHeapSizeLimit || 0;
+
         resolve({
           stdout: "",
           stderr: "TimeoutError: Sandboxed offline execution exceeded the maximum safety limit of 3000ms. Process terminated to maintain client responsiveness.",
@@ -179,6 +200,11 @@ export const executeCodeOffline = async (
             lineCount,
             linesPerMs,
             isOffline: true,
+            heapUsedBytes,
+            heapTotalBytes,
+            heapLimitBytes,
+            cpuLeakWarning: true,
+            ramLeakWarning: memoryDeltaKb > 5000 || (heapUsedBytes > 0.8 * heapLimitBytes),
           }
         });
       }, 3000);
@@ -201,6 +227,10 @@ export const executeCodeOffline = async (
         const lineCount = code.split("\n").length;
         const linesPerMs = executionTimeMs > 0 ? parseFloat((lineCount / executionTimeMs).toFixed(2)) : lineCount;
 
+        const heapUsedBytes = asyncHeapBytes || endMem || (performance as any).memory?.usedJSHeapSize || 0;
+        const heapTotalBytes = (performance as any).memory?.totalJSHeapSize || 0;
+        const heapLimitBytes = (performance as any).memory?.jsHeapSizeLimit || 0;
+
         resolve({
           stdout: stdout || (success ? "[Execution completed with exit code 0. No stdout detected.]" : ""),
           stderr: stderr || "",
@@ -210,6 +240,11 @@ export const executeCodeOffline = async (
             lineCount,
             linesPerMs,
             isOffline: true,
+            heapUsedBytes,
+            heapTotalBytes,
+            heapLimitBytes,
+            cpuLeakWarning: executionTimeMs > 1000,
+            ramLeakWarning: memoryDeltaKb > 5000 || (heapUsedBytes > 0.8 * heapLimitBytes),
           }
         });
       };
@@ -225,6 +260,10 @@ export const executeCodeOffline = async (
         const memoryDeltaKb = parseFloat(((code.length * 0.08) + (stdin.length * 0.04) + Math.random() * 3).toFixed(2));
         const linesPerMs = executionTimeMs > 0 ? parseFloat((lineCount / executionTimeMs).toFixed(2)) : lineCount;
 
+        const heapUsedBytes = asyncHeapBytes || (performance as any).memory?.usedJSHeapSize || 0;
+        const heapTotalBytes = (performance as any).memory?.totalJSHeapSize || 0;
+        const heapLimitBytes = (performance as any).memory?.jsHeapSizeLimit || 0;
+
         resolve({
           stdout: "",
           stderr: `Sandbox compilation error: ${err.message}`,
@@ -234,6 +273,11 @@ export const executeCodeOffline = async (
             lineCount,
             linesPerMs,
             isOffline: true,
+            heapUsedBytes,
+            heapTotalBytes,
+            heapLimitBytes,
+            cpuLeakWarning: executionTimeMs > 1000,
+            ramLeakWarning: memoryDeltaKb > 5000 || (heapUsedBytes > 0.8 * heapLimitBytes),
           }
         });
       };
@@ -249,6 +293,10 @@ export const executeCodeOffline = async (
     const memoryDeltaKb = parseFloat(((code.length * 0.12) + (stdin.length * 0.05) + Math.random() * 8).toFixed(2));
     const lineCount = code.split("\n").length;
     const linesPerMs = executionTimeMs > 0 ? parseFloat((lineCount / executionTimeMs).toFixed(2)) : lineCount;
+
+    const heapUsedBytes = (performance as any).memory?.usedJSHeapSize || 0;
+    const heapTotalBytes = (performance as any).memory?.totalJSHeapSize || 0;
+    const heapLimitBytes = (performance as any).memory?.jsHeapSizeLimit || 0;
 
     return {
       stdout: `[Offline Sandboxed Simulation Mode - ${language.toUpperCase()}]
@@ -268,6 +316,11 @@ Exit Code: 0 (Success)`,
         lineCount,
         linesPerMs,
         isOffline: true,
+        heapUsedBytes,
+        heapTotalBytes,
+        heapLimitBytes,
+        cpuLeakWarning: executionTimeMs > 1000,
+        ramLeakWarning: memoryDeltaKb > 5000 || (heapUsedBytes > 0.8 * heapLimitBytes),
       }
     };
   }
