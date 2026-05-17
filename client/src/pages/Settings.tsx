@@ -47,6 +47,97 @@ const THEME_ACCENT_MAP: Record<string, string> = {
   "custom-dark": "#0ea5e9",  // Blue (One Dark blue accent)
 };
 
+interface SettingSectionProps {
+  title: string;
+  icon: any;
+  children: React.ReactNode;
+  fullWidth?: boolean;
+}
+
+const SettingSection: React.FC<SettingSectionProps> = ({
+  title,
+  icon: Icon,
+  children,
+  fullWidth = false,
+}) => (
+  <section className="bg-sidebar/30 backdrop-blur-xl border border-border-subtle rounded-3xl p-6 md:p-10 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="flex items-center gap-3 mb-8">
+      <div className="bg-brand/10 p-2.5 rounded-xl text-brand">
+        <Icon size={22} />
+      </div>
+      <h2 className="text-xl font-black text-text-main tracking-tight uppercase text-[10px]">
+        {title}
+      </h2>
+    </div>
+    <div
+      className={
+        fullWidth
+          ? "w-full"
+          : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+      }
+    >
+      {children}
+    </div>
+  </section>
+);
+
+interface SettingCardProps {
+  title: string;
+  description: string;
+  active: boolean;
+  onClick: () => void;
+  icon?: any;
+  accentColor?: string;
+}
+
+const SettingCard: React.FC<SettingCardProps> = ({
+  title,
+  description,
+  active,
+  onClick,
+  icon: Icon,
+  accentColor,
+}) => (
+  <button
+    onClick={onClick}
+    className={`flex flex-col text-left p-6 rounded-3xl border-2 transition-all duration-500 group relative overflow-hidden ${
+      active
+        ? "border-brand bg-brand/5 shadow-2xl shadow-brand/10"
+        : "border-border-subtle bg-black/5 hover:border-text-muted/30 hover:bg-black/10"
+    }`}
+  >
+    <div className="flex items-center justify-between mb-6">
+      <div
+        className={`p-2.5 rounded-xl ${active ? "bg-brand text-white shadow-lg shadow-brand/20" : "bg-text-muted/10 text-text-muted transition-colors group-hover:bg-text-muted/20"}`}
+      >
+        {Icon ? (
+          <Icon size={20} />
+        ) : (
+          <div
+            className="w-5 h-5 rounded-full ring-2 ring-white/20"
+            style={{
+              backgroundColor: title === "Custom" ? accentColor : "",
+            }}
+          />
+        )}
+      </div>
+      <div
+        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${active ? "border-brand bg-brand scale-110" : "border-border-subtle scale-100"}`}
+      >
+        {active && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
+      </div>
+    </div>
+    <h3
+      className={`font-black text-sm uppercase tracking-widest mb-2 transition-colors ${active ? "text-brand" : "text-text-main"}`}
+    >
+      {title}
+    </h3>
+    <p className="text-[10px] text-text-muted leading-relaxed font-bold uppercase tracking-tight opacity-60">
+      {description}
+    </p>
+  </button>
+);
+
 const Settings: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const {
@@ -134,91 +225,6 @@ const Settings: React.FC = () => {
     { name: "Orange", color: "#f59e0b" },
     { name: "Pink", color: "#ec4899" },
   ];
-
-  const SettingSection = ({
-    title,
-    icon: Icon,
-    children,
-    fullWidth = false,
-  }: {
-    title: string;
-    icon: any;
-    children: React.ReactNode;
-    fullWidth?: boolean;
-  }) => (
-    <section className="bg-sidebar/30 backdrop-blur-xl border border-border-subtle rounded-3xl p-6 md:p-10 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex items-center gap-3 mb-8">
-        <div className="bg-brand/10 p-2.5 rounded-xl text-brand">
-          <Icon size={22} />
-        </div>
-        <h2 className="text-xl font-black text-text-main tracking-tight uppercase text-[10px]">
-          {title}
-        </h2>
-      </div>
-      <div
-        className={
-          fullWidth
-            ? "w-full"
-            : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
-        }
-      >
-        {children}
-      </div>
-    </section>
-  );
-
-  const SettingCard = ({
-    title,
-    description,
-    active,
-    onClick,
-    icon: Icon,
-  }: {
-    title: string;
-    description: string;
-    active: boolean;
-    onClick: () => void;
-    icon?: any;
-  }) => (
-    <button
-      onClick={onClick}
-      className={`flex flex-col text-left p-6 rounded-3xl border-2 transition-all duration-500 group relative overflow-hidden ${
-        active
-          ? "border-brand bg-brand/5 shadow-2xl shadow-brand/10"
-          : "border-border-subtle bg-black/5 hover:border-text-muted/30 hover:bg-black/10"
-      }`}
-    >
-      <div className="flex items-center justify-between mb-6">
-        <div
-          className={`p-2.5 rounded-xl ${active ? "bg-brand text-white shadow-lg shadow-brand/20" : "bg-text-muted/10 text-text-muted transition-colors group-hover:bg-text-muted/20"}`}
-        >
-          {Icon ? (
-            <Icon size={20} />
-          ) : (
-            <div
-              className="w-5 h-5 rounded-full ring-2 ring-white/20"
-              style={{
-                backgroundColor: title === "Custom" ? accentColor : "",
-              }}
-            />
-          )}
-        </div>
-        <div
-          className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${active ? "border-brand bg-brand scale-110" : "border-border-subtle scale-100"}`}
-        >
-          {active && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
-        </div>
-      </div>
-      <h3
-        className={`font-black text-sm uppercase tracking-widest mb-2 transition-colors ${active ? "text-brand" : "text-text-main"}`}
-      >
-        {title}
-      </h3>
-      <p className="text-[10px] text-text-muted leading-relaxed font-bold uppercase tracking-tight opacity-60">
-        {description}
-      </p>
-    </button>
-  );
 
   return (
     <div className="max-w-6xl mx-auto py-8 px-4">
