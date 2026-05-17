@@ -1,19 +1,37 @@
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useCallback, useState, lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { loader } from "@monaco-editor/react";
 import type { RootState, AppDispatch } from "./app/store";
 import Sidebar from "./components/Sidebar";
-import Dashboard from "./pages/Dashboard";
-import AllProblems from "./pages/AllProblems";
-import ProblemDetails from "./pages/ProblemDetails";
-import Settings from "./pages/Settings";
-import NewProblem from "./pages/NewProblem";
-import EditProblem from "./pages/EditProblem";
-import TaxonomyExplorer from "./pages/TaxonomyExplorer";
-import DataStructures from "./pages/DataStructures";
-import Algorithms from "./pages/Algorithms";
 import ErrorBoundary from "./components/ErrorBoundary";
+
+// Chunk-Level Route Lazy Loading to minimize initial bundle paint size
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const AllProblems = lazy(() => import("./pages/AllProblems"));
+const ProblemDetails = lazy(() => import("./pages/ProblemDetails"));
+const Settings = lazy(() => import("./pages/Settings"));
+const NewProblem = lazy(() => import("./pages/NewProblem"));
+const EditProblem = lazy(() => import("./pages/EditProblem"));
+const TaxonomyExplorer = lazy(() => import("./pages/TaxonomyExplorer"));
+const DataStructures = lazy(() => import("./pages/DataStructures"));
+const Algorithms = lazy(() => import("./pages/Algorithms"));
+
+const RouteLoader = () => (
+  <div className="flex flex-col items-center justify-center min-h-[400px] gap-4 font-sans animate-in fade-in duration-500">
+    <div className="relative flex items-center justify-center">
+      {/* Outer dynamic glowing bounds */}
+      <div className="absolute w-12 h-12 rounded-full border border-brand/20 animate-ping opacity-30" />
+      {/* Outer spinning contrast ring */}
+      <div className="w-10 h-10 rounded-full border-[3px] border-white/5 border-t-brand animate-spin" />
+      {/* Inner pulsating core */}
+      <div className="absolute w-3.5 h-3.5 bg-brand rounded-full animate-pulse shadow-[0_0_12px_var(--brand)]" />
+    </div>
+    <span className="text-[9px] font-black uppercase tracking-[0.3em] text-text-muted opacity-50 animate-pulse">
+      Loading Module...
+    </span>
+  </div>
+);
 import {
   fetchSettings,
   setOnline,
@@ -200,17 +218,19 @@ function App() {
         <div className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-8 lg:p-12">
           <div className="max-w-7xl mx-auto">
             <ErrorBoundary>
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/problems" element={<AllProblems />} />
-                <Route path="/problems/new" element={<NewProblem />} />
-                <Route path="/problems/:id" element={<ProblemDetails />} />
-                <Route path="/problems/:id/edit" element={<EditProblem />} />
-                <Route path="/ds" element={<DataStructures />} />
-                <Route path="/algorithms" element={<Algorithms />} />
-                <Route path="/taxonomy" element={<TaxonomyExplorer />} />
-                <Route path="/settings" element={<Settings />} />
-              </Routes>
+              <Suspense fallback={<RouteLoader />}>
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/problems" element={<AllProblems />} />
+                  <Route path="/problems/new" element={<NewProblem />} />
+                  <Route path="/problems/:id" element={<ProblemDetails />} />
+                  <Route path="/problems/:id/edit" element={<EditProblem />} />
+                  <Route path="/ds" element={<DataStructures />} />
+                  <Route path="/algorithms" element={<Algorithms />} />
+                  <Route path="/taxonomy" element={<TaxonomyExplorer />} />
+                  <Route path="/settings" element={<Settings />} />
+                </Routes>
+              </Suspense>
             </ErrorBoundary>
           </div>
         </div>
