@@ -14,6 +14,7 @@ export interface SettingsState {
   editorTheme: string;
   editorFontSize: number;
   editorFontLigatures: boolean;
+  editorFontFamily: string;
   loading: boolean;
   error: string | null;
 }
@@ -29,6 +30,7 @@ const initialState: SettingsState = {
   editorTheme: localStorage.getItem("editorTheme") || "custom-dark",
   editorFontSize: Number(localStorage.getItem("editorFontSize")) || 14,
   editorFontLigatures: localStorage.getItem("editorFontLigatures") !== "false",
+  editorFontFamily: localStorage.getItem("editorFontFamily") || "Fira Code",
   loading: false,
   error: null,
 };
@@ -90,6 +92,10 @@ const settingsSlice = createSlice({
       state.editorFontLigatures = action.payload;
       localStorage.setItem("editorFontLigatures", String(action.payload));
     },
+    setEditorFontFamily: (state, action: PayloadAction<string>) => {
+      state.editorFontFamily = action.payload;
+      localStorage.setItem("editorFontFamily", action.payload);
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -114,12 +120,14 @@ const settingsSlice = createSlice({
         state.editorTheme = action.payload.editorTheme || "custom-dark";
         state.editorFontSize = action.payload.editorFontSize ?? 14;
         state.editorFontLigatures = action.payload.editorFontLigatures ?? true;
+        state.editorFontFamily = action.payload.editorFontFamily || "Fira Code";
         
         localStorage.setItem("terminalLayout", action.payload.terminalLayout);
         localStorage.setItem("editorHighContrast", String(action.payload.editorHighContrast));
         localStorage.setItem("editorTheme", action.payload.editorTheme || "custom-dark");
         localStorage.setItem("editorFontSize", String(action.payload.editorFontSize ?? 14));
         localStorage.setItem("editorFontLigatures", String(action.payload.editorFontLigatures ?? true));
+        localStorage.setItem("editorFontFamily", action.payload.editorFontFamily || "Fira Code");
       })
       .addCase(fetchSettings.rejected, (state, action) => {
         state.loading = false;
@@ -138,5 +146,6 @@ export const {
   setEditorTheme,
   setEditorFontSize,
   setEditorFontLigatures,
+  setEditorFontFamily,
 } = settingsSlice.actions;
 export default settingsSlice.reducer;

@@ -41,7 +41,42 @@ const CustomMonaco: React.FC<CustomMonacoProps> = ({
     editorTheme,
     editorFontSize,
     editorFontLigatures,
+    editorFontFamily,
   } = useSelector((state: RootState) => state.settings);
+
+  const [resolvedFontFamily, setResolvedFontFamily] = useState(editorFontFamily || "Fira Code");
+
+  // Observability font rendering validation hook
+  useEffect(() => {
+    const fontToTest = editorFontFamily || "Fira Code";
+    if (document.fonts && typeof document.fonts.check === "function") {
+      const checkAndVerifyFont = async () => {
+        try {
+          const isAvailable = document.fonts.check(`14px "${fontToTest}"`);
+          if (isAvailable) {
+            setResolvedFontFamily(fontToTest);
+          } else {
+            console.log(`[Font Observability] Loading remote font: "${fontToTest}"...`);
+            await document.fonts.load(`14px "${fontToTest}"`);
+            if (document.fonts.check(`14px "${fontToTest}"`)) {
+              setResolvedFontFamily(fontToTest);
+            } else {
+              console.warn(
+                `[Font Observability] Font "${fontToTest}" failed validation. Falling back to standard system monospace.`
+              );
+              setResolvedFontFamily("monospace");
+            }
+          }
+        } catch (err) {
+          console.warn(`[Font Observability] Validation check failed:`, err);
+          setResolvedFontFamily("monospace");
+        }
+      };
+      checkAndVerifyFont();
+    } else {
+      setResolvedFontFamily(fontToTest);
+    }
+  }, [editorFontFamily]);
 
   const editorRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -137,7 +172,7 @@ const CustomMonaco: React.FC<CustomMonacoProps> = ({
       top: EDITOR_CONSTANTS.PADDING_TOP,
       bottom: EDITOR_CONSTANTS.PADDING_BOTTOM,
     },
-    fontFamily: EDITOR_CONSTANTS.FONT_FAMILY,
+    fontFamily: `'${resolvedFontFamily}', ${EDITOR_CONSTANTS.FONT_FAMILY}`,
     cursorSmoothCaretAnimation: "on",
     smoothScrolling: true,
     roundedSelection: true,
@@ -158,7 +193,7 @@ const CustomMonaco: React.FC<CustomMonacoProps> = ({
       style={{
         backgroundColor: "var(--editor-bg)",
         color: "var(--editor-text)",
-        fontFamily: EDITOR_CONSTANTS.FONT_FAMILY,
+        fontFamily: `'${resolvedFontFamily}', ${EDITOR_CONSTANTS.FONT_FAMILY}`,
       }}
     >
       <div className="flex flex-col gap-4 opacity-30">

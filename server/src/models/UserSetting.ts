@@ -9,6 +9,7 @@ export interface IUserSetting {
   editorTheme: string;
   editorFontSize: number;
   editorFontLigatures: boolean;
+  editorFontFamily: string;
   updatedAt: Date;
 }
 
@@ -21,6 +22,7 @@ const userSettingSchema = new mongoose.Schema<IUserSetting>({
   editorTheme: { type: String, default: 'custom-dark' },
   editorFontSize: { type: Number, default: 14 },
   editorFontLigatures: { type: Boolean, default: true },
+  editorFontFamily: { type: String, default: 'Fira Code' },
   updatedAt: { type: Date, default: Date.now }
 }, {
   timestamps: true

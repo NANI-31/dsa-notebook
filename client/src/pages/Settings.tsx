@@ -10,6 +10,7 @@ import {
   setEditorTheme,
   setEditorFontSize,
   setEditorFontLigatures,
+  setEditorFontFamily,
   syncSettings,
   type SettingsState,
 } from "../features/settings/settingsSlice";
@@ -57,6 +58,7 @@ const Settings: React.FC = () => {
     editorTheme,
     editorFontSize,
     editorFontLigatures,
+    editorFontFamily,
   } = useSelector((state: RootState) => state.settings);
   const categories = useSelector((state: RootState) => state.categories.list);
   const techniques = useSelector((state: RootState) => state.techniques.list);
@@ -460,6 +462,62 @@ const Settings: React.FC = () => {
                   )
                 }
               />
+
+              {/* Font Family Selector Card */}
+              <div className="flex flex-col text-left p-6 rounded-3xl border-2 border-border-subtle bg-black/5 relative overflow-hidden transition-all duration-500 hover:border-text-muted/30 col-span-1 md:col-span-2">
+                <div className="flex items-center justify-between flex-wrap gap-4 w-full">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 rounded-xl bg-text-muted/10 text-text-muted">
+                      <LuType size={20} />
+                    </div>
+                    <div>
+                      <h3 className="font-black text-sm uppercase tracking-widest text-text-main">
+                        Font Family
+                      </h3>
+                      <p className="text-[10px] text-text-muted leading-relaxed font-bold uppercase tracking-tight opacity-60">
+                        Choose your preferred editor coding typeface.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="relative">
+                    <select
+                      value={editorFontFamily || "Fira Code"}
+                      onChange={(e) =>
+                        handleSettingChange(
+                          "editorFontFamily",
+                          e.target.value,
+                          setEditorFontFamily,
+                        )
+                      }
+                      className="bg-sidebar border-2 border-border-subtle rounded-2xl px-5 py-2.5 font-mono text-sm font-bold text-text-main focus:outline-none focus:border-brand/50 transition-all duration-300 cursor-pointer shadow-lg outline-none appearance-none pr-10"
+                    >
+                      <option value="Fira Code">Fira Code (Ligatures)</option>
+                      <option value="JetBrains Mono">JetBrains Mono</option>
+                      <option value="Source Code Pro">Source Code Pro</option>
+                      <option value="Share Tech Mono">Share Tech Mono</option>
+                      <option value="Courier New">Courier New (System)</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-text-muted">
+                      <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Live Preview Block */}
+                <div className="mt-6 p-4 rounded-2xl bg-black/20 border border-border-subtle font-mono text-xs text-text-muted/80 leading-relaxed select-none transition-all duration-500 overflow-hidden max-h-[80px] flex items-center justify-between"
+                     style={{ fontFamily: `'${editorFontFamily || "Fira Code"}', monospace` }}>
+                  <div>
+                    <span className="text-emerald-400 font-bold">const</span> solution = <span className="text-brand">(x) =&gt;</span> x * <span className="text-amber-500">2</span>;
+                    <br />
+                    <span className="text-text-muted/40">// Beautiful ligatures check: x !== null &amp;&amp; a -&gt; b</span>
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 bg-brand/10 text-brand rounded-lg hidden sm:inline-block">
+                    Live Preview
+                  </span>
+                </div>
+              </div>
             </SettingSection>
           </div>
         ) : (
