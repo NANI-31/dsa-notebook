@@ -1,5 +1,9 @@
 import type { editor, Range as MonacoRange } from "monaco-editor";
 
+// Pre-compiled global regex pattern defined outside of execution loop to prevent re-compiling on every single keypress
+const SEMANTIC_HIGHLIGHT_REGEX =
+  /(?:".*?"|'.*?'|`[^`]*`|\/\*[\s\S]*?\*\/|\/\/.*)|(\b(?:true|false|null|undefined)\b)|([+\-*/!%^&|=<>]+)|(\b(?!(?:if|while|for|switch|catch|function|return|new|super|typeof|instanceof|throw|yield|await)\b)[a-zA-Z_$][\w$]*\b)(?=\s*\()|(?<=\.)([a-zA-Z_$][\w$]*)\b(?!\s*\()/g;
+
 /**
  * Executes the regex engine against the provided model text and returns
  * the array of Monaco semantic decorations.
@@ -11,16 +15,11 @@ export const getSemanticDecorations = (
   const text = model.getValue();
   const newDecorations: editor.IModelDeltaDecoration[] = [];
 
-  // Match 0 (ignored): Strings or Comments
-  // Match 1: Booleans/Nulls
-  // Match 2: Operators
-  // Match 3: Function Names
-  // Match 4: Object Properties (preceded by a dot, NOT followed by parenthesis)
-  const regex =
-    /(?:".*?"|'.*?'|`[^`]*`|\/\*[\s\S]*?\*\/|\/\/.*)|(\b(?:true|false|null|undefined)\b)|([+\-*/!%^&|=<>]+)|(\b(?!(?:if|while|for|switch|catch|function|return|new|super|typeof|instanceof|throw|yield|await)\b)[a-zA-Z_$][\w$]*\b)(?=\s*\()|(?<=\.)([a-zA-Z_$][\w$]*)\b(?!\s*\()/g;
+  // Reset lastIndex because the regex is global and stateful across executions
+  SEMANTIC_HIGHLIGHT_REGEX.lastIndex = 0;
 
   let match;
-  while ((match = regex.exec(text)) !== null) {
+  while ((match = SEMANTIC_HIGHLIGHT_REGEX.exec(text)) !== null) {
     if (!match[1] && !match[2] && !match[3] && !match[4]) {
       // It matched the non-capturing group (string or comment), skip it
       continue;
