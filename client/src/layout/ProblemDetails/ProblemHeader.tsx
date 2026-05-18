@@ -1,16 +1,57 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { LuStar, LuPencil, LuTrash, LuClock, LuZap, LuTag, LuLoader, LuCheck } from 'react-icons/lu';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { LuStar, LuPencil, LuTrash, LuClock, LuZap, LuTag, LuLoader, LuCheck, LuChevronDown } from 'react-icons/lu';
 
 import { useProblemDetails } from '../../context/ProblemDetailsContext';
+import { deleteProblem } from '../../features/problems/problemsSlice';
+import { addToast } from '../../features/ui/uiSlice';
+import type { AppDispatch } from '../../app/store';
+import ConfirmDeleteModal from '../../components/modals/ConfirmDeleteModal';
 
 const ProblemHeader: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+
   const { 
     problem, 
     saving, 
     isSaved, 
     onSync 
   } = useProblemDetails();
+
+  const [complexityOpen, setComplexityOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  const handleDeleteClick = () => {
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!problem || !problem.slug) return;
+    try {
+      const action = await dispatch(deleteProblem(problem.slug));
+      if (deleteProblem.fulfilled.match(action)) {
+        dispatch(
+          addToast({
+            message: `Problem "${problem.title}" deleted successfully!`,
+            type: "success",
+            duration: 3000,
+          })
+        );
+        navigate("/problems");
+      }
+    } catch (err: any) {
+      dispatch(
+        addToast({
+          message: err.message || "Failed to delete problem",
+          type: "error",
+          duration: 3000,
+        })
+      );
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Top Bar: Badges and Action Buttons */}
@@ -45,7 +86,11 @@ const ProblemHeader: React.FC = () => {
           >
             <LuPencil size={18} />
           </Link>
-          <button className="p-2.5 bg-white/5 border border-white/5 text-text-muted hover:text-red-500 rounded-xl transition-all active:scale-95">
+          <button
+            onClick={handleDeleteClick}
+            className="p-2.5 bg-white/5 border border-white/5 text-text-muted hover:text-red-500 rounded-xl transition-all active:scale-95"
+            title="Delete Problem"
+          >
             <LuTrash size={18} />
           </button>
         </div>
@@ -72,40 +117,120 @@ const ProblemHeader: React.FC = () => {
         </button>
       </h1>
 
-      {/* Complexity Card - Slim Horizontal Ribbon */}
-      <div className="bg-sidebar/40 border border-white/15 rounded-2xl p-4 flex flex-wrap items-center gap-8 md:gap-12 shadow-sm">
-        <div className="flex items-center gap-3">
-          <LuClock className="text-brand/60" size={16} />
-          <span className="text-text-muted">
-            Time:{" "}
-            <span className="text-text-main font-bold lowercase ml-0.5">
-              {problem.timeComplexity || "O(n)"}
-            </span>
-          </span>
-        </div>
-        <div className="flex items-center gap-3">
-          <LuZap className="text-brand/60" size={16} />
-          <span className="text-text-muted">
-            Space:{" "}
-            <span className="text-text-main font-bold lowercase ml-0.5">
-              {problem.spaceComplexity || "O(1)"}
-            </span>
-          </span>
-        </div>
-        <div className="flex items-center gap-4 border-l border-white/5 pl-8 md:pl-12">
-          <LuTag className="text-brand/60" size={16} />
-          <div className="flex flex-wrap gap-2">
-            {problem.techniques?.map((tech: any) => (
-              <span
-                key={tech._id}
-                className="px-3 py-1 bg-white/5 border border-white/10 text-[9px] font-bold uppercase tracking-widest rounded-lg text-text-muted/80 hover:bg-brand/5 hover:text-brand transition-all"
-              >
-                {tech.name}
+      {/* Complexity Card - Expandable Ribbon */}
+      <div className="bg-sidebar/40 border border-white/15 rounded-2xl shadow-sm overflow-hidden transition-all duration-500">
+        {/* Clickable Header Row — keep original UI untouched */}
+        <button
+          onClick={() => setComplexityOpen(!complexityOpen)}
+          className="w-full p-4 flex flex-wrap items-center gap-8 md:gap-12 cursor-pointer hover:bg-white/2 transition-all duration-300"
+        >
+          <div className="flex items-center gap-3">
+            <LuClock className="text-brand/60" size={16} />
+            <span className="text-text-muted">
+              Time:{" "}
+              <span className="text-text-main font-bold lowercase ml-0.5">
+                {problem.timeComplexity || "O(n)"}
               </span>
-            ))}
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <LuZap className="text-brand/60" size={16} />
+            <span className="text-text-muted">
+              Space:{" "}
+              <span className="text-text-main font-bold lowercase ml-0.5">
+                {problem.spaceComplexity || "O(1)"}
+              </span>
+            </span>
+          </div>
+          <div className="flex items-center gap-4 border-l border-white/5 pl-8 md:pl-12">
+            <LuTag className="text-brand/60" size={16} />
+            <div className="flex flex-wrap gap-2">
+              {problem.techniques?.map((tech: any) => (
+                <span
+                  key={tech._id}
+                  className="px-3 py-1 bg-white/5 border border-white/10 text-[9px] font-bold uppercase tracking-widest rounded-lg text-text-muted/80 hover:bg-brand/5 hover:text-brand transition-all"
+                >
+                  {tech.name}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Expand/Collapse Chevron */}
+          <div className="ml-auto flex items-center gap-2">
+            <span className="text-[9px] font-black uppercase tracking-widest text-text-muted/40 hidden sm:inline">
+              {complexityOpen ? "Collapse" : "Analysis"}
+            </span>
+            <LuChevronDown
+              size={16}
+              className={`text-text-muted/40 transition-transform duration-300 ${
+                complexityOpen ? "rotate-180" : ""
+              }`}
+            />
+          </div>
+        </button>
+
+        {/* Expandable Analysis Content */}
+        <div
+          className={`grid transition-all duration-500 ease-in-out ${
+            complexityOpen
+              ? "grid-rows-[1fr] opacity-100"
+              : "grid-rows-[0fr] opacity-0"
+          }`}
+        >
+          <div className="overflow-hidden">
+            <div className="px-4 pb-5 pt-1 border-t border-white/5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {/* Time Complexity Analysis */}
+                <div className="p-5 bg-white/3 border border-white/5 rounded-2xl space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-1.5 rounded-lg bg-sky-500/10">
+                      <LuClock size={14} className="text-sky-400" />
+                    </div>
+                    <h3 className="text-[10px] font-black uppercase tracking-widest text-text-main">
+                      Time Complexity —{" "}
+                      <span className="text-brand lowercase">
+                        {problem.timeComplexity || "O(n)"}
+                      </span>
+                    </h3>
+                  </div>
+                  <p className="text-sm text-text-muted leading-relaxed">
+                    {problem.timeComplexityAnalysis ||
+                      "No time complexity analysis provided. Edit this problem to add a detailed breakdown."}
+                  </p>
+                </div>
+
+                {/* Space Complexity Analysis */}
+                <div className="p-5 bg-white/3 border border-white/5 rounded-2xl space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300 delay-75">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-1.5 rounded-lg bg-emerald-500/10">
+                      <LuZap size={14} className="text-emerald-400" />
+                    </div>
+                    <h3 className="text-[10px] font-black uppercase tracking-widest text-text-main">
+                      Space Complexity —{" "}
+                      <span className="text-brand lowercase">
+                        {problem.spaceComplexity || "O(1)"}
+                      </span>
+                    </h3>
+                  </div>
+                  <p className="text-sm text-text-muted leading-relaxed">
+                    {problem.spaceComplexityAnalysis ||
+                      "No space complexity analysis provided. Edit this problem to add a detailed breakdown."}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Premium custom confirmation modal */}
+      <ConfirmDeleteModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        problemTitle={problem.title}
+      />
     </div>
   );
 };

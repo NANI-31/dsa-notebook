@@ -11,7 +11,7 @@ export interface ISolution extends Document {
 const SolutionSchema = new Schema<ISolution>({
   problemId: { type: Schema.Types.ObjectId, ref: 'Problem', required: true },
   name: { type: String, required: true },
-  code: { type: String, required: true },
+  code: { type: String, default: '' },
   language: { type: String, required: true },
   codes: { type: Map, of: String, default: {} }
 });

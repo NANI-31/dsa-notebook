@@ -2,29 +2,34 @@ import React, { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { LuSave, LuLoader } from "react-icons/lu";
-import { 
-  fetchProblemBySlug, 
-  updateProblem 
+import {
+  fetchProblemBySlug,
+  updateProblem,
 } from "../features/problems/problemsSlice";
 import type { AppDispatch, RootState } from "../app/store";
+import type { ProblemFormData } from "../types/problem";
+import { addToast } from "../features/ui/uiSlice";
 import SolutionEditor from "../components/SolutionEditor";
 
 // Unified Layout Components
-import { 
-  SharedFormHeader, 
-  SharedFormTabs, 
-  SharedContextTab, 
-  SharedAnalysisTab 
+import {
+  SharedFormHeader,
+  SharedFormTabs,
+  SharedContextTab,
+  SharedAnalysisTab,
 } from "../layout/SharedForm";
 
 // Context
-import { ProblemFormProvider, useProblemForm } from "../context/ProblemFormContext";
+import {
+  ProblemFormProvider,
+  useProblemForm,
+} from "../context/ProblemFormContext";
 
 const EditProblemContent: React.FC = () => {
   const { id: slug } = useParams<{ id: string }>();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  
+
   const { currentProblem: problem, loading } = useSelector(
     (state: RootState) => state.problems,
   );
@@ -33,18 +38,47 @@ const EditProblemContent: React.FC = () => {
   const handleUpdate = async () => {
     if (!formData.title || !slug) return;
 
+    // --- Pre-Submit Validation Guard ---
     const selectedCategory = categories.find(
       (c) => c.name === formData.category,
     );
+    const categoryId =
+      selectedCategory?._id || formData.categoryId || formData.category;
+
+    // Validate: category must resolve to a valid ObjectId (24-hex chars)
+    if (!categoryId || !/^[a-f\d]{24}$/i.test(categoryId)) {
+      dispatch(
+        addToast({
+          message:
+            "Category could not be resolved. Please re-select a category from the dropdown.",
+          type: "error",
+          duration: 5000,
+        }),
+      );
+      return;
+    }
+
+    if (!formData.subCategory) {
+      dispatch(
+        addToast({
+          message: "Sub-category is required. Please select a sub-category.",
+          type: "error",
+          duration: 4000,
+        }),
+      );
+      return;
+    }
 
     const problemData = {
       title: formData.title,
       description: formData.description,
       difficulty: formData.difficulty,
-      category: selectedCategory?._id || formData.category,
+      category: categoryId,
       subCategory: formData.subCategory,
       timeComplexity: formData.timeComplexity,
       spaceComplexity: formData.spaceComplexity,
+      timeComplexityAnalysis: formData.timeComplexityAnalysis,
+      spaceComplexityAnalysis: formData.spaceComplexityAnalysis,
       techniques: formData.techniques,
       notes: formData.notes,
       explanation: formData.explanation,
@@ -72,7 +106,7 @@ const EditProblemContent: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-app-bg text-text-main pb-24 animate-in fade-in duration-500 relative">
-      <SharedFormHeader 
+      <SharedFormHeader
         title="Modify Entry"
         subtitle={`Current Workspace: ${problem?.title}`}
         actionLabel="Save Changes"
@@ -83,12 +117,14 @@ const EditProblemContent: React.FC = () => {
 
       <div className="animate-in slide-in-from-bottom-6 duration-700">
         {activeTab === "details" && <SharedContextTab />}
-        
+
         {activeTab === "code" && (
           <div className="animate-in slide-in-from-bottom-4 duration-500">
-            <SolutionEditor 
+            <SolutionEditor
               variants={formData.variants}
-              onChange={(variants) => setFormData((prev: any) => ({ ...prev, variants }))}
+              onChange={(variants) =>
+                setFormData((prev) => ({ ...prev, variants }))
+              }
             />
           </div>
         )}
@@ -112,20 +148,25 @@ const EditProblem: React.FC = () => {
     }
   }, [dispatch, slug]);
 
-  const initialData = useMemo(() => {
+  const initialData: ProblemFormData = useMemo(() => {
     if (!problem || problem.slug !== slug) {
       return {
         title: "",
         category: "",
+        categoryId: "",
         subCategory: "",
         difficulty: "Medium",
         description: "",
         timeComplexity: "",
         spaceComplexity: "",
-        techniques: [] as string[],
+        timeComplexityAnalysis: "",
+        spaceComplexityAnalysis: "",
+        techniques: [],
         explanation: "",
         notes: "",
-        variants: [{ name: "Main Solution", language: "typescript", code: "", codes: {} }],
+        variants: [
+          { name: "Main Solution", language: "typescript", code: "", codes: {} },
+        ],
       };
     }
 
@@ -133,21 +174,26 @@ const EditProblem: React.FC = () => {
       problem.variants &&
       Array.isArray(problem.variants) &&
       problem.variants.length > 0
-        ? problem.variants.map((v: any) => ({
+        ? problem.variants.map((v) => ({
             ...v,
-            codes: v.codes || { [v.language]: v.code }
+            codes: v.codes || { [v.language]: v.code },
           }))
-        : [{ name: "Main Solution", language: "typescript", code: "", codes: {} }];
+        : [
+            { name: "Main Solution", language: "typescript", code: "", codes: {} },
+          ];
 
     return {
       title: problem.title || "",
       category: problem.category?.name || "Coding Problems",
+      categoryId: problem.category?._id || "",
       subCategory: problem.subCategory || "",
       difficulty: problem.difficulty || "Medium",
       description: problem.description || "",
       timeComplexity: problem.timeComplexity || "",
       spaceComplexity: problem.spaceComplexity || "",
-      techniques: problem.techniques?.map((t: any) => t._id) || [],
+      timeComplexityAnalysis: problem.timeComplexityAnalysis || "",
+      spaceComplexityAnalysis: problem.spaceComplexityAnalysis || "",
+      techniques: problem.techniques?.map((t) => t._id) || [],
       explanation: problem.explanation || "",
       notes: problem.notes || "",
       variants: safeVariants,

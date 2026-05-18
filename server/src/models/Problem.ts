@@ -10,10 +10,13 @@ export interface IProblem extends Document {
   starred: boolean;
   timeComplexity: string;
   spaceComplexity: string;
+  timeComplexityAnalysis: string;
+  spaceComplexityAnalysis: string;
   techniques: mongoose.Types.ObjectId[];
   description: string;
   explanation: string;
   notes: string;
+  folderId: mongoose.Types.ObjectId | null;
   addedDate: Date;
 }
 
@@ -27,10 +30,13 @@ const ProblemSchema = new Schema<IProblem>({
   starred: { type: Boolean, default: false },
   timeComplexity: { type: String },
   spaceComplexity: { type: String },
+  timeComplexityAnalysis: { type: String, default: '' },
+  spaceComplexityAnalysis: { type: String, default: '' },
   techniques: [{ type: Schema.Types.ObjectId, ref: 'Technique' }],
   description: { type: String, default: '' },
   explanation: { type: String, default: '' },
   notes: { type: String, default: '' },
+  folderId: { type: Schema.Types.ObjectId, ref: 'Folder', default: null },
   addedDate: { type: Date, default: Date.now }
 });
 

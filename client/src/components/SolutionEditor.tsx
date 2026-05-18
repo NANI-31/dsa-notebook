@@ -132,7 +132,7 @@ const SolutionEditor: React.FC<SolutionEditorProps> = ({
           </button>
         </div>
 
-        <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-y-auto no-scrollbar pb-4 lg:pb-0">
+        <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-y-auto custom-scrollbar pb-4 lg:pb-0">
           {variants.map((v, i) => (
             <button
               key={i}

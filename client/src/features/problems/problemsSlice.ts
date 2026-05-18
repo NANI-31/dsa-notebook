@@ -5,7 +5,12 @@ import api from "../../services/api";
 
 interface ProblemsState {
   problems: Problem[];
+  byId: Record<string, Problem>;
+  allIds: string[];
   currentProblem: Problem | null;
+  problemsBackup: Problem[] | null;
+  problemsBackupById: Record<string, Problem> | null;
+  problemsBackupAllIds: string[] | null;
   loading: boolean;
   saving: boolean;
   error: string | null;
@@ -20,7 +25,12 @@ interface ProblemsState {
 
 const initialState: ProblemsState = {
   problems: [],
+  byId: {},
+  allIds: [],
   currentProblem: null,
+  problemsBackup: null,
+  problemsBackupById: null,
+  problemsBackupAllIds: null,
   loading: false,
   saving: false,
   error: null,
@@ -41,6 +51,8 @@ export const fetchProblems = createAsyncThunk(
       params.append("categoryName", filters.categoryName);
     if (filters.techniques?.length)
       params.append("techniques", filters.techniques.join(","));
+    if (filters.folderId)
+      params.append("folderId", filters.folderId);
     
     // Pagination params
     params.append("page", (filters.page || 1).toString());
@@ -86,6 +98,14 @@ export const updateProblem = createAsyncThunk(
   },
 );
 
+export const deleteProblem = createAsyncThunk(
+  "problems/deleteProblem",
+  async (slug: string) => {
+    await api.delete(`/problems/${slug}`);
+    return slug;
+  },
+);
+
 const problemsSlice = createSlice({
   name: "problems",
   initialState,
@@ -97,9 +117,14 @@ const problemsSlice = createSlice({
       if (state.currentProblem) {
         state.currentProblem.variants = action.payload;
       }
+      if (state.currentProblem && state.byId[state.currentProblem._id]) {
+        state.byId[state.currentProblem._id].variants = action.payload;
+      }
     },
     resetProblems: (state) => {
       state.problems = [];
+      state.byId = {};
+      state.allIds = [];
       state.pagination = null;
       state.hasMore = true;
     }
@@ -117,10 +142,19 @@ const problemsSlice = createSlice({
         
         if (isNewSearch) {
           state.problems = data;
+          state.byId = {};
+          state.allIds = [];
         } else {
           // Append for pagination
           state.problems = [...state.problems, ...data];
         }
+
+        data.forEach((p: Problem) => {
+          state.byId[p._id] = p;
+          if (!state.allIds.includes(p._id)) {
+            state.allIds.push(p._id);
+          }
+        });
         
         state.pagination = pagination;
         state.hasMore = pagination.currentPage < pagination.pages;
@@ -136,7 +170,12 @@ const problemsSlice = createSlice({
       })
       .addCase(fetchProblemBySlug.fulfilled, (state, action) => {
         state.loading = false;
-        state.currentProblem = action.payload;
+        const problem = action.payload;
+        state.currentProblem = problem;
+        state.byId[problem._id] = problem;
+        if (!state.allIds.includes(problem._id)) {
+          state.allIds.push(problem._id);
+        }
       })
       .addCase(fetchProblemBySlug.rejected, (state, action) => {
         state.loading = false;
@@ -148,11 +187,15 @@ const problemsSlice = createSlice({
       })
       .addCase(saveProblemVariants.fulfilled, (state, action) => {
         state.saving = false;
+        const updated = action.payload;
         if (
           state.currentProblem &&
-          state.currentProblem.slug === action.payload.slug
+          state.currentProblem.slug === updated.slug
         ) {
-          state.currentProblem.variants = action.payload.variants;
+          state.currentProblem.variants = updated.variants;
+        }
+        if (state.byId[updated._id]) {
+          state.byId[updated._id].variants = updated.variants;
         }
       })
       .addCase(saveProblemVariants.rejected, (state, action) => {
@@ -165,7 +208,10 @@ const problemsSlice = createSlice({
       })
       .addCase(createProblem.fulfilled, (state, action) => {
         state.saving = false;
-        state.problems.push(action.payload);
+        const problem = action.payload;
+        state.problems.push(problem);
+        state.byId[problem._id] = problem;
+        state.allIds.push(problem._id);
       })
       .addCase(createProblem.rejected, (state, action) => {
         state.saving = false;
@@ -177,16 +223,65 @@ const problemsSlice = createSlice({
       })
       .addCase(updateProblem.fulfilled, (state, action) => {
         state.saving = false;
-        state.currentProblem = action.payload;
+        const updated = action.payload;
+        state.currentProblem = updated;
         // Optionally update the list if it exists
-        const index = state.problems.findIndex((p) => p.slug === action.payload.slug);
+        const index = state.problems.findIndex((p) => p.slug === updated.slug);
         if (index !== -1) {
-          state.problems[index] = action.payload;
+          state.problems[index] = updated;
+        }
+        state.byId[updated._id] = updated;
+        if (!state.allIds.includes(updated._id)) {
+          state.allIds.push(updated._id);
         }
       })
       .addCase(updateProblem.rejected, (state, action) => {
         state.saving = false;
         state.error = action.error.message || "Failed to update problem";
+      })
+      // Delete Problem
+      .addCase(deleteProblem.pending, (state, action) => {
+        state.loading = true;
+        state.problemsBackup = [...state.problems];
+        state.problemsBackupById = { ...state.byId };
+        state.problemsBackupAllIds = [...state.allIds];
+        
+        const targetSlug = action.meta.arg;
+        const targetProblem = state.problems.find((p) => p.slug === targetSlug);
+
+        // Optimistically filter the problem from state list and maps
+        state.problems = state.problems.filter((p) => p.slug !== targetSlug);
+        if (targetProblem) {
+          delete state.byId[targetProblem._id];
+          state.allIds = state.allIds.filter((id) => id !== targetProblem._id);
+        }
+
+        if (state.currentProblem?.slug === targetSlug) {
+          state.currentProblem = null;
+        }
+      })
+      .addCase(deleteProblem.fulfilled, (state) => {
+        state.loading = false;
+        state.problemsBackup = null;
+        state.problemsBackupById = null;
+        state.problemsBackupAllIds = null;
+      })
+      .addCase(deleteProblem.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to delete problem";
+        // Rollback on failure
+        if (state.problemsBackup) {
+          state.problems = state.problemsBackup;
+          state.problemsBackup = null;
+        }
+        if (state.problemsBackupById) {
+          state.byId = state.problemsBackupById;
+          state.problemsBackupById = null;
+        }
+        if (state.problemsBackupAllIds) {
+          state.allIds = state.problemsBackupAllIds;
+          state.problemsBackupAllIds = null;
+        }
       });
   },
 });

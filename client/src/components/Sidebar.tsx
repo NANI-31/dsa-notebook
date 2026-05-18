@@ -1,24 +1,17 @@
-import React from "react";
-import {
-  LuLayoutDashboard,
-  LuList,
-  LuStar,
-  LuDatabase,
-  LuGitBranch,
-  LuLightbulb,
-  LuTerminal,
-  LuCode,
-  LuPlus,
-  LuSun,
-  LuMoon,
-  LuSettings,
-  LuLayers,
-  LuX,
-} from "react-icons/lu";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "../app/store";
-import { toggleTheme } from "../features/settings/settingsSlice";
+import { fetchFolders } from "../features/folders/foldersSlice";
+import { fetchCategories } from "../features/categories/categoriesSlice";
+import api from "../services/api";
+import type { Problem } from "../types/problem";
+
+// Sub-components
+import SidebarHeader from "./Sidebar/SidebarHeader";
+import NavigationSection from "./Sidebar/NavigationSection";
+import WorkspaceExplorer from "./Sidebar/WorkspaceExplorer/WorkspaceExplorer";
+import SidebarFooter from "./Sidebar/SidebarFooter";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -28,147 +21,136 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const location = useLocation();
   const dispatch = useDispatch<AppDispatch>();
-  const theme = useSelector((state: RootState) => state.settings.theme);
 
-  const navItems = [
-    { name: "Dashboard", icon: LuLayoutDashboard, path: "/" },
-    { name: "All Problems", icon: LuList, path: "/problems" },
-    { name: "Starred", icon: LuStar, path: "/starred" },
-    { name: "Data Structures", icon: LuDatabase, path: "/ds" },
-    { name: "Algorithms", icon: LuGitBranch, path: "/algorithms" },
-    { name: "Techniques", icon: LuLightbulb, path: "/techniques" },
-    { name: "Coding Problems", icon: LuTerminal, path: "/coding" },
-  ];
+  // Redux state
+  const theme = useSelector((state: RootState) => state.settings.theme);
+  const { folders } = useSelector((state: RootState) => state.folders);
+  const { list: categories } = useSelector(
+    (state: RootState) => state.categories,
+  );
+
+  // Local state for Workspace Problems & Resizing Width
+  const [allProblems, setAllProblems] = useState<Problem[]>([]);
+  const [loadingProblems, setLoadingProblems] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(288);
+  const isResizingRef = useRef(false);
 
   const isActive = (path: string) => location.pathname === path;
 
+  // Restore sidebar width from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("sidebarWidth");
+    if (saved) {
+      const parsed = parseInt(saved, 10);
+      if (!isNaN(parsed) && parsed >= 240) {
+        setSidebarWidth(parsed);
+      }
+    }
+  }, []);
+
+  // Drag Resize Mouse Handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    isResizingRef.current = true;
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isResizingRef.current) return;
+      const max30Percent = window.innerWidth * 0.22;
+      // Clamp between min 240px and max 30% of innerWidth
+      const newWidth = Math.max(240, Math.min(e.clientX, max30Percent));
+      setSidebarWidth(newWidth);
+    };
+
+    const handleMouseUp = () => {
+      if (isResizingRef.current) {
+        isResizingRef.current = false;
+        document.body.style.cursor = "";
+        document.body.style.userSelect = "";
+        localStorage.setItem("sidebarWidth", sidebarWidth.toString());
+      }
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [sidebarWidth]);
+
+  // Load backend dependencies
+  useEffect(() => {
+    dispatch(fetchFolders());
+    dispatch(fetchCategories());
+    fetchWorkspaceProblems();
+  }, [dispatch]);
+
+  const fetchWorkspaceProblems = async () => {
+    try {
+      setLoadingProblems(true);
+      const response = await api.get<{ data: Problem[] }>(
+        "/problems?limit=1000",
+      );
+      setAllProblems(response.data.data);
+    } catch (err) {
+      console.error("[Workspace Tree] Failed to load problems:", err);
+    } finally {
+      setLoadingProblems(false);
+    }
+  };
+
   return (
-    <aside
-      className={`fixed inset-y-0 left-0 z-40 w-68 bg-sidebar text-text-muted flex flex-col border-r border-border-subtle overflow-hidden transition-transform duration-300 lg:static lg:translate-x-0 ${
-        isOpen ? "translate-x-0" : "-translate-x-full"
-      }`}
-    >
-      {/* Header */}
-      <div className="p-6 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3" onClick={onClose}>
-          <div className="bg-brand p-2 rounded-lg text-white shadow-lg shadow-brand/20 transition-all duration-500">
-            <LuCode size={20} />
-          </div>
-          <h1 className="text-xl font-bold tracking-tight text-text-main">
-            DSA Tracker
-          </h1>
-        </Link>
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => dispatch(toggleTheme())}
-            className="p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-500 hover:scale-110 active:scale-95 text-text-muted hover:text-text-main group"
-            aria-label="Toggle Theme"
-          >
-            <div className="transition-transform duration-500 group-hover:rotate-12 group-active:rotate-45">
-              {theme === "dark" ? <LuSun size={20} /> : <LuMoon size={20} />}
-            </div>
-          </button>
-          <button
-            onClick={onClose}
-            className="lg:hidden p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-text-muted"
-          >
-            <LuX size={20} />
-          </button>
-        </div>
-      </div>
-
-      {/* Navigation */}
-      <div className="flex-1 px-4 py-2 overflow-y-auto custom-scrollbar space-y-8">
-        <div>
-          <p className="text-[10px] uppercase font-bold tracking-[0.2em] text-text-muted/50 mb-4 px-2">
-            Navigation
-          </p>
-          <nav className="space-y-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                to={item.path}
-                onClick={onClose}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
-                  isActive(item.path)
-                    ? "bg-brand/10 text-brand"
-                    : "hover:bg-text-main/5 hover:text-text-main"
-                }`}
-              >
-                <item.icon
-                  size={18}
-                  className={
-                    isActive(item.path)
-                      ? "text-brand"
-                      : "text-text-muted group-hover:text-text-main"
-                  }
-                />
-                <span className="text-sm font-medium">{item.name}</span>
-              </Link>
-            ))}
-          </nav>
-        </div>
-
-        {/* Bottom Navigation */}
-        <div>
-          <p className="text-[10px] uppercase font-bold tracking-[0.2em] text-text-muted/50 mb-4 px-2">
-            Configure
-          </p>
-          <nav className="space-y-1">
-            <Link
-              to="/taxonomy"
-              onClick={onClose}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
-                isActive("/taxonomy")
-                  ? "bg-brand/10 text-brand"
-                  : "hover:bg-text-main/5 hover:text-text-main"
-              }`}
-            >
-              <LuLayers
-                size={18}
-                className={
-                  isActive("/taxonomy")
-                    ? "text-brand"
-                    : "text-text-muted group-hover:text-text-main"
-                }
-              />
-              <span className="text-sm font-medium">Taxonomy</span>
-            </Link>
-            <Link
-              to="/settings"
-              onClick={onClose}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
-                isActive("/settings")
-                  ? "bg-brand/10 text-brand"
-                  : "hover:bg-text-main/5 hover:text-text-main"
-              }`}
-            >
-              <LuSettings
-                size={18}
-                className={
-                  isActive("/settings")
-                    ? "text-brand"
-                    : "text-text-muted group-hover:text-text-main"
-                }
-              />
-              <span className="text-sm font-medium">Settings</span>
-            </Link>
-          </nav>
-        </div>
-      </div>
-
-      {/* Footer Content */}
-      <div className="p-4 bg-sidebar border-t border-border-subtle">
-        <Link
-          to="/problems/new"
+    <>
+      {/* Mobile Sidebar Overlay */}
+      {isOpen && (
+        <div
           onClick={onClose}
-          className="w-full bg-brand hover:opacity-90 text-white py-2.5 rounded-xl flex items-center justify-center gap-2 font-bold transition-all shadow-lg shadow-brand/20 hover:shadow-brand/30"
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden animate-in fade-in duration-300"
+        />
+      )}
+
+      {/* Main Sidebar Panel */}
+      <div
+        style={{ width: `${sidebarWidth}px` }}
+        className={`fixed lg:sticky top-0 left-0 h-screen bg-sidebar border-r border-border-subtle flex flex-col z-50 transition-transform duration-300 shrink-0 select-none ${
+          isOpen
+            ? "translate-x-0 shadow-2xl lg:shadow-none"
+            : "-translate-x-full lg:translate-x-0"
+        }`}
+      >
+        <SidebarHeader theme={theme} onClose={onClose} />
+
+        {/* Sidebar Content */}
+        <div className="flex-1 flex flex-col overflow-hidden px-4 py-2 gap-2 pb-6">
+          <NavigationSection isActive={isActive} onClose={onClose} />
+
+          <WorkspaceExplorer
+            folders={folders}
+            categories={categories}
+            allProblems={allProblems}
+            loadingProblems={loadingProblems}
+            onClose={onClose}
+            fetchWorkspaceProblems={fetchWorkspaceProblems}
+          />
+        </div>
+
+        <SidebarFooter isActive={isActive} onClose={onClose} />
+
+        {/* Resize Handle Handle Bar */}
+        <div
+          onMouseDown={handleMouseDown}
+          className="absolute top-0 right-0 w-1.5 h-full cursor-col-resize hover:bg-brand/30 active:bg-brand/50 transition-colors z-50 group"
+          title="Drag to resize sidebar"
         >
-          <LuPlus size={18} />
-          <span>New Problem</span>
-        </Link>
+          {/* Visual Indicator Cue Line */}
+          <div className="w-[2px] h-10 bg-brand/35 rounded absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity" />
+        </div>
       </div>
-    </aside>
+    </>
   );
 };
 

@@ -50,6 +50,9 @@ const CustomMonaco: React.FC<CustomMonacoProps> = ({
     editorFontSize,
     editorFontLigatures,
     editorFontFamily,
+    editorCursorBlinking,
+    editorLineNumberPadding,
+    editorContrastRatio,
   } = useSelector((state: RootState) => state.settings);
 
   const [resolvedFontFamily, setResolvedFontFamily] = useState(editorFontFamily || "Fira Code");
@@ -171,6 +174,10 @@ const CustomMonaco: React.FC<CustomMonacoProps> = ({
     }
   }, [isFocusMode, autoHeight, updateHeight]);
 
+  const contrastFilter = editorContrastRatio !== 100
+    ? `contrast(${editorContrastRatio / 100})`
+    : undefined;
+
   const defaultOptions: EditorProps["options"] = {
     fontSize: editorFontSize,
     fontLigatures: editorFontLigatures,
@@ -181,13 +188,15 @@ const CustomMonaco: React.FC<CustomMonacoProps> = ({
       bottom: EDITOR_CONSTANTS.PADDING_BOTTOM,
     },
     fontFamily: `'${resolvedFontFamily}', ${EDITOR_CONSTANTS.FONT_FAMILY}`,
-    cursorSmoothCaretAnimation: "on",
+    cursorBlinking: editorCursorBlinking,
+    cursorSmoothCaretAnimation: editorCursorBlinking === "smooth" ? "on" : "off",
     smoothScrolling: true,
     roundedSelection: true,
     automaticLayout: true,
     formatOnPaste: true,
     formatOnType: true,
     fixedOverflowWidgets: true,
+    lineNumbersMinChars: Math.max(2, Math.round(editorLineNumberPadding / 8)),
     scrollbar: autoHeight
       ? { vertical: "hidden", handleMouseWheel: true }
       : undefined,
@@ -240,6 +249,7 @@ const CustomMonaco: React.FC<CustomMonacoProps> = ({
         height: autoHeight ? dynamicHeight : props.height || "100%",
         transition: `height ${EDITOR_CONSTANTS.TRANSITION_SPEED} ${EDITOR_CONSTANTS.TRANSITION_TIMING}`,
         overflow: "hidden",
+        filter: contrastFilter,
       }}
     >
       {isIntersecting ? (

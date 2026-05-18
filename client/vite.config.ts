@@ -8,24 +8,32 @@ import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig(({ mode }) => ({
   plugins: [
-    react(), 
+    react(),
     tailwindcss(),
-    mode === "analyze" && visualizer({
-      open: true,
-      filename: "dist/stats.html",
-      gzipSize: true,
-      brotliSize: true,
-    })
+    mode === "analyze" &&
+      visualizer({
+        open: true,
+        filename: "dist/stats.html",
+        gzipSize: true,
+        brotliSize: true,
+      }),
   ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "decimal.js-light": "decimal.js-light/decimal.mjs",
     },
+  },
+  // Fix: decimal.js-light ships UMD/CJS browser builds that mess up ESM default imports in Vite.
+  // We force resolution to decimal.mjs (pure ESM) using the resolve.alias above,
+  // and pre-bundle both recharts and decimal.js-light to guarantee clean module interop.
+  optimizeDeps: {
+    include: ["decimal.js-light", "recharts"],
   },
   server: {
     port: 5173,
     open: true,
-    host: "localhost", //true
+    host: true, //true
     proxy: {
       "/api": {
         target: "http://localhost:5000",

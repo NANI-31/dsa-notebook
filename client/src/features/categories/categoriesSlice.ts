@@ -47,6 +47,15 @@ export const fetchCategories = createAsyncThunk(
     const response = await api.get("/categories");
     return response.data;
   },
+  {
+    // Optimistic loading guard: skip if already loaded or in-flight
+    condition: (_, { getState }) => {
+      const { categories } = getState() as { categories: CategoriesState };
+      if (categories.status === "loading" || categories.status === "succeeded") {
+        return false; // Cancel the thunk — data is already available or loading
+      }
+    },
+  },
 );
 
 export const createCategory = createAsyncThunk(

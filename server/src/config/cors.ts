@@ -7,8 +7,8 @@ export const corsOptions: CorsOptions = {
 
     const allowedOrigins = [
       "http://localhost:3000",
+      "http://192.168.1.4:5173",
       "http://localhost:5173",
-      "http://localhost:5174",
     ];
 
     if (allowedOrigins.includes(origin)) {

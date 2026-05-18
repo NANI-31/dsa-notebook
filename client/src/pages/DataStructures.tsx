@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "../app/store";
 import { fetchTaxonomyStats } from "../features/categories/categoriesSlice";
 import { getIcon, prefetchIcons } from "../components/IconLoader";
-import { BarChart, Bar, XAxis, Cell, ResponsiveContainer } from "recharts";
+const CustomBarChart = lazy(() => import("../components/CustomCharts/CustomBarChart"));
 
 import { 
   LuDatabase,
@@ -34,16 +34,20 @@ const MasteryOverlay: React.FC<{ ds: any; active: boolean }> = ({ ds, active }) 
          <span className="text-xs font-bold text-brand">{ds.count} Total</span>
       </div>
       <div className="h-32 w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-            <XAxis dataKey="name" axisLine={false} tickLine={false} fontSize={9} stroke="var(--text-muted)" dy={5} />
-            <Bar dataKey="count" radius={[4, 4, 0, 0]} barSize={20}>
-              {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+        <Suspense fallback={<div className="w-full h-full bg-black/5 dark:bg-white/5 animate-pulse rounded-xl" />}>
+          <CustomBarChart
+            data={data}
+            useResponsiveContainer={true}
+            barDataKey="count"
+            xAxisDataKey="name"
+            barSize={20}
+            radius={[4, 4, 0, 0]}
+            tickSize={9}
+            customTooltip={false}
+            margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+            cells={data.map(entry => ({ fill: entry.color }))}
+          />
+        </Suspense>
       </div>
     </div>
   );

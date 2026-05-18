@@ -5,7 +5,7 @@ import { LuChevronRight, LuLoader, LuCode } from "react-icons/lu";
 // Component Layouts
 import ProblemHeader from "../layout/ProblemDetails/ProblemHeader";
 import ProblemDescription from "../layout/ProblemDetails/ProblemDescription";
-import CodeWorkspace from "../layout/ProblemDetails/CodeWorkspace";
+const CodeWorkspace = React.lazy(() => import("../layout/ProblemDetails/CodeWorkspace"));
 import ProblemExplanations from "../layout/ProblemDetails/ProblemExplanations";
 import ProblemFooter from "../layout/ProblemDetails/ProblemFooter";
 
@@ -64,7 +64,16 @@ const ProblemDetailsContent: React.FC = () => {
       <div className="flex flex-col gap-8">
         <ProblemHeader />
         <ProblemDescription />
-        <CodeWorkspace />
+        <React.Suspense fallback={
+          <div className="flex flex-col items-center justify-center p-12 bg-sidebar border border-border-subtle rounded-3xl gap-4 min-h-[300px] animate-pulse">
+            <LuLoader size={30} className="animate-spin text-brand" />
+            <p className="text-text-muted font-bold tracking-widest uppercase text-[9px]">
+              Initializing Monaco Editor Workspace...
+            </p>
+          </div>
+        }>
+          <CodeWorkspace />
+        </React.Suspense>
         <ProblemExplanations />
         <ProblemFooter />
       </div>

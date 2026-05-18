@@ -1,20 +1,22 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../app/store";
+import type { ProblemFormData } from "../types/problem";
+import type { Category } from "../features/categories/categoriesSlice";
 
 interface ProblemFormContextType {
-  formData: any;
-  setFormData: React.Dispatch<React.SetStateAction<any>>;
+  formData: ProblemFormData;
+  setFormData: React.Dispatch<React.SetStateAction<ProblemFormData>>;
   activeTab: "details" | "code" | "notes";
   setActiveTab: (tab: "details" | "code" | "notes") => void;
   showDescPreview: boolean;
   setShowDescPreview: (show: boolean) => void;
   showNotesPreview: boolean;
   setShowNotesPreview: (show: boolean) => void;
-  categories: any[];
+  categories: Category[];
   categoriesMap: Record<string, string[]>;
   categoryStatus: string;
-  techniquesList: any[];
+  techniquesList: Array<{ _id: string; name: string }>;
   saving: boolean;
   toggleTechnique: (techId: string) => void;
 }
@@ -30,9 +32,9 @@ export const useProblemForm = () => {
 };
 
 export const ProblemFormProvider: React.FC<{ 
-  initialData: any; 
+  initialData: ProblemFormData; 
   children: React.ReactNode; 
-  onAutoSave?: (data: any) => void;
+  onAutoSave?: (data: ProblemFormData) => void;
 }> = ({
   initialData,
   children,
@@ -49,7 +51,7 @@ export const ProblemFormProvider: React.FC<{
   const [activeTab, setActiveTab] = useState<"details" | "code" | "notes">("details");
   const [showDescPreview, setShowDescPreview] = useState(false);
   const [showNotesPreview, setShowNotesPreview] = useState(false);
-  const [formData, setFormData] = useState(initialData);
+  const [formData, setFormData] = useState<ProblemFormData>(initialData);
 
   // Sync formData with initialData if it changes (useful for EditProblem hydration)
   useEffect(() => {
@@ -73,10 +75,10 @@ export const ProblemFormProvider: React.FC<{
   }, [formData, onAutoSave]);
 
   const toggleTechnique = (techId: string) => {
-    setFormData((prev: any) => ({
+    setFormData((prev) => ({
       ...prev,
       techniques: prev.techniques.includes(techId)
-        ? prev.techniques.filter((t: any) => t !== techId)
+        ? prev.techniques.filter((t) => t !== techId)
         : [...prev.techniques, techId],
     }));
   };

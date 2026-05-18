@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, Suspense } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 import {
   LuLayers,
   LuStar,
@@ -6,83 +8,159 @@ import {
   LuChartBar,
   LuChevronRight,
   LuTrendingUp,
+  LuActivity,
+  LuPlus,
+  LuTrash,
+  LuPencil,
+  LuClock,
 } from "react-icons/lu";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-} from "recharts";
+const CustomBarChart = React.lazy(() => import("../components/CustomCharts/CustomBarChart"));
 import Skeleton from "../components/Skeleton";
+import { fetchProblems } from "../features/problems/problemsSlice";
+import type { RootState, AppDispatch } from "../app/store";
+import api from "../services/api";
+import { io } from "socket.io-client";
 
 interface DashboardProps {}
 
-const Dashboard: React.FC<DashboardProps> = () => {
-  const [loading, setLoading] = useState(true);
+const useContainerSize = () => {
+  const [size, setSize] = useState({ width: 0, height: 0 });
+  const observerRef = React.useRef<ResizeObserver | null>(null);
 
-  useEffect(() => {
-    // Simulate initial data fetch
-    const timer = setTimeout(() => setLoading(false), 1500);
-    return () => clearTimeout(timer);
+  const ref = useCallback((node: HTMLDivElement | null) => {
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+      observerRef.current = null;
+    }
+
+    if (node) {
+      observerRef.current = new ResizeObserver((entries) => {
+        if (!entries || entries.length === 0) return;
+        const { width, height } = entries[0].contentRect;
+        setSize({ width, height });
+      });
+      observerRef.current.observe(node);
+
+      // Set initial size
+      setSize({
+        width: node.clientWidth,
+        height: node.clientHeight,
+      });
+    }
   }, []);
 
+  return [ref, size] as const;
+};
+
+const Dashboard: React.FC<DashboardProps> = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { problems, loading: problemsLoading } = useSelector(
+    (state: RootState) => state.problems
+  );
+
+  const [activities, setActivities] = useState<any[]>([]);
+  const [activitiesLoading, setActivitiesLoading] = useState(true);
+  const [categoryRef, categorySize] = useContainerSize();
+  const [difficultyRef, difficultySize] = useContainerSize();
+
+  const loadActivities = useCallback(async () => {
+    try {
+      const res = await api.get("/activities");
+      setActivities(res.data);
+    } catch (err) {
+      console.error("Failed to load telemetry activities:", err);
+    } finally {
+      setActivitiesLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    dispatch(fetchProblems({}));
+    loadActivities();
+
+    // Connect to WebSocket server for real-time telemetry stream!
+    const socketUrl = import.meta.env.VITE_API_URL 
+      ? import.meta.env.VITE_API_URL.replace("/api", "") 
+      : "http://localhost:5000";
+    const socket = io(socketUrl);
+
+    socket.on("connect", () => {
+      console.log("[WebSocket Telemetry] Connected to real-time activities stream!");
+    });
+
+    socket.on("activity", (newActivity: any) => {
+      console.log("[WebSocket Telemetry] Received activity feed event:", newActivity);
+      setActivities((prev) => [newActivity, ...prev].slice(0, 15)); // prepend and cap at 15 items!
+    });
+
+    socket.on("disconnect", () => {
+      console.log("[WebSocket Telemetry] Disconnected from activities stream.");
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [dispatch, loadActivities]);
+
+  // Compute dynamic stats based on real database records
+  const totalProblemsCount = problems.length;
+  const starredCount = problems.filter((p) => p.starred).length;
+  const easyCount = problems.filter((p) => p.difficulty === "Easy").length;
+  const mediumCount = problems.filter((p) => p.difficulty === "Medium").length;
+  const hardCount = problems.filter((p) => p.difficulty === "Hard").length;
+
   const stats = [
-    { label: "Total Problems", value: 5, icon: LuLayers, color: "text-brand" },
-    { label: "Starred", value: 2, icon: LuStar, color: "text-yellow-400" },
-    { label: "Easy", value: 3, icon: LuCircle, color: "text-green-500" },
-    { label: "Hard", value: 1, icon: LuCircle, color: "text-red-500" },
+    { label: "Total Problems", value: totalProblemsCount, icon: LuLayers, color: "text-brand" },
+    { label: "Starred", value: starredCount, icon: LuStar, color: "text-yellow-400" },
+    { label: "Easy / Medium", value: `${easyCount} / ${mediumCount}`, icon: LuCircle, color: "text-green-500" },
+    { label: "Hard Challenges", value: hardCount, icon: LuCircle, color: "text-red-500" },
   ];
 
-  const categoryData = [
-    { name: "Coding", value: 1 },
-    { name: "Algos", value: 2 },
-    { name: "Tech", value: 1 },
-    { name: "DS", value: 1 },
-  ];
+  // Dynamic Category count mapper
+  const categoryCounts: Record<string, number> = {};
+  problems.forEach((p) => {
+    const cat = p.categories?.[0] || "Uncategorized";
+    categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+  });
+
+  const categoryData = Object.keys(categoryCounts).length > 0
+    ? Object.keys(categoryCounts).map((cat) => ({
+        name: cat,
+        value: categoryCounts[cat],
+      }))
+    : [
+        { name: "Coding", value: 0 },
+        { name: "Algos", value: 0 },
+        { name: "Tech", value: 0 },
+        { name: "DS", value: 0 },
+      ];
 
   const difficultyData = [
-    { name: "Easy", count: 3, color: "#10b981" },
-    { name: "Medium", count: 1, color: "#f59e0b" },
-    { name: "Hard", count: 1, color: "#ef4444" },
+    { name: "Easy", count: easyCount, color: "#10b981" },
+    { name: "Medium", count: mediumCount, color: "#f59e0b" },
+    { name: "Hard", count: hardCount, color: "#ef4444" },
   ];
 
-  const recentProblems = [
-    {
-      title: "Two Sum",
-      difficulty: "Easy",
-      category: "LeetCode-style",
-      starred: true,
-    },
-    {
-      title: "Binary Search",
-      difficulty: "Easy",
-      category: "Searching",
-      starred: false,
-    },
-    {
-      title: "Sliding Window Maximum",
-      difficulty: "Hard",
-      category: "Sliding Window",
-      starred: true,
-    },
-    {
-      title: "Merge Sort",
-      difficulty: "Medium",
-      category: "Sorting",
-      starred: false,
-    },
-    {
-      title: "Linked List Cycle Detection",
-      difficulty: "Easy",
-      category: "Linked List",
-      starred: false,
-    },
-  ];
+  // Real-time sorted recently added problem records
+  const recentProblems = [...problems]
+    .sort((a, b) => new Date(b.addedDate || 0).getTime() - new Date(a.addedDate || 0).getTime())
+    .slice(0, 4);
 
-  if (loading) {
+  const getRelativeTime = (timestamp: string) => {
+    const now = new Date();
+    const date = new Date(timestamp);
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return `${diffDays}d ago`;
+  };
+
+  if (problemsLoading && problems.length === 0) {
     return (
       <div className="space-y-8 animate-in fade-in duration-500">
         <div className="space-y-2">
@@ -144,7 +222,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
                 {stat.label}
               </span>
             </div>
-            <div className="text-2xl md:text-4xl font-black text-text-main tracking-tighter">
+            <div className="text-xl md:text-3xl font-black text-text-main tracking-tighter">
               {stat.value}
             </div>
             <span className="text-[9px] font-bold text-text-muted/60 uppercase tracking-tight sm:hidden">
@@ -169,20 +247,19 @@ const Dashboard: React.FC<DashboardProps> = () => {
             </div>
             <LuTrendingUp size={18} className="text-text-muted/40" />
           </div>
-          <div className="h-[250px] w-full min-w-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={categoryData}>
-                <XAxis
-                  dataKey="name"
-                  stroke="var(--text-muted)"
-                  fontSize={10}
-                  tickLine={false}
-                  axisLine={false}
-                  dy={10}
-                />
-                <Tooltip
-                  cursor={{ fill: "rgba(var(--brand-rgb), 0.05)" }}
-                  contentStyle={{
+          <div ref={categoryRef} className="h-[250px] w-full min-w-0">
+            {categorySize.width > 0 && (
+              <Suspense fallback={<Skeleton className="h-[250px] w-full rounded-2xl" />}>
+                <CustomBarChart
+                  width={categorySize.width}
+                  height={250}
+                  data={categoryData}
+                  barDataKey="value"
+                  xAxisDataKey="name"
+                  barSize={40}
+                  radius={[6, 6, 0, 0]}
+                  customTooltipCursor={{ fill: "rgba(var(--brand-rgb), 0.05)" }}
+                  customTooltipContentStyle={{
                     backgroundColor: "var(--sidebar-bg)",
                     borderColor: "var(--border-subtle)",
                     borderRadius: "16px",
@@ -190,20 +267,14 @@ const Dashboard: React.FC<DashboardProps> = () => {
                     border: "1px solid var(--border-subtle)",
                     boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
                   }}
-                  itemStyle={{
+                  customTooltipItemStyle={{
                     color: "var(--brand)",
                     fontWeight: "bold",
                     fontSize: "12px",
                   }}
                 />
-                <Bar
-                  dataKey="value"
-                  fill="var(--brand)"
-                  radius={[6, 6, 0, 0]}
-                  barSize={40}
-                />
-              </BarChart>
-            </ResponsiveContainer>
+              </Suspense>
+            )}
           </div>
         </div>
 
@@ -219,90 +290,170 @@ const Dashboard: React.FC<DashboardProps> = () => {
               </span>
             </div>
           </div>
-          <div className="h-[250px] w-full min-w-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={difficultyData} layout="vertical">
-                <XAxis type="number" hide />
-                <YAxis
-                  dataKey="name"
-                  type="category"
-                  stroke="var(--text-muted)"
-                  fontSize={10}
-                  tickLine={false}
-                  axisLine={false}
-                  width={70}
-                />
-                <Tooltip
-                  cursor={{ fill: "transparent" }}
-                  contentStyle={{
+          <div ref={difficultyRef} className="h-[250px] w-full min-w-0">
+            {difficultySize.width > 0 && (
+              <Suspense fallback={<Skeleton className="h-[250px] w-full rounded-2xl" />}>
+                <CustomBarChart
+                  width={difficultySize.width}
+                  height={250}
+                  data={difficultyData}
+                  layout="vertical"
+                  barDataKey="count"
+                  yAxisDataKey="name"
+                  barSize={25}
+                  radius={[0, 6, 6, 0]}
+                  hideXAxis={true}
+                  hideYAxis={false}
+                  yAxisWidth={70}
+                  customTooltipCursor={{ fill: "transparent" }}
+                  customTooltipContentStyle={{
                     backgroundColor: "var(--sidebar-bg)",
                     borderColor: "var(--border-subtle)",
                     borderRadius: "16px",
                   }}
+                  cells={difficultyData.map(entry => ({ fill: entry.color }))}
                 />
-                <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={25}>
-                  {difficultyData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+              </Suspense>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Recently Added Section */}
-      <div className="space-y-6">
-        <div className="flex justify-between items-end px-2">
-          <h2 className="text-2xl font-black text-text-main tracking-tight">
-            Recently Added
-          </h2>
-          <button className="text-xs font-black uppercase tracking-widest text-brand hover:opacity-80 flex items-center gap-2 transition-all group">
-            View all library{" "}
-            <LuChevronRight
-              size={14}
-              className="group-hover:translate-x-1 transition-transform"
-            />
-          </button>
+      {/* 2-Column Split: Recently Added & Observability Telemetry Stream */}
+      <div className="grid grid-cols-1 xl:grid-cols-5 gap-6 md:gap-8 items-start">
+        {/* Left Column (Recently Added) */}
+        <div className="xl:col-span-3 space-y-6">
+          <div className="flex justify-between items-end px-2">
+            <h2 className="text-2xl font-black text-text-main tracking-tight">
+              Recently Added
+            </h2>
+            <Link 
+              to="/all-problems" 
+              className="text-xs font-black uppercase tracking-widest text-brand hover:opacity-80 flex items-center gap-2 transition-all group"
+            >
+              View all library{" "}
+              <LuChevronRight
+                size={14}
+                className="group-hover:translate-x-1 transition-transform"
+              />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            {recentProblems.length > 0 ? (
+              recentProblems.map((problem) => (
+                <Link
+                  key={problem.slug}
+                  to={`/problems/${problem.slug}`}
+                  className="bg-sidebar border border-border-subtle p-6 rounded-3xl hover:border-brand/40 transition-all hover:translate-y-[-4px] shadow-sm hover:shadow-2xl hover:shadow-brand/5 group flex flex-col justify-between h-40 animate-in fade-in-50 duration-300"
+                >
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="flex flex-wrap gap-2">
+                      <span
+                        className={`text-[9px] px-2.5 py-1 rounded-full font-black uppercase tracking-widest ${
+                          problem.difficulty === "Easy"
+                            ? "bg-green-500/10 text-green-500 border border-green-500/20"
+                            : problem.difficulty === "Medium"
+                              ? "bg-yellow-500/10 text-yellow-500 border border-yellow-500/20"
+                              : "bg-red-500/10 text-red-500 border border-red-500/20"
+                        }`}
+                      >
+                        {problem.difficulty}
+                      </span>
+                      <span className="text-[9px] px-2.5 py-1 rounded-full font-black uppercase tracking-widest bg-border-subtle/30 text-text-muted border border-border-subtle">
+                        {problem.categories?.[0] || "General"}
+                      </span>
+                    </div>
+                    {problem.starred && (
+                      <span className="text-yellow-400">
+                        <LuStar size={16} fill="currentColor" />
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="font-extrabold text-lg leading-tight group-hover:text-brand transition-colors tracking-tight line-clamp-2">
+                    {problem.title}
+                  </h3>
+                </Link>
+              ))
+            ) : (
+              <div className="col-span-2 py-12 text-center bg-sidebar border border-border-subtle rounded-3xl text-text-muted text-sm font-medium">
+                No problems added yet. Click New Problem to begin.
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          {recentProblems.map((problem) => (
-            <div
-              key={problem.title}
-              className="bg-sidebar border border-border-subtle p-6 rounded-3xl hover:border-brand/40 transition-all hover:translate-y-[-4px] shadow-sm hover:shadow-2xl hover:shadow-brand/5 group flex flex-col justify-between"
-            >
-              <div className="flex justify-between items-start mb-6">
-                <div className="flex flex-wrap gap-2">
-                  <span
-                    className={`text-[9px] px-2.5 py-1 rounded-full font-black uppercase tracking-widest ${
-                      problem.difficulty === "Easy"
-                        ? "bg-green-500/10 text-green-500 border border-green-500/20"
-                        : problem.difficulty === "Medium"
-                          ? "bg-yellow-500/10 text-yellow-500 border border-yellow-500/20"
-                          : "bg-red-500/10 text-red-500 border border-red-500/20"
-                    }`}
-                  >
-                    {problem.difficulty}
-                  </span>
-                  <span className="text-[9px] px-2.5 py-1 rounded-full font-black uppercase tracking-widest bg-border-subtle/30 text-text-muted border border-border-subtle">
-                    {problem.category}
-                  </span>
-                </div>
-                <button
-                  className={`transition-all duration-500 ${problem.starred ? "text-yellow-400 scale-125" : "text-text-muted hover:text-yellow-400 hover:scale-125"}`}
-                >
-                  <LuStar
-                    size={20}
-                    fill={problem.starred ? "currentColor" : "none"}
-                  />
-                </button>
-              </div>
-              <h3 className="font-extrabold text-xl leading-tight group-hover:text-brand transition-colors tracking-tight">
-                {problem.title}
-              </h3>
+        {/* Right Column (Observability Telemetry Feed) */}
+        <div className="xl:col-span-2 space-y-6">
+          <div className="flex items-center gap-3 px-2">
+            <div className="bg-brand/10 p-2 rounded-xl text-brand animate-pulse">
+              <LuActivity size={18} />
             </div>
-          ))}
+            <h2 className="text-2xl font-black text-text-main tracking-tight">
+              Telemetry Stream
+            </h2>
+          </div>
+
+          <div className="bg-sidebar/80 border border-border-subtle backdrop-blur-md rounded-3xl p-6 shadow-sm overflow-hidden h-[345px] flex flex-col">
+            <div className="overflow-y-auto pr-1 flex-1 space-y-4 custom-scrollbar">
+              {activitiesLoading ? (
+                [...Array(3)].map((_, i) => (
+                  <div key={i} className="flex gap-4 items-start p-3 bg-white/3 border border-white/5 rounded-2xl">
+                    <Skeleton className="h-10 w-10 rounded-xl" />
+                    <div className="space-y-2 flex-1">
+                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-3 w-48" />
+                    </div>
+                  </div>
+                ))
+              ) : activities.length > 0 ? (
+                activities.map((activity, i) => {
+                  let badgeBg = "bg-green-500/10 text-green-400 border-green-500/20";
+                  let Icon = LuPlus;
+                  
+                  if (activity.action === "update") {
+                    badgeBg = "bg-blue-500/10 text-blue-400 border-blue-500/20";
+                    Icon = LuPencil;
+                  } else if (activity.action === "delete") {
+                    badgeBg = "bg-red-500/10 text-red-400 border-red-500/20";
+                    Icon = LuTrash;
+                  }
+
+                  return (
+                    <div
+                      key={activity._id || i}
+                      className="flex gap-4 items-start p-3 hover:bg-white/3 border border-transparent hover:border-white/5 rounded-2xl transition-all duration-300 animate-in slide-in-from-right-3"
+                    >
+                      <div className={`p-2 rounded-xl border shrink-0 ${badgeBg}`}>
+                        <Icon size={16} />
+                      </div>
+                      
+                      <div className="min-w-0 flex-1">
+                        <div className="flex justify-between items-start gap-2">
+                          <span className="text-xs font-black uppercase tracking-widest text-text-main truncate">
+                            {activity.action} problem
+                          </span>
+                          <span className="text-[10px] text-text-muted/60 flex items-center gap-1 font-bold whitespace-nowrap">
+                            <LuClock size={10} />
+                            {getRelativeTime(activity.timestamp)}
+                          </span>
+                        </div>
+                        <p className="text-xs text-text-muted mt-1 leading-relaxed break-all font-medium">
+                          {activity.details || `Problem "${activity.itemName}" was ${activity.action}d.`}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center text-center text-text-muted py-12">
+                  <LuActivity size={24} className="text-text-muted/40 mb-3 animate-pulse" />
+                  <p className="text-xs font-black uppercase tracking-widest">Awaiting events</p>
+                  <p className="text-[10px] mt-1 text-text-muted/60">No recent workspace actions captured.</p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

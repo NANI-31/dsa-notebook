@@ -30,7 +30,7 @@ export const SharedContextTab: React.FC = () => {
               placeholder="e.g. Reverse Linked List"
               value={formData.title}
               onChange={(e) =>
-                setFormData((prev: any) => ({
+                setFormData((prev) => ({
                   ...prev,
                   title: e.target.value,
                 }))
@@ -51,7 +51,7 @@ export const SharedContextTab: React.FC = () => {
                   }
                   onChange={(e) => {
                     const newCategory = e.target.value as string;
-                    setFormData((prev: any) => ({
+                    setFormData((prev) => ({
                       ...prev,
                       category: newCategory,
                       subCategory: categoriesMap[newCategory]?.[0] || "",
@@ -115,7 +115,7 @@ export const SharedContextTab: React.FC = () => {
                       : ""
                   }
                   onChange={(e) =>
-                    setFormData((prev: any) => ({
+                    setFormData((prev) => ({
                       ...prev,
                       subCategory: e.target.value as string,
                     }))
@@ -172,7 +172,7 @@ export const SharedContextTab: React.FC = () => {
                 <Select
                   value={formData.difficulty}
                   onChange={(e) =>
-                    setFormData((prev: any) => ({
+                    setFormData((prev) => ({
                       ...prev,
                       difficulty: e.target.value as string,
                     }))
@@ -237,7 +237,7 @@ export const SharedContextTab: React.FC = () => {
                   type="text"
                   value={formData.timeComplexity}
                   onChange={(e) =>
-                    setFormData((prev: any) => ({
+                    setFormData((prev) => ({
                       ...prev,
                       timeComplexity: e.target.value,
                     }))
@@ -259,7 +259,7 @@ export const SharedContextTab: React.FC = () => {
                   type="text"
                   value={formData.spaceComplexity}
                   onChange={(e) =>
-                    setFormData((prev: any) => ({
+                    setFormData((prev) => ({
                       ...prev,
                       spaceComplexity: e.target.value,
                     }))
@@ -267,6 +267,43 @@ export const SharedContextTab: React.FC = () => {
                   className="w-full bg-app-bg border border-border-subtle rounded-2xl pl-14 pr-6 py-4 text-text-main focus:outline-none focus:ring-2 focus:ring-brand/40 transition-all font-bold"
                 />
               </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-text-muted mb-3 italic opacity-40">
+                Time Complexity Analysis
+              </label>
+              <textarea
+                value={formData.timeComplexityAnalysis}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    timeComplexityAnalysis: e.target.value,
+                  }))
+                }
+                rows={3}
+                placeholder="Explain why the time complexity is what it is..."
+                className="w-full bg-app-bg border border-border-subtle rounded-2xl px-6 py-4 text-text-main focus:outline-none focus:ring-2 focus:ring-brand/40 transition-all resize-none text-sm leading-relaxed"
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-text-muted mb-3 italic opacity-40">
+                Space Complexity Analysis
+              </label>
+              <textarea
+                value={formData.spaceComplexityAnalysis}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    spaceComplexityAnalysis: e.target.value,
+                  }))
+                }
+                rows={3}
+                placeholder="Explain why the space complexity is what it is..."
+                className="w-full bg-app-bg border border-border-subtle rounded-2xl px-6 py-4 text-text-main focus:outline-none focus:ring-2 focus:ring-brand/40 transition-all resize-none text-sm leading-relaxed"
+              />
             </div>
           </div>
 
@@ -299,7 +336,7 @@ export const SharedContextTab: React.FC = () => {
                 rows={12}
                 value={formData.description}
                 onChange={(e) =>
-                  setFormData((prev: any) => ({
+                  setFormData((prev) => ({
                     ...prev,
                     description: e.target.value,
                   }))
@@ -342,7 +379,7 @@ export const SharedContextTab: React.FC = () => {
               rows={10}
               value={formData.explanation}
               onChange={(e) =>
-                setFormData((prev: any) => ({
+                setFormData((prev) => ({
                   ...prev,
                   explanation: e.target.value,
                 }))

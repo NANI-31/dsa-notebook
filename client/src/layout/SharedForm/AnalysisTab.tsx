@@ -43,7 +43,7 @@ export const SharedAnalysisTab: React.FC = () => {
             rows={20}
             value={formData.notes}
             onChange={(e) =>
-              setFormData((prev: any) => ({ ...prev, notes: e.target.value }))
+              setFormData((prev) => ({ ...prev, notes: e.target.value }))
             }
             className="w-full bg-app-bg border border-border-subtle rounded-3xl px-8 py-8 text-text-main focus:outline-none focus:ring-2 focus:ring-brand/40 transition-all font-bold resize-none min-h-[500px] leading-relaxed"
           />

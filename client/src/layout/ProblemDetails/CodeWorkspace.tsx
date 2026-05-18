@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useState } from "react";
 import {
   LuKeyboard,
   LuPlay,
@@ -18,7 +18,7 @@ import SectionHeader from "./SectionHeader";
 
 import { useProblemDetails } from "../../context/ProblemDetailsContext";
 
-const TelemetryDashboard: React.FC<{ telemetry: any }> = ({ telemetry }) => {
+const RuntimeDiagnostics: React.FC<{ telemetry: any }> = ({ telemetry }) => {
   if (!telemetry) return null;
 
   const usedBytes = telemetry.heapUsedBytes || 0;
@@ -26,31 +26,44 @@ const TelemetryDashboard: React.FC<{ telemetry: any }> = ({ telemetry }) => {
   const limitBytes = telemetry.heapLimitBytes || 0;
 
   const usedMb = usedBytes > 0 ? (usedBytes / (1024 * 1024)).toFixed(1) : "0.0";
-  const totalMb = totalBytes > 0 ? (totalBytes / (1024 * 1024)).toFixed(0) : "0";
-  const limitMb = limitBytes > 0 ? (limitBytes / (1024 * 1024)).toFixed(0) : "0";
-  const usedPercent = limitBytes > 0 ? ((usedBytes / limitBytes) * 100).toFixed(1) : "0.0";
+  const totalMb =
+    totalBytes > 0 ? (totalBytes / (1024 * 1024)).toFixed(0) : "0";
+  const limitMb =
+    limitBytes > 0 ? (limitBytes / (1024 * 1024)).toFixed(0) : "0";
+  const usedPercent =
+    limitBytes > 0 ? ((usedBytes / limitBytes) * 100).toFixed(1) : "0.0";
 
   return (
-    <div className="mb-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 font-sans">
+    <div className="mb-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 font-sans animate-in fade-in slide-in-from-bottom-2 duration-300">
       <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 transition-all">
-        <div className={`p-2 rounded-lg ${telemetry.isOffline ? 'bg-amber-500/10 text-amber-400' : 'bg-sky-500/10 text-sky-400'}`}>
+        <div
+          className={`p-2 rounded-lg ${telemetry.isOffline ? "bg-amber-500/10 text-amber-400" : "bg-sky-500/10 text-sky-400"}`}
+        >
           <LuActivity size={16} />
         </div>
         <div className="flex flex-col text-left">
-          <span className="text-[9px] font-black uppercase tracking-wider text-text-muted opacity-60">Engine</span>
-          <span className={`text-[9px] font-extrabold uppercase tracking-widest ${telemetry.isOffline ? 'text-amber-400' : 'text-sky-400'}`}>
-            {telemetry.isOffline ? 'Offline Sandbox' : 'Online Runtime'}
+          <span className="text-[9px] font-black uppercase tracking-wider text-text-muted opacity-60">
+            Engine
+          </span>
+          <span
+            className={`text-[9px] font-extrabold uppercase tracking-widest ${telemetry.isOffline ? "text-amber-400" : "text-sky-400"}`}
+          >
+            {telemetry.isOffline ? "Offline Sandbox" : "Online Runtime"}
           </span>
         </div>
       </div>
-      
+
       <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
         <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400">
           <LuZap size={16} />
         </div>
         <div className="flex flex-col text-left">
-          <span className="text-[9px] font-black uppercase tracking-wider text-text-muted opacity-60">Speed</span>
-          <span className="text-xs font-black text-text-main font-mono">{telemetry.executionTimeMs} ms</span>
+          <span className="text-[9px] font-black uppercase tracking-wider text-text-muted opacity-60">
+            Speed
+          </span>
+          <span className="text-xs font-black text-text-main font-mono">
+            {telemetry.executionTimeMs} ms
+          </span>
         </div>
       </div>
 
@@ -59,8 +72,12 @@ const TelemetryDashboard: React.FC<{ telemetry: any }> = ({ telemetry }) => {
           <LuHardDrive size={16} />
         </div>
         <div className="flex flex-col text-left">
-          <span className="text-[9px] font-black uppercase tracking-wider text-text-muted opacity-60">Memory delta</span>
-          <span className="text-xs font-black text-emerald-400 font-mono">+{telemetry.memoryDeltaKb} KB</span>
+          <span className="text-[9px] font-black uppercase tracking-wider text-text-muted opacity-60">
+            Memory delta
+          </span>
+          <span className="text-xs font-black text-emerald-400 font-mono">
+            +{telemetry.memoryDeltaKb} KB
+          </span>
           {usedBytes > 0 && (
             <span className="text-[8px] font-bold text-text-muted font-mono leading-none mt-1 opacity-70">
               Heap: {usedMb}MB / {totalMb}MB ({limitMb}MB max)
@@ -74,7 +91,9 @@ const TelemetryDashboard: React.FC<{ telemetry: any }> = ({ telemetry }) => {
           <LuCpu size={16} />
         </div>
         <div className="flex flex-col text-left">
-          <span className="text-[9px] font-black uppercase tracking-wider text-text-muted opacity-60">Parser</span>
+          <span className="text-[9px] font-black uppercase tracking-wider text-text-muted opacity-60">
+            Parser
+          </span>
           <span className="text-[9px] font-black text-purple-300 font-mono leading-tight">
             {telemetry.lineCount} lines @ {telemetry.linesPerMs} l/ms
           </span>
@@ -82,35 +101,55 @@ const TelemetryDashboard: React.FC<{ telemetry: any }> = ({ telemetry }) => {
       </div>
 
       {/* V8 CPU Health Safeguard Indicator */}
-      <div className={`flex items-center gap-3 p-3 rounded-xl border transition-all duration-300 ${
-        telemetry.cpuLeakWarning 
-          ? 'bg-rose-500/15 border-rose-500/30 text-rose-400 animate-pulse' 
-          : 'bg-white/5 border-white/5 text-emerald-400'
-      }`}>
-        <div className={`p-2 rounded-lg ${telemetry.cpuLeakWarning ? 'bg-rose-500/20' : 'bg-emerald-500/10'}`}>
-          {telemetry.cpuLeakWarning ? <LuInfo size={16} /> : <LuCpu size={16} className="animate-spin duration-3000" />}
+      <div
+        className={`flex items-center gap-3 p-3 rounded-xl border transition-all duration-300 ${
+          telemetry.cpuLeakWarning
+            ? "bg-rose-500/15 border-rose-500/30 text-rose-400 animate-pulse"
+            : "bg-white/5 border-white/5 text-emerald-400"
+        }`}
+      >
+        <div
+          className={`p-2 rounded-lg ${telemetry.cpuLeakWarning ? "bg-rose-500/20" : "bg-emerald-500/10"}`}
+        >
+          {telemetry.cpuLeakWarning ? (
+            <LuInfo size={16} />
+          ) : (
+            <LuCpu size={16} className="animate-spin duration-3000" />
+          )}
         </div>
         <div className="flex flex-col text-left">
-          <span className="text-[9px] font-black uppercase tracking-wider text-text-muted opacity-60">CPU Safeguard</span>
+          <span className="text-[9px] font-black uppercase tracking-wider text-text-muted opacity-60">
+            CPU Safeguard
+          </span>
           <span className="text-[9px] font-extrabold uppercase tracking-widest font-mono leading-tight">
-            {telemetry.cpuLeakWarning ? 'STRESS / LEAK' : 'STABLE / FAST'}
+            {telemetry.cpuLeakWarning ? "STRESS / LEAK" : "STABLE / FAST"}
           </span>
         </div>
       </div>
 
       {/* V8 RAM Allocation Health Safeguard Indicator */}
-      <div className={`flex items-center gap-3 p-3 rounded-xl border transition-all duration-300 ${
-        telemetry.ramLeakWarning 
-          ? 'bg-rose-500/15 border-rose-500/30 text-rose-400 animate-pulse' 
-          : 'bg-white/5 border-white/5 text-emerald-400'
-      }`}>
-        <div className={`p-2 rounded-lg ${telemetry.ramLeakWarning ? 'bg-rose-500/20' : 'bg-emerald-500/10'}`}>
-          {telemetry.ramLeakWarning ? <LuInfo size={16} /> : <LuHardDrive size={16} />}
+      <div
+        className={`flex items-center gap-3 p-3 rounded-xl border transition-all duration-300 ${
+          telemetry.ramLeakWarning
+            ? "bg-rose-500/15 border-rose-500/30 text-rose-400 animate-pulse"
+            : "bg-white/5 border-white/5 text-emerald-400"
+        }`}
+      >
+        <div
+          className={`p-2 rounded-lg ${telemetry.ramLeakWarning ? "bg-rose-500/20" : "bg-emerald-500/10"}`}
+        >
+          {telemetry.ramLeakWarning ? (
+            <LuInfo size={16} />
+          ) : (
+            <LuHardDrive size={16} />
+          )}
         </div>
         <div className="flex flex-col text-left">
-          <span className="text-[9px] font-black uppercase tracking-wider text-text-muted opacity-60">RAM safeguard</span>
+          <span className="text-[9px] font-black uppercase tracking-wider text-text-muted opacity-60">
+            RAM safeguard
+          </span>
           <span className="text-[9px] font-extrabold uppercase tracking-widest font-mono leading-tight">
-            {telemetry.ramLeakWarning ? 'LEAK ALERT' : `SAFE (${usedPercent}%)`}
+            {telemetry.ramLeakWarning ? "LEAK ALERT" : `SAFE (${usedPercent}%)`}
           </span>
         </div>
       </div>
@@ -141,6 +180,10 @@ const CodeWorkspace: React.FC = () => {
     executionOutput,
     telemetry,
   } = useProblemDetails();
+
+  const [activeTerminalTab, setActiveTerminalTab] = useState<
+    "terminal" | "performance"
+  >("terminal");
   return (
     <section className="animate-in slide-in-from-bottom-8 duration-1000">
       <SectionHeader title="Code" colorClass="bg-indigo-500">
@@ -169,7 +212,7 @@ const CodeWorkspace: React.FC = () => {
 
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex bg-sidebar p-1 rounded-2xl border border-border-subtle overflow-x-auto no-scrollbar">
+          <div className="flex bg-sidebar p-1 rounded-2xl border border-border-subtle overflow-x-auto custom-scrollbar pb-2">
             {variants.map((v, idx) => (
               <button
                 key={idx}
@@ -269,7 +312,7 @@ const CodeWorkspace: React.FC = () => {
             )}
 
             {/* Monaco Editor */}
-            <div 
+            <div
               style={{
                 backgroundColor: "var(--editor-bg)",
                 borderColor: "var(--editor-border)",
@@ -277,7 +320,7 @@ const CodeWorkspace: React.FC = () => {
               }}
               className="rounded-3xl border overflow-hidden shadow-2xl transition-editor-all transition-all duration-300"
             >
-              <div 
+              <div
                 style={{
                   backgroundColor: "var(--editor-header-bg)",
                   borderColor: "var(--editor-border)",
@@ -289,7 +332,7 @@ const CodeWorkspace: React.FC = () => {
                   <div className="w-2.5 h-2.5 rounded-full bg-amber-500/90" />
                   <div className="w-2.5 h-2.5 rounded-full bg-green-500/90" />
                 </div>
-                <span 
+                <span
                   style={{ color: "var(--editor-text)" }}
                   className="text-[10px] font-black uppercase tracking-widest opacity-60"
                 >
@@ -307,24 +350,26 @@ const CodeWorkspace: React.FC = () => {
                             : "c"}
                 </span>
               </div>
-              <Suspense fallback={
-                <div className="w-full flex flex-col p-6 animate-pulse bg-sidebar/50 backdrop-blur-md rounded-3xl min-h-[400px]">
-                  <div className="flex flex-col gap-4 opacity-30">
-                    <div className="flex gap-4">
-                      <div className="w-8 h-4 bg-text-muted/20 rounded-md" />
-                      <div className="w-48 h-4 bg-text-muted/10 rounded-md" />
-                    </div>
-                    <div className="flex gap-4">
-                      <div className="w-8 h-4 bg-text-muted/20 rounded-md" />
-                      <div className="w-64 h-4 bg-text-muted/10 rounded-md" />
-                    </div>
-                    <div className="flex gap-4">
-                      <div className="w-8 h-4 bg-text-muted/20 rounded-md" />
-                      <div className="w-32 h-4 bg-text-muted/10 rounded-md" />
+              <Suspense
+                fallback={
+                  <div className="w-full flex flex-col p-6 animate-pulse bg-sidebar/50 backdrop-blur-md rounded-3xl min-h-[400px]">
+                    <div className="flex flex-col gap-4 opacity-30">
+                      <div className="flex gap-4">
+                        <div className="w-8 h-4 bg-text-muted/20 rounded-md" />
+                        <div className="w-48 h-4 bg-text-muted/10 rounded-md" />
+                      </div>
+                      <div className="flex gap-4">
+                        <div className="w-8 h-4 bg-text-muted/20 rounded-md" />
+                        <div className="w-64 h-4 bg-text-muted/10 rounded-md" />
+                      </div>
+                      <div className="flex gap-4">
+                        <div className="w-8 h-4 bg-text-muted/20 rounded-md" />
+                        <div className="w-32 h-4 bg-text-muted/10 rounded-md" />
+                      </div>
                     </div>
                   </div>
-                </div>
-              }>
+                }
+              >
                 <CustomMonaco
                   height={
                     terminalLayout === "sidebar" && showTerminal
@@ -347,12 +392,35 @@ const CodeWorkspace: React.FC = () => {
             {showTerminal && terminalLayout === "bottom" && (
               <div className="animate-in slide-in-from-bottom-4 duration-500">
                 <div className="bg-[#0c0e14] border border-border-subtle rounded-3xl overflow-hidden shadow-2xl">
-                  <div className="flex items-center justify-between px-6 py-3 bg-white/5 border-b border-white/5">
+                  <div className="flex items-center justify-between px-6 py-3 bg-white/5 border-b border-white/5 gap-4">
                     <div className="flex items-center gap-3">
                       <LuTerminal size={14} className="text-brand" />
-                      <span className="text-[9px] font-black uppercase tracking-widest text-text-main">
+                      <span className="text-[9px] font-black uppercase tracking-widest text-text-main hidden sm:inline">
                         System Terminal
                       </span>
+                    </div>
+                    {/* Tab Switcher inside header */}
+                    <div className="flex bg-white/5 border border-white/10 p-1 rounded-xl gap-1">
+                      <button
+                        onClick={() => setActiveTerminalTab("terminal")}
+                        className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all ${
+                          activeTerminalTab === "terminal"
+                            ? "bg-brand text-white shadow-md"
+                            : "text-text-muted hover:text-text-main"
+                        }`}
+                      >
+                        Stdout
+                      </button>
+                      <button
+                        onClick={() => setActiveTerminalTab("performance")}
+                        className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all ${
+                          activeTerminalTab === "performance"
+                            ? "bg-brand text-white shadow-md"
+                            : "text-text-muted hover:text-text-main"
+                        }`}
+                      >
+                        Diagnostics
+                      </button>
                     </div>
                     <button
                       onClick={() => setShowTerminal(false)}
@@ -375,22 +443,33 @@ const CodeWorkspace: React.FC = () => {
                       </div>
                     ) : (
                       <>
-                        <TelemetryDashboard telemetry={telemetry} />
-                        {executionError ? (
-                          <div className="text-red-400 whitespace-pre-wrap leading-relaxed">
-                            <span className="font-black mr-2 opacity-50">
-                              [FATAL]
-                            </span>
-                            {executionError}
-                          </div>
-                        ) : executionOutput ? (
-                          <div className="text-green-400 whitespace-pre-wrap leading-relaxed">
-                            {executionOutput}
-                          </div>
+                        {activeTerminalTab === "performance" ? (
+                          telemetry ? (
+                            <RuntimeDiagnostics telemetry={telemetry} />
+                          ) : (
+                            <div className="text-text-muted/40 italic text-xs uppercase tracking-widest flex items-center justify-center min-h-[100px] animate-in fade-in duration-300">
+                              Run code to calculate diagnostics
+                            </div>
+                          )
                         ) : (
-                          <div className="text-text-muted/40 italic text-xs uppercase tracking-widest flex items-center justify-center min-h-[100px]">
-                            Null pointer: No output detected
-                          </div>
+                          <>
+                            {executionError ? (
+                              <div className="text-red-400 whitespace-pre-wrap leading-relaxed animate-in fade-in slide-in-from-bottom-2 duration-300">
+                                <span className="font-black mr-2 opacity-50">
+                                  [FATAL]
+                                </span>
+                                {executionError}
+                              </div>
+                            ) : executionOutput ? (
+                              <div className="text-green-400 whitespace-pre-wrap leading-relaxed animate-in fade-in slide-in-from-bottom-2 duration-300">
+                                {executionOutput}
+                              </div>
+                            ) : (
+                              <div className="text-text-muted/40 italic text-xs uppercase tracking-widest flex items-center justify-center min-h-[100px] animate-in fade-in duration-300">
+                                Null pointer: No output detected
+                              </div>
+                            )}
+                          </>
                         )}
                       </>
                     )}
@@ -404,12 +483,35 @@ const CodeWorkspace: React.FC = () => {
           {showTerminal && terminalLayout === "sidebar" && (
             <div className="hidden lg:flex animate-in slide-in-from-right-4 duration-500 flex-col h-full">
               <div className="bg-[#0c0e14] border border-border-subtle rounded-3xl overflow-hidden shadow-2xl flex flex-col h-full sticky top-8">
-                <div className="flex items-center justify-between px-6 py-2.5 bg-white/5 border-b border-white/5">
+                <div className="flex items-center justify-between px-6 py-2.5 bg-white/5 border-b border-white/5 gap-4">
                   <div className="flex items-center gap-3">
                     <LuTerminal size={18} className="text-brand" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-text-main">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-text-main hidden xl:inline">
                       Process Stream
                     </span>
+                  </div>
+                  {/* Tab Switcher inside header */}
+                  <div className="flex bg-white/5 border border-white/10 p-0.5 rounded-lg gap-0.5">
+                    <button
+                      onClick={() => setActiveTerminalTab("terminal")}
+                      className={`px-2.5 py-0.5 rounded-md text-[8px] font-black uppercase tracking-wider transition-all ${
+                        activeTerminalTab === "terminal"
+                          ? "bg-brand text-white shadow-sm"
+                          : "text-text-muted hover:text-text-main"
+                      }`}
+                    >
+                      Stdout
+                    </button>
+                    <button
+                      onClick={() => setActiveTerminalTab("performance")}
+                      className={`px-2.5 py-0.5 rounded-md text-[8px] font-black uppercase tracking-wider transition-all ${
+                        activeTerminalTab === "performance"
+                          ? "bg-brand text-white shadow-sm"
+                          : "text-text-muted hover:text-text-main"
+                      }`}
+                    >
+                      Diagnostics
+                    </button>
                   </div>
                   <button
                     onClick={() => setShowTerminal(false)}
@@ -432,25 +534,36 @@ const CodeWorkspace: React.FC = () => {
                     </div>
                   ) : (
                     <>
-                      <TelemetryDashboard telemetry={telemetry} />
-                      {executionError ? (
-                        <div className="text-red-400 whitespace-pre-wrap bg-red-400/5 p-6 rounded-2xl border border-red-400/10">
-                          <div className="font-black mb-3 uppercase tracking-tighter opacity-60">
-                            Runtime Exception
+                      {activeTerminalTab === "performance" ? (
+                        telemetry ? (
+                          <RuntimeDiagnostics telemetry={telemetry} />
+                        ) : (
+                          <div className="flex items-center justify-center min-h-[300px] text-text-muted/20 italic font-black uppercase tracking-[0.3em] text-center animate-in fade-in duration-300">
+                            No diagnostics calculated
                           </div>
-                          {executionError}
-                        </div>
-                      ) : executionOutput ? (
-                        <div className="text-green-400 whitespace-pre-wrap h-full">
-                          <div className="font-black mb-3 uppercase tracking-tighter text-green-400/40">
-                            Exit Code: 0 (Success)
-                          </div>
-                          {executionOutput}
-                        </div>
+                        )
                       ) : (
-                        <div className="flex items-center justify-center min-h-[300px] text-text-muted/20 italic font-black uppercase tracking-[0.3em] text-center">
-                          No Data Stream
-                        </div>
+                        <>
+                          {executionError ? (
+                            <div className="text-red-400 whitespace-pre-wrap bg-red-400/5 p-6 rounded-2xl border border-red-400/10 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                              <div className="font-black mb-3 uppercase tracking-tighter opacity-60">
+                                Runtime Exception
+                              </div>
+                              {executionError}
+                            </div>
+                          ) : executionOutput ? (
+                            <div className="text-green-400 whitespace-pre-wrap h-full animate-in fade-in slide-in-from-bottom-2 duration-300">
+                              <div className="font-black mb-3 uppercase tracking-tighter text-green-400/40">
+                                Exit Code: 0 (Success)
+                              </div>
+                              {executionOutput}
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-center min-h-[300px] text-text-muted/20 italic font-black uppercase tracking-[0.3em] text-center animate-in fade-in duration-300">
+                              No Data Stream
+                            </div>
+                          )}
+                        </>
                       )}
                     </>
                   )}

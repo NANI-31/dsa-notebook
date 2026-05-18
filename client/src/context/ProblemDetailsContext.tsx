@@ -17,6 +17,7 @@ import {
 } from "../services/sandboxStore";
 import type { ExecutionTelemetry } from "../services/sandboxStore";
 import type { Solution } from "../types/problem";
+import { useExecutionTelemetry } from "../hooks/useExecutionTelemetry";
 
 interface ProblemDetailsContextType {
   // Redux State
@@ -87,13 +88,22 @@ export const ProblemDetailsProvider: React.FC<{ slug: string | undefined; childr
   const [stdin, setStdin] = useState("");
   const [showTerminal, setShowTerminal] = useState(false);
   const [showInput, setShowInput] = useState(false);
-  const [telemetry, setTelemetry] = useState<ExecutionTelemetry | null>(null);
+  const { telemetry, setTelemetry, clearTelemetry, recordOnlineTelemetry } = useExecutionTelemetry();
 
   const [activeVariantIndex, setActiveVariantIndex] = useState(0);
   const scrollPositionsRef = useRef<Record<number, number>>({});
 
-  const variants = problem?.variants || [];
-  const activeVariant = variants[activeVariantIndex];
+  const defaultVariants: Solution[] = [
+    {
+      name: "Main Solution",
+      language: "typescript",
+      code: "",
+      codes: { typescript: "" },
+    },
+  ];
+
+  const variants = problem?.variants && problem.variants.length > 0 ? problem.variants : defaultVariants;
+  const activeVariant = variants[activeVariantIndex] || variants[0];
 
   // Fetch problem on mount or slug change
   useEffect(() => {
@@ -235,7 +245,7 @@ export const ProblemDetailsProvider: React.FC<{ slug: string | undefined; childr
     setShowTerminal(true);
     setExecutionOutput("");
     setExecutionError("");
-    setTelemetry(null);
+    clearTelemetry();
 
     const isClientOnline = typeof navigator !== "undefined" ? navigator.onLine : true;
 
@@ -245,7 +255,9 @@ export const ProblemDetailsProvider: React.FC<{ slug: string | undefined; childr
         const result = await executeCodeOffline(activeVariant.code, activeVariant.language, stdin);
         setExecutionOutput(result.stdout);
         setExecutionError(result.stderr);
-        setTelemetry(result.telemetry || null);
+        if (result.telemetry) {
+          setTelemetry(result.telemetry);
+        }
       } catch (err: any) {
         setExecutionError(`Sandbox execution exception: ${err.message}`);
       } finally {
@@ -265,33 +277,12 @@ export const ProblemDetailsProvider: React.FC<{ slug: string | undefined; childr
         },
       );
 
-      const endTime = performance.now();
       const { stdout, stderr, output } = response.data.run;
       setExecutionOutput(stdout || output);
       setExecutionError(stderr);
 
-      // Measure online compilation telemetry for seamless consistent diagnostics
-      const executionTimeMs = parseFloat((endTime - startTime).toFixed(2));
-      const lineCount = activeVariant.code.split("\n").length;
-      const linesPerMs = executionTimeMs > 0 ? parseFloat((lineCount / executionTimeMs).toFixed(2)) : lineCount;
-      const memoryDeltaKb = parseFloat(((activeVariant.code.length * 0.1) + (stdin.length * 0.03) + Math.random() * 4).toFixed(2));
-
-      const heapUsedBytes = (performance as any).memory?.usedJSHeapSize || 0;
-      const heapTotalBytes = (performance as any).memory?.totalJSHeapSize || 0;
-      const heapLimitBytes = (performance as any).memory?.jsHeapSizeLimit || 0;
-
-      setTelemetry({
-        executionTimeMs,
-        memoryDeltaKb,
-        lineCount,
-        linesPerMs,
-        isOffline: false,
-        heapUsedBytes,
-        heapTotalBytes,
-        heapLimitBytes,
-        cpuLeakWarning: executionTimeMs > 1000,
-        ramLeakWarning: memoryDeltaKb > 5000 || (heapUsedBytes > 0.8 * heapLimitBytes),
-      });
+      // Measure online compilation telemetry via decoupled hook
+      recordOnlineTelemetry(startTime, activeVariant.code, stdin);
     } catch (error: any) {
       setExecutionError(
         error.response?.data?.message || "Failed to connect to execution runtime.",

@@ -16,6 +16,9 @@ export interface SettingsState {
   editorFontSize: number;
   editorFontLigatures: boolean;
   editorFontFamily: string;
+  editorCursorBlinking: "blink" | "smooth" | "phase" | "expand" | "solid";
+  editorLineNumberPadding: number;
+  editorContrastRatio: number;
   loading: boolean;
   error: string | null;
 
@@ -39,6 +42,14 @@ const initialState: SettingsState = {
   editorFontSize: Number(localStorage.getItem("editorFontSize")) || 14,
   editorFontLigatures: localStorage.getItem("editorFontLigatures") !== "false",
   editorFontFamily: localStorage.getItem("editorFontFamily") || "Fira Code",
+  editorCursorBlinking:
+    (localStorage.getItem(
+      "editorCursorBlinking",
+    ) as SettingsState["editorCursorBlinking"]) || "smooth",
+  editorLineNumberPadding:
+    Number(localStorage.getItem("editorLineNumberPadding")) || 28,
+  editorContrastRatio:
+    Number(localStorage.getItem("editorContrastRatio")) || 100,
   loading: false,
   error: null,
   isOnline: typeof navigator !== "undefined" ? navigator.onLine : true,
@@ -61,9 +72,10 @@ const initialState: SettingsState = {
 };
 
 // Global BroadcastChannel to sync settings cross-tab
-const settingsChannel = typeof window !== "undefined" && "BroadcastChannel" in window
-  ? new BroadcastChannel("dsa-settings-channel")
-  : null;
+const settingsChannel =
+  typeof window !== "undefined" && "BroadcastChannel" in window
+    ? new BroadcastChannel("dsa-settings-channel")
+    : null;
 
 export const fetchSettings = createAsyncThunk(
   "settings/fetchSettings",
@@ -89,12 +101,16 @@ export const syncSettings = createAsyncThunk(
       ...settings,
     };
 
-    const isClientOnline = typeof navigator !== "undefined" ? navigator.onLine : true;
+    const isClientOnline =
+      typeof navigator !== "undefined" ? navigator.onLine : true;
 
     if (!isClientOnline) {
       dispatch(setSyncStatus("offline"));
       // Write immediately to crash backup disk
-      localStorage.setItem("offlineSettingsBackup", JSON.stringify(pendingSettingsBuffer));
+      localStorage.setItem(
+        "offlineSettingsBackup",
+        JSON.stringify(pendingSettingsBuffer),
+      );
     } else {
       dispatch(setSyncStatus("syncing"));
     }
@@ -119,10 +135,13 @@ export const syncSettings = createAsyncThunk(
         pendingRejecters = [];
         syncSettingsTimeoutId = null;
 
-        const stillOnline = typeof navigator !== "undefined" ? navigator.onLine : true;
+        const stillOnline =
+          typeof navigator !== "undefined" ? navigator.onLine : true;
         if (!stillOnline) {
           dispatch(setSyncStatus("offline"));
-          resolvers.forEach((r) => r({ message: "Saved locally (Offline)", offline: true }));
+          resolvers.forEach((r) =>
+            r({ message: "Saved locally (Offline)", offline: true }),
+          );
           return;
         }
 
@@ -136,52 +155,70 @@ export const syncSettings = createAsyncThunk(
         while (attempt < maxRetries && !success) {
           try {
             attempt++;
-            console.log(`[Sync settings retry] Sync attempt ${attempt} of ${maxRetries}...`);
+            console.log(
+              `[Sync settings retry] Sync attempt ${attempt} of ${maxRetries}...`,
+            );
             const response = await api.patch("/settings", payloadToSync);
             responseData = response.data;
             success = true;
           } catch (error: any) {
             lastError = error;
-            console.warn(`[Sync settings retry] Attempt ${attempt} failed: ${error.message}`);
+            console.warn(
+              `[Sync settings retry] Attempt ${attempt} failed: ${error.message}`,
+            );
             if (attempt < maxRetries) {
               const backoffDelay = Math.pow(2, attempt) * 1000; // 2000ms, 4000ms
-              dispatch(addToast({
-                message: `Still retrying settings sync (Attempt ${attempt}/3)...`,
-                type: "warning",
-                duration: backoffDelay - 200
-              }));
+              dispatch(
+                addToast({
+                  message: `Still retrying settings sync (Attempt ${attempt}/3)...`,
+                  type: "warning",
+                  duration: backoffDelay - 200,
+                }),
+              );
               await delay(backoffDelay);
             }
           }
         }
 
         if (success) {
-          console.log("[Settings Sync Buffering] Sync successfully pushed to database!");
+          console.log(
+            "[Settings Sync Buffering] Sync successfully pushed to database!",
+          );
           dispatch(setSyncStatus("synced"));
           localStorage.removeItem("offlineSettingsBackup");
-          
-          dispatch(addToast({
-            message: "Preferences synchronized with cloud database!",
-            type: "success",
-            duration: 3000
-          }));
+
+          dispatch(
+            addToast({
+              message: "Preferences synchronized with cloud database!",
+              type: "success",
+              duration: 3000,
+            }),
+          );
 
           resolvers.forEach((r) => r(responseData));
         } else {
-          console.error("[Settings Sync Buffering] All sync attempts failed:", lastError);
+          console.error(
+            "[Settings Sync Buffering] All sync attempts failed:",
+            lastError,
+          );
           dispatch(setSyncStatus("error"));
-          
-          dispatch(addToast({
-            message: "Server sync offline. Changes cached locally until connection restores.",
-            type: "error",
-            duration: 5000
-          }));
 
-          rejecters.forEach((rj) => rj(lastError.message || "Failed to sync settings"));
+          dispatch(
+            addToast({
+              message:
+                "Server sync offline. Changes cached locally until connection restores.",
+              type: "error",
+              duration: 5000,
+            }),
+          );
+
+          rejecters.forEach((rj) =>
+            rj(lastError.message || "Failed to sync settings"),
+          );
         }
       }, 1000);
     });
-  }
+  },
 );
 
 export const syncOfflineSettings = createAsyncThunk(
@@ -191,13 +228,16 @@ export const syncOfflineSettings = createAsyncThunk(
     if (backupStr) {
       try {
         const backup = JSON.parse(backupStr);
-        console.log("[Offline Hydrator] Found offline settings backup. Re-syncing with server...", backup);
+        console.log(
+          "[Offline Hydrator] Found offline settings backup. Re-syncing with server...",
+          backup,
+        );
         dispatch(syncSettings(backup));
       } catch (err) {
         console.error("[Offline Hydrator] Failed to parse backup:", err);
       }
     }
-  }
+  },
 );
 
 const settingsSlice = createSlice({
@@ -209,7 +249,10 @@ const settingsSlice = createSlice({
       state.theme = action.payload;
       localStorage.setItem("theme", action.payload);
       if (settingsChannel) {
-        settingsChannel.postMessage({ type: "settings/setTheme", payload: action.payload });
+        settingsChannel.postMessage({
+          type: "settings/setTheme",
+          payload: action.payload,
+        });
       }
     },
     setAccentColor: (state, action: PayloadAction<string>) => {
@@ -217,7 +260,10 @@ const settingsSlice = createSlice({
       state.accentColor = action.payload;
       localStorage.setItem("accent", action.payload);
       if (settingsChannel) {
-        settingsChannel.postMessage({ type: "settings/setAccentColor", payload: action.payload });
+        settingsChannel.postMessage({
+          type: "settings/setAccentColor",
+          payload: action.payload,
+        });
       }
     },
     setSyncWithSystem: (state, action: PayloadAction<boolean>) => {
@@ -225,7 +271,10 @@ const settingsSlice = createSlice({
       state.syncWithSystem = action.payload;
       localStorage.setItem("syncSystem", String(action.payload));
       if (settingsChannel) {
-        settingsChannel.postMessage({ type: "settings/setSyncWithSystem", payload: action.payload });
+        settingsChannel.postMessage({
+          type: "settings/setSyncWithSystem",
+          payload: action.payload,
+        });
       }
     },
     setTerminalLayout: (state, action: PayloadAction<"sidebar" | "bottom">) => {
@@ -233,7 +282,10 @@ const settingsSlice = createSlice({
       state.terminalLayout = action.payload;
       localStorage.setItem("terminalLayout", action.payload);
       if (settingsChannel) {
-        settingsChannel.postMessage({ type: "settings/setTerminalLayout", payload: action.payload });
+        settingsChannel.postMessage({
+          type: "settings/setTerminalLayout",
+          payload: action.payload,
+        });
       }
     },
     toggleTheme: (state) => {
@@ -242,7 +294,10 @@ const settingsSlice = createSlice({
       localStorage.setItem("theme", nextTheme);
       if (state.syncWithSystem) state.syncWithSystem = false;
       if (settingsChannel) {
-        settingsChannel.postMessage({ type: "settings/setTheme", payload: nextTheme });
+        settingsChannel.postMessage({
+          type: "settings/setTheme",
+          payload: nextTheme,
+        });
       }
     },
     setEditorHighContrast: (state, action: PayloadAction<boolean>) => {
@@ -250,7 +305,10 @@ const settingsSlice = createSlice({
       state.editorHighContrast = action.payload;
       localStorage.setItem("editorHighContrast", String(action.payload));
       if (settingsChannel) {
-        settingsChannel.postMessage({ type: "settings/setEditorHighContrast", payload: action.payload });
+        settingsChannel.postMessage({
+          type: "settings/setEditorHighContrast",
+          payload: action.payload,
+        });
       }
     },
     setEditorTheme: (state, action: PayloadAction<string>) => {
@@ -258,7 +316,10 @@ const settingsSlice = createSlice({
       state.editorTheme = action.payload;
       localStorage.setItem("editorTheme", action.payload);
       if (settingsChannel) {
-        settingsChannel.postMessage({ type: "settings/setEditorTheme", payload: action.payload });
+        settingsChannel.postMessage({
+          type: "settings/setEditorTheme",
+          payload: action.payload,
+        });
       }
     },
     setEditorFontSize: (state, action: PayloadAction<number>) => {
@@ -266,7 +327,10 @@ const settingsSlice = createSlice({
       state.editorFontSize = action.payload;
       localStorage.setItem("editorFontSize", String(action.payload));
       if (settingsChannel) {
-        settingsChannel.postMessage({ type: "settings/setEditorFontSize", payload: action.payload });
+        settingsChannel.postMessage({
+          type: "settings/setEditorFontSize",
+          payload: action.payload,
+        });
       }
     },
     setEditorFontLigatures: (state, action: PayloadAction<boolean>) => {
@@ -274,7 +338,10 @@ const settingsSlice = createSlice({
       state.editorFontLigatures = action.payload;
       localStorage.setItem("editorFontLigatures", String(action.payload));
       if (settingsChannel) {
-        settingsChannel.postMessage({ type: "settings/setEditorFontLigatures", payload: action.payload });
+        settingsChannel.postMessage({
+          type: "settings/setEditorFontLigatures",
+          payload: action.payload,
+        });
       }
     },
     setEditorFontFamily: (state, action: PayloadAction<string>) => {
@@ -282,7 +349,46 @@ const settingsSlice = createSlice({
       state.editorFontFamily = action.payload;
       localStorage.setItem("editorFontFamily", action.payload);
       if (settingsChannel) {
-        settingsChannel.postMessage({ type: "settings/setEditorFontFamily", payload: action.payload });
+        settingsChannel.postMessage({
+          type: "settings/setEditorFontFamily",
+          payload: action.payload,
+        });
+      }
+    },
+    setEditorCursorBlinking: (
+      state,
+      action: PayloadAction<SettingsState["editorCursorBlinking"]>,
+    ) => {
+      if (state.editorCursorBlinking === action.payload) return;
+      state.editorCursorBlinking = action.payload;
+      localStorage.setItem("editorCursorBlinking", action.payload);
+      if (settingsChannel) {
+        settingsChannel.postMessage({
+          type: "settings/setEditorCursorBlinking",
+          payload: action.payload,
+        });
+      }
+    },
+    setEditorLineNumberPadding: (state, action: PayloadAction<number>) => {
+      if (state.editorLineNumberPadding === action.payload) return;
+      state.editorLineNumberPadding = action.payload;
+      localStorage.setItem("editorLineNumberPadding", String(action.payload));
+      if (settingsChannel) {
+        settingsChannel.postMessage({
+          type: "settings/setEditorLineNumberPadding",
+          payload: action.payload,
+        });
+      }
+    },
+    setEditorContrastRatio: (state, action: PayloadAction<number>) => {
+      if (state.editorContrastRatio === action.payload) return;
+      state.editorContrastRatio = action.payload;
+      localStorage.setItem("editorContrastRatio", String(action.payload));
+      if (settingsChannel) {
+        settingsChannel.postMessage({
+          type: "settings/setEditorContrastRatio",
+          payload: action.payload,
+        });
       }
     },
     setOnline: (state, action: PayloadAction<boolean>) => {
@@ -291,15 +397,24 @@ const settingsSlice = createSlice({
         state.syncStatus = "offline";
       }
     },
-    setSyncStatus: (state, action: PayloadAction<"synced" | "syncing" | "offline" | "error">) => {
+    setSyncStatus: (
+      state,
+      action: PayloadAction<"synced" | "syncing" | "offline" | "error">,
+    ) => {
       state.syncStatus = action.payload;
     },
-    setShortcut: (state, action: PayloadAction<{ actionId: string; keyCombo: string }>) => {
+    setShortcut: (
+      state,
+      action: PayloadAction<{ actionId: string; keyCombo: string }>,
+    ) => {
       const { actionId, keyCombo } = action.payload;
       state.shortcuts[actionId] = keyCombo;
       localStorage.setItem("editorShortcuts", JSON.stringify(state.shortcuts));
       if (settingsChannel) {
-        settingsChannel.postMessage({ type: "settings/setShortcut", payload: action.payload });
+        settingsChannel.postMessage({
+          type: "settings/setShortcut",
+          payload: action.payload,
+        });
       }
     },
   },
@@ -327,13 +442,45 @@ const settingsSlice = createSlice({
         state.editorFontSize = action.payload.editorFontSize ?? 14;
         state.editorFontLigatures = action.payload.editorFontLigatures ?? true;
         state.editorFontFamily = action.payload.editorFontFamily || "Fira Code";
-        
+        state.editorCursorBlinking =
+          action.payload.editorCursorBlinking || "smooth";
+        state.editorLineNumberPadding =
+          action.payload.editorLineNumberPadding ?? 28;
+        state.editorContrastRatio = action.payload.editorContrastRatio ?? 100;
+
         localStorage.setItem("terminalLayout", action.payload.terminalLayout);
-        localStorage.setItem("editorHighContrast", String(action.payload.editorHighContrast));
-        localStorage.setItem("editorTheme", action.payload.editorTheme || "custom-dark");
-        localStorage.setItem("editorFontSize", String(action.payload.editorFontSize ?? 14));
-        localStorage.setItem("editorFontLigatures", String(action.payload.editorFontLigatures ?? true));
-        localStorage.setItem("editorFontFamily", action.payload.editorFontFamily || "Fira Code");
+        localStorage.setItem(
+          "editorHighContrast",
+          String(action.payload.editorHighContrast),
+        );
+        localStorage.setItem(
+          "editorTheme",
+          action.payload.editorTheme || "custom-dark",
+        );
+        localStorage.setItem(
+          "editorFontSize",
+          String(action.payload.editorFontSize ?? 14),
+        );
+        localStorage.setItem(
+          "editorFontLigatures",
+          String(action.payload.editorFontLigatures ?? true),
+        );
+        localStorage.setItem(
+          "editorFontFamily",
+          action.payload.editorFontFamily || "Fira Code",
+        );
+        localStorage.setItem(
+          "editorCursorBlinking",
+          action.payload.editorCursorBlinking || "smooth",
+        );
+        localStorage.setItem(
+          "editorLineNumberPadding",
+          String(action.payload.editorLineNumberPadding ?? 28),
+        );
+        localStorage.setItem(
+          "editorContrastRatio",
+          String(action.payload.editorContrastRatio ?? 100),
+        );
       })
       .addCase(fetchSettings.rejected, (state, action) => {
         state.loading = false;
@@ -353,6 +500,9 @@ export const {
   setEditorFontSize,
   setEditorFontLigatures,
   setEditorFontFamily,
+  setEditorCursorBlinking,
+  setEditorLineNumberPadding,
+  setEditorContrastRatio,
   setOnline,
   setSyncStatus,
   setShortcut,

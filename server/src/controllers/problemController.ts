@@ -2,17 +2,27 @@ import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import Problem from '../models/Problem';
 import Solution from '../models/Solution';
+import ActivityLog from '../models/ActivityLog';
 import logger from '../utils/logger';
+import { emitActivity } from '../utils/socket';
 
 export const getProblems = async (req: Request, res: Response) => {
   try {
-    const { search, difficulty, categories, techniques, subCategory, categoryName } = req.query;
+    const { search, difficulty, categories, techniques, subCategory, categoryName, folderId } = req.query;
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 12;
     const skip = (page - 1) * limit;
 
     const query: any = {};
     let sort: any = { addedDate: -1 }; // Default sort
+
+    if (folderId) {
+      if (folderId === "root") {
+        query.folderId = null;
+      } else if (folderId !== "all") {
+        query.folderId = folderId;
+      }
+    }
 
     if (search) {
       query.$text = { $search: search };
@@ -57,7 +67,7 @@ export const getProblems = async (req: Request, res: Response) => {
         .skip(skip)
         .limit(limit)
         .select(
-          "title difficulty slug starred categories techniques timeComplexity spaceComplexity",
+          "title difficulty slug starred categories techniques timeComplexity spaceComplexity folderId",
         )
         .populate("category", "name")
         .populate("techniques", "name"),
@@ -147,6 +157,20 @@ export const updateProblemCode = async (req: Request, res: Response): Promise<vo
       await Solution.insertMany(solutionDocs);
     }
 
+    // Background Activity Logging
+    try {
+      const activity = await ActivityLog.create({
+        action: 'update',
+        itemType: 'problem',
+        itemName: problem.title,
+        itemId: problem._id.toString(),
+        details: `Problem "${problem.title}" code templates updated.`
+      });
+      emitActivity(activity);
+    } catch (logErr: any) {
+      logger.error("Failed to log update activity:", logErr);
+    }
+
     return getProblemBySlug(req, res);
   } catch (error: any) {
     logger.error("Error updating problem:", { slug: req.params.slug, message: error.message });
@@ -172,9 +196,58 @@ export const createProblem = async (req: Request, res: Response) => {
       await Solution.insertMany(solutionDocs);
     }
 
-    res.status(201).json({ ...req.body, _id: newProblem._id });
+    // Background Activity Logging
+    try {
+      const activity = await ActivityLog.create({
+        action: 'create',
+        itemType: 'problem',
+        itemName: newProblem.title,
+        itemId: newProblem._id.toString(),
+        details: `Problem "${newProblem.title}" created with difficulty ${newProblem.difficulty}.`
+      });
+      emitActivity(activity);
+    } catch (logErr: any) {
+      logger.error("Failed to log create activity:", logErr);
+    }
+
+    res.status(201).json({ ...newProblem.toObject(), variants });
   } catch (error: any) {
     logger.error("Error creating problem:", { message: error.message, body: req.body });
     res.status(400).json({ message: error.message });
+  }
+};
+
+export const deleteProblem = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const problem = await Problem.findOne({ slug: req.params.slug });
+    if (!problem) {
+      res.status(404).json({ message: "Problem not found" });
+      return;
+    }
+
+    // Delete associated solutions
+    await Solution.deleteMany({ problemId: problem._id });
+
+    // Delete the problem document
+    await Problem.deleteOne({ _id: problem._id });
+
+    // Background Activity Logging
+    try {
+      const activity = await ActivityLog.create({
+        action: 'delete',
+        itemType: 'problem',
+        itemName: problem.title,
+        itemId: problem._id.toString(),
+        details: `Problem "${problem.title}" permanently deleted.`
+      });
+      emitActivity(activity);
+    } catch (logErr: any) {
+      logger.error("Failed to log delete activity:", logErr);
+    }
+
+    res.json({ message: "Problem successfully deleted" });
+  } catch (error: any) {
+    logger.error("Error deleting problem:", { slug: req.params.slug, message: error.message });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };

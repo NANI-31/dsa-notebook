@@ -16,6 +16,7 @@ const EditProblem = lazy(() => import("./pages/EditProblem"));
 const TaxonomyExplorer = lazy(() => import("./pages/TaxonomyExplorer"));
 const DataStructures = lazy(() => import("./pages/DataStructures"));
 const Algorithms = lazy(() => import("./pages/Algorithms"));
+const FolderExplorer = lazy(() => import("./pages/FolderExplorer"));
 
 const RouteLoader = () => (
   <div className="flex flex-col items-center justify-center min-h-[400px] gap-4 font-sans animate-in fade-in duration-500">
@@ -278,6 +279,8 @@ function App() {
                   <Route path="/ds" element={<DataStructures />} />
                   <Route path="/algorithms" element={<Algorithms />} />
                   <Route path="/taxonomy" element={<TaxonomyExplorer />} />
+                  <Route path="/folders" element={<FolderExplorer />} />
+                  <Route path="/folders/:folderId" element={<FolderExplorer />} />
                   <Route path="/settings" element={<Settings />} />
                 </Routes>
               </Suspense>
