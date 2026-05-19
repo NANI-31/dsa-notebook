@@ -1,8 +1,12 @@
-import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, type PayloadAction, createEntityAdapter } from "@reduxjs/toolkit";
 import api from "../../services/api";
 import type { Folder } from "../../types/folder";
 
-interface FoldersState {
+export const foldersAdapter = createEntityAdapter<any>();
+
+export interface FoldersState {
+  ids: string[];
+  entities: Record<string, any>;
   folders: Folder[];
   byId: Record<string, Folder>;
   allIds: string[];
@@ -11,14 +15,21 @@ interface FoldersState {
   error: string | null;
 }
 
-const initialState: FoldersState = {
+const initialState: FoldersState = foldersAdapter.getInitialState<{
+  folders: Folder[];
+  byId: Record<string, Folder>;
+  allIds: string[];
+  loading: boolean;
+  saving: boolean;
+  error: string | null;
+}>({
   folders: [],
   byId: {},
   allIds: [],
   loading: false,
   saving: false,
   error: null,
-};
+});
 
 // Async Thunks
 export const fetchFolders = createAsyncThunk("folders/fetchFolders", async () => {
@@ -50,6 +61,11 @@ export const deleteFolder = createAsyncThunk(
   }
 );
 
+const mapToEntity = (f: Folder) => ({
+  ...f,
+  id: f._id,
+});
+
 const foldersSlice = createSlice({
   name: "folders",
   initialState,
@@ -62,6 +78,10 @@ const foldersSlice = createSlice({
       if (folder) {
         folder.parentFolder = action.payload.parentFolder;
         state.byId[folder._id] = folder;
+        foldersAdapter.updateOne(state, {
+          id: action.payload.id,
+          changes: { parentFolder: action.payload.parentFolder }
+        });
       }
     },
   },
@@ -77,6 +97,7 @@ const foldersSlice = createSlice({
         state.folders = action.payload;
         state.byId = {};
         state.allIds = [];
+        foldersAdapter.setAll(state, action.payload.map(mapToEntity));
         action.payload.forEach((f) => {
           state.byId[f._id] = f;
           state.allIds.push(f._id);
@@ -93,6 +114,7 @@ const foldersSlice = createSlice({
       .addCase(createFolder.fulfilled, (state, action) => {
         state.saving = false;
         state.folders.push(action.payload);
+        foldersAdapter.addOne(state, mapToEntity(action.payload));
         state.byId[action.payload._id] = action.payload;
         state.allIds.push(action.payload._id);
       })
@@ -110,6 +132,7 @@ const foldersSlice = createSlice({
         if (index !== -1) {
           state.folders[index] = action.payload;
         }
+        foldersAdapter.upsertOne(state, mapToEntity(action.payload));
         state.byId[action.payload._id] = action.payload;
       })
       .addCase(updateFolder.rejected, (state, action) => {
@@ -124,6 +147,7 @@ const foldersSlice = createSlice({
         state.saving = false;
         const toDelete = new Set(action.payload.deletedFolderIds);
         state.folders = state.folders.filter((f) => !toDelete.has(f._id));
+        foldersAdapter.removeMany(state, action.payload.deletedFolderIds);
         action.payload.deletedFolderIds.forEach((id) => {
           delete state.byId[id];
         });

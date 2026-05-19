@@ -4,6 +4,7 @@ import type { RootState, AppDispatch } from "../../app/store";
 import {
   setTheme,
   setAccentColor,
+  setAccentTheme,
   setSyncWithSystem,
   setTerminalLayout,
   setEditorHighContrast,
@@ -24,7 +25,6 @@ import {
   LuMoon,
   LuSmartphone,
   LuPalette,
-  LuMonitor,
   LuLayoutDashboard,
   LuTerminal,
   LuAccessibility,
@@ -35,6 +35,8 @@ import {
 import { SettingSection } from "./SettingSection";
 import { SettingCard } from "./SettingCard";
 import { useSettings } from "../../context/SettingsContext";
+import { PresetThemeGrid } from "./ui/PresetThemeGrid";
+import { AccentOverrideGrid } from "./ui/AccentOverrideGrid";
 
 const THEME_ACCENT_MAP: Record<string, string> = {
   "dracula": "#6366f1",      // Purple
@@ -50,6 +52,7 @@ export const InterfaceSettings: React.FC = () => {
   const {
     theme,
     accentColor,
+    accentTheme,
     syncWithSystem,
     terminalLayout,
     editorHighContrast,
@@ -226,38 +229,22 @@ export const InterfaceSettings: React.FC = () => {
         />
       </SettingSection>
 
-      <div className="bg-sidebar/30 backdrop-blur-xl border border-border-subtle rounded-3xl p-6 md:p-10 mb-8">
-        <div className="flex items-center gap-3 mb-10">
-          <div className="bg-brand/10 p-2.5 rounded-xl text-brand">
-            <LuMonitor size={22} />
-          </div>
-          <h2 className="text-xl font-black text-text-main tracking-tight uppercase text-[10px]">
-            Visual Identity
-          </h2>
-        </div>
-        <div className="flex flex-wrap gap-5">
-          {accents.map((accent) => (
-            <button
-              key={accent.name}
-              onClick={() =>
-                handleSettingChange("accentColor", accent.color, setAccentColor)
-              }
-              className={`group relative flex items-center justify-center w-16 h-16 rounded-3xl transition-all duration-500 ${
-                accentColor === accent.color
-                  ? "ring-4 ring-brand/30 scale-110 shadow-2xl"
-                  : "hover:scale-105"
-              }`}
-              style={{ backgroundColor: accent.color }}
-            >
-              <div
-                className={`w-4 h-4 rounded-full bg-white transition-opacity duration-300 ${accentColor === accent.color ? "opacity-100" : "opacity-0"}`}
-              />
-              <span className="absolute -bottom-10 text-[9px] font-black uppercase tracking-[0.2em] text-text-muted opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                {accent.name}
-              </span>
-            </button>
-          ))}
-        </div>
+      <div className="bg-sidebar/30 backdrop-blur-xl border border-border-subtle rounded-3xl p-6 md:p-10 mb-8 space-y-10">
+        <PresetThemeGrid
+          activeTheme={accentTheme || "default"}
+          onThemeSelect={(themeId) =>
+            handleSettingChange("accentTheme", themeId, setAccentTheme)
+          }
+        />
+        <AccentOverrideGrid
+          activeAccent={accentColor}
+          activeTheme={accentTheme || "default"}
+          accents={accents}
+          onAccentSelect={(color) => {
+            handleSettingChange("accentTheme", "default", setAccentTheme);
+            handleSettingChange("accentColor", color, setAccentColor);
+          }}
+        />
       </div>
 
       <SettingSection title="Runtime Environment" icon={LuLayoutDashboard}>

@@ -1,16 +1,22 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, createEntityAdapter } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { Problem, ProblemFilters, Solution, PaginatedResponse } from "../../types/problem";
 import api from "../../services/api";
 
-interface ProblemsState {
+export const problemsAdapter = createEntityAdapter<any>();
+
+export interface ProblemsState {
+  ids: string[];
+  entities: Record<string, any>;
   problems: Problem[];
+  workspaceProblems: Problem[];
   byId: Record<string, Problem>;
   allIds: string[];
   currentProblem: Problem | null;
   problemsBackup: Problem[] | null;
   problemsBackupById: Record<string, Problem> | null;
   problemsBackupAllIds: string[] | null;
+  workspaceProblemsBackup: Problem[] | null;
   loading: boolean;
   saving: boolean;
   error: string | null;
@@ -23,20 +29,42 @@ interface ProblemsState {
   hasMore: boolean;
 }
 
-const initialState: ProblemsState = {
+const initialState: ProblemsState = problemsAdapter.getInitialState<{
+  problems: Problem[];
+  workspaceProblems: Problem[];
+  byId: Record<string, Problem>;
+  allIds: string[];
+  currentProblem: Problem | null;
+  problemsBackup: Problem[] | null;
+  problemsBackupById: Record<string, Problem> | null;
+  problemsBackupAllIds: string[] | null;
+  workspaceProblemsBackup: Problem[] | null;
+  loading: boolean;
+  saving: boolean;
+  error: string | null;
+  pagination: {
+    total: number;
+    pages: number;
+    currentPage: number;
+    limit: number;
+  } | null;
+  hasMore: boolean;
+}>({
   problems: [],
+  workspaceProblems: [],
   byId: {},
   allIds: [],
   currentProblem: null,
   problemsBackup: null,
   problemsBackupById: null,
   problemsBackupAllIds: null,
+  workspaceProblemsBackup: null,
   loading: false,
   saving: false,
   error: null,
   pagination: null,
   hasMore: true,
-};
+});
 
 export const fetchProblems = createAsyncThunk(
   "problems/fetchProblems",
@@ -63,6 +91,14 @@ export const fetchProblems = createAsyncThunk(
       ...response.data,
       isNewSearch: filters.page === undefined || filters.page === 1
     };
+  },
+);
+
+export const fetchWorkspaceProblems = createAsyncThunk(
+  "problems/fetchWorkspaceProblems",
+  async () => {
+    const response = await api.get<{ data: Problem[] }>("/problems?limit=1000");
+    return response.data.data;
   },
 );
 
@@ -106,6 +142,11 @@ export const deleteProblem = createAsyncThunk(
   },
 );
 
+const mapToEntity = (p: Problem) => ({
+  ...p,
+  id: p._id,
+});
+
 const problemsSlice = createSlice({
   name: "problems",
   initialState,
@@ -116,6 +157,10 @@ const problemsSlice = createSlice({
     updateLocalVariants: (state, action: PayloadAction<Solution[]>) => {
       if (state.currentProblem) {
         state.currentProblem.variants = action.payload;
+        problemsAdapter.updateOne(state, {
+          id: state.currentProblem._id,
+          changes: { variants: action.payload }
+        });
       }
       if (state.currentProblem && state.byId[state.currentProblem._id]) {
         state.byId[state.currentProblem._id].variants = action.payload;
@@ -127,6 +172,7 @@ const problemsSlice = createSlice({
       state.allIds = [];
       state.pagination = null;
       state.hasMore = true;
+      problemsAdapter.removeAll(state);
     }
   },
   extraReducers: (builder) => {
@@ -144,9 +190,11 @@ const problemsSlice = createSlice({
           state.problems = data;
           state.byId = {};
           state.allIds = [];
+          problemsAdapter.setAll(state, data.map(mapToEntity));
         } else {
           // Append for pagination
           state.problems = [...state.problems, ...data];
+          problemsAdapter.addMany(state, data.map(mapToEntity));
         }
 
         data.forEach((p: Problem) => {
@@ -163,6 +211,26 @@ const problemsSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to fetch problems";
       })
+      // Fetch Workspace Problems (All)
+      .addCase(fetchWorkspaceProblems.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchWorkspaceProblems.fulfilled, (state, action) => {
+        state.loading = false;
+        state.workspaceProblems = action.payload;
+        problemsAdapter.upsertMany(state, action.payload.map(mapToEntity));
+        action.payload.forEach((p: Problem) => {
+          state.byId[p._id] = p;
+          if (!state.allIds.includes(p._id)) {
+            state.allIds.push(p._id);
+          }
+        });
+      })
+      .addCase(fetchWorkspaceProblems.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch workspace problems";
+      })
       // Fetch Single Problem
       .addCase(fetchProblemBySlug.pending, (state) => {
         state.loading = true;
@@ -172,6 +240,7 @@ const problemsSlice = createSlice({
         state.loading = false;
         const problem = action.payload;
         state.currentProblem = problem;
+        problemsAdapter.upsertOne(state, mapToEntity(problem));
         state.byId[problem._id] = problem;
         if (!state.allIds.includes(problem._id)) {
           state.allIds.push(problem._id);
@@ -194,6 +263,10 @@ const problemsSlice = createSlice({
         ) {
           state.currentProblem.variants = updated.variants;
         }
+        problemsAdapter.updateOne(state, {
+          id: updated._id,
+          changes: { variants: updated.variants }
+        });
         if (state.byId[updated._id]) {
           state.byId[updated._id].variants = updated.variants;
         }
@@ -210,6 +283,8 @@ const problemsSlice = createSlice({
         state.saving = false;
         const problem = action.payload;
         state.problems.push(problem);
+        state.workspaceProblems.push(problem);
+        problemsAdapter.addOne(state, mapToEntity(problem));
         state.byId[problem._id] = problem;
         state.allIds.push(problem._id);
       })
@@ -225,11 +300,15 @@ const problemsSlice = createSlice({
         state.saving = false;
         const updated = action.payload;
         state.currentProblem = updated;
-        // Optionally update the list if it exists
         const index = state.problems.findIndex((p) => p.slug === updated.slug);
         if (index !== -1) {
           state.problems[index] = updated;
         }
+        const wsIndex = state.workspaceProblems.findIndex((p) => p.slug === updated.slug);
+        if (wsIndex !== -1) {
+          state.workspaceProblems[wsIndex] = updated;
+        }
+        problemsAdapter.upsertOne(state, mapToEntity(updated));
         state.byId[updated._id] = updated;
         if (!state.allIds.includes(updated._id)) {
           state.allIds.push(updated._id);
@@ -243,17 +322,20 @@ const problemsSlice = createSlice({
       .addCase(deleteProblem.pending, (state, action) => {
         state.loading = true;
         state.problemsBackup = [...state.problems];
+        state.workspaceProblemsBackup = [...state.workspaceProblems];
         state.problemsBackupById = { ...state.byId };
         state.problemsBackupAllIds = [...state.allIds];
         
         const targetSlug = action.meta.arg;
-        const targetProblem = state.problems.find((p) => p.slug === targetSlug);
+        const targetProblem = state.workspaceProblems.find((p) => p.slug === targetSlug);
 
         // Optimistically filter the problem from state list and maps
         state.problems = state.problems.filter((p) => p.slug !== targetSlug);
+        state.workspaceProblems = state.workspaceProblems.filter((p) => p.slug !== targetSlug);
         if (targetProblem) {
           delete state.byId[targetProblem._id];
           state.allIds = state.allIds.filter((id) => id !== targetProblem._id);
+          problemsAdapter.removeOne(state, targetProblem._id);
         }
 
         if (state.currentProblem?.slug === targetSlug) {
@@ -263,6 +345,7 @@ const problemsSlice = createSlice({
       .addCase(deleteProblem.fulfilled, (state) => {
         state.loading = false;
         state.problemsBackup = null;
+        state.workspaceProblemsBackup = null;
         state.problemsBackupById = null;
         state.problemsBackupAllIds = null;
       })
@@ -274,8 +357,13 @@ const problemsSlice = createSlice({
           state.problems = state.problemsBackup;
           state.problemsBackup = null;
         }
+        if (state.workspaceProblemsBackup) {
+          state.workspaceProblems = state.workspaceProblemsBackup;
+          state.workspaceProblemsBackup = null;
+        }
         if (state.problemsBackupById) {
           state.byId = state.problemsBackupById;
+          problemsAdapter.setAll(state, Object.values(state.problemsBackupById).map(mapToEntity));
           state.problemsBackupById = null;
         }
         if (state.problemsBackupAllIds) {

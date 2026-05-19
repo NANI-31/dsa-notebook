@@ -1,21 +1,36 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  LuSearch,
-  LuPlus,
-  LuFilterX,
-  LuLoader,
-  LuFilter,
-  LuChevronDown,
-} from "react-icons/lu";
+import React, { useState, useEffect } from "react";
+import { LuPlus, LuLoader } from "react-icons/lu";
 import { Link } from "react-router-dom";
-import MultiSelect from "../components/MultiSelect";
+import { List } from "react-window";
 import EmptyState from "../components/EmptyState";
 import ProblemCard from "../components/ProblemCard";
+import FilterSection from "../components/catalog/FilterSection";
 
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "../app/store";
 import { fetchProblems } from "../features/problems/problemsSlice";
 import type { ProblemFilters } from "../types/problem";
+
+// Helper hook to track window width and height dynamically
+const useWindowSize = () => {
+  const [size, setSize] = useState({
+    width: typeof window !== "undefined" ? window.innerWidth : 1200,
+    height: typeof window !== "undefined" ? window.innerHeight : 800,
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return size;
+};
 
 const AllProblems: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -30,7 +45,7 @@ const AllProblems: React.FC = () => {
   const [selectedSubCategories, setSelectedSubCategories] = useState<string[]>(() => {
     const params = new URLSearchParams(window.location.search);
     const sub = params.get("subCategory");
-    const cats = params.get("categories"); // Support both param names
+    const cats = params.get("categories");
     if (sub) return [sub];
     if (cats) return cats.split(",");
     return [];
@@ -41,8 +56,16 @@ const AllProblems: React.FC = () => {
     return diff ? diff.split(",") : [];
   });
   const [selectedTechniques, setSelectedTechniques] = useState<string[]>([]);
-  const [showMobileFilters, setShowMobileFilters] = useState(false);
-  const observerRef = useRef<HTMLDivElement>(null);
+
+  const { width, height } = useWindowSize();
+
+  // Dynamic grid column configuration matching Tailwind layout breakpoints
+  const cols = React.useMemo(() => {
+    if (width < 640) return 1;
+    if (width < 1024) return 2;
+    if (width < 1536) return 3;
+    return 4;
+  }, [width]);
 
   // Initial fetch and filter updates
   useEffect(() => {
@@ -93,35 +116,66 @@ const AllProblems: React.FC = () => {
     selectedDifficulties.length > 0 ||
     selectedTechniques.length > 0;
 
-  // Infinite Scroll logic
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loading) {
-          const nextPage = (pagination?.currentPage || 1) + 1;
-          const filters: ProblemFilters = {
-            search,
-            difficulty: selectedDifficulties,
-            categories: selectedSubCategories,
-            techniques: selectedTechniques,
-            page: nextPage,
-          };
-          dispatch(fetchProblems(filters));
-        }
-      },
-      { threshold: 0.1 }, // Trigger a bit earlier
-    );
+  const rowProps = React.useMemo(() => ({}), []);
 
-    if (observerRef.current) observer.observe(observerRef.current);
-    return () => observer.disconnect();
-  }, [dispatch, hasMore, loading, pagination, search, selectedDifficulties, selectedSubCategories, selectedTechniques]);
+  // Slice problem list array into dynamic row chunks
+  const rows = React.useMemo(() => {
+    const result = [];
+    for (let i = 0; i < problems.length; i += cols) {
+      result.push(problems.slice(i, i + cols));
+    }
+    return result;
+  }, [problems, cols]);
+
+  // Virtual Row Renderer
+  const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
+    // If hasMore is active, show the scroll loader as the last virtual list item
+    if (index === rows.length) {
+      return (
+        <div style={style} className="flex justify-center items-center py-6">
+          <div className="flex items-center gap-3 text-brand/60">
+            <div className="h-2 w-2 bg-brand rounded-full animate-bounce" />
+            <div className="h-2 w-2 bg-brand rounded-full animate-bounce [animation-delay:0.2s]" />
+            <div className="h-2 w-2 bg-brand rounded-full animate-bounce [animation-delay:0.4s]" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] ml-2">
+              {loading ? "Discovering more problems..." : "Scroll for more catalog"}
+            </span>
+          </div>
+        </div>
+      );
+    }
+
+    const rowItems = rows[index];
+
+    return (
+      <div style={style} className="flex gap-6 pb-6 pr-2">
+        {rowItems.map((problem, subIndex) => (
+          <div
+            key={problem._id}
+            className="flex-1 min-w-0"
+            style={{ maxWidth: `calc((100% - ${(cols - 1) * 24}px) / ${cols})` }}
+          >
+            <ProblemCard problem={problem} index={index * cols + subIndex} />
+          </div>
+        ))}
+        {/* Pad empty space in the last row to maintain grid alignment */}
+        {rowItems.length < cols &&
+          Array.from({ length: cols - rowItems.length }).map((_, i) => (
+            <div key={`empty-${i}`} className="flex-1" />
+          ))}
+      </div>
+    );
+  };
+
+  const totalRows = rows.length + (hasMore ? 1 : 0);
+  const virtualListHeight = Math.max(400, height - 380);
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-text-main">
+          <h1 className="text-fluid-h1 font-extrabold tracking-tight text-text-main">
             Problem Library
           </h1>
           <div className="flex items-center gap-2 mt-1 px-1">
@@ -136,106 +190,55 @@ const AllProblems: React.FC = () => {
         </div>
         <Link
           to="/problems/new"
-          className="bg-brand hover:opacity-90 text-white px-6 py-3 rounded-2xl flex items-center justify-center gap-2 font-black shadow-xl shadow-brand/20 transition-all active:scale-95"
+          className="w-full sm:w-auto bg-brand hover:opacity-90 text-white px-6 py-3 rounded-2xl flex items-center justify-center gap-2 font-black shadow-xl shadow-brand/20 transition-all active:scale-95 shrink-0 self-start sm:self-auto"
         >
           <LuPlus size={20} />
           <span>New Problem</span>
         </Link>
       </div>
 
-      {/* Filters Section */}
-      <div className="bg-sidebar border border-border-subtle p-4 md:p-6 rounded-3xl shadow-sm space-y-4">
-        {/* Search & Mobile Filter Toggle */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative group flex-1">
-            <LuSearch
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-brand transition-colors"
-              size={18}
-            />
-            <input
-              type="text"
-              placeholder="Search by title or concept..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-app-bg border border-border-subtle rounded-2xl py-3.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all text-sm text-text-main font-medium placeholder:text-text-muted/40"
-            />
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setShowMobileFilters(!showMobileFilters)}
-              className={`flex-1 sm:flex-initial md:hidden flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-bold transition-all border ${showMobileFilters ? "bg-brand/10 border-brand text-brand" : "bg-app-bg border-border-subtle text-text-muted"}`}
-            >
-              <LuFilter size={18} />
-              <span>Filters</span>
-              <LuChevronDown
-                size={16}
-                className={`transition-transform duration-300 ${showMobileFilters ? "rotate-180" : ""}`}
-              />
-            </button>
-            {isFilterActive && (
-              <button
-                onClick={resetFilters}
-                className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl text-red-500 bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 font-bold transition-all"
-                title="Clear all filters"
-              >
-                <LuFilterX size={18} />
-                <span className="hidden sm:inline">Reset</span>
-              </button>
-            )}
-          </div>
-        </div>
+      {/* Extracted Modular Filter Section */}
+      <FilterSection
+        search={search}
+        onSearchChange={setSearch}
+        selectedSubCategories={selectedSubCategories}
+        onSubCategoriesChange={setSelectedSubCategories}
+        selectedDifficulties={selectedDifficulties}
+        onDifficultiesChange={setSelectedDifficulties}
+        selectedTechniques={selectedTechniques}
+        onTechniquesChange={setSelectedTechniques}
+        subCategoriesOptions={subCategoriesOptions}
+        difficultyOptions={difficultyOptions}
+        techniquesOptions={techniquesOptions}
+        resetFilters={resetFilters}
+        isFilterActive={isFilterActive}
+      />
 
-        {/* Desktop Multi-Select Dropdowns / Mobile Collapsible */}
-        <div
-          className={`${showMobileFilters ? "grid" : "hidden md:grid"} grid-cols-1 md:grid-cols-3 gap-4 animate-in slide-in-from-top-2 duration-300`}
-        >
-          <MultiSelect
-            label="Sub-categories"
-            options={subCategoriesOptions}
-            selected={selectedSubCategories}
-            onChange={setSelectedSubCategories}
-          />
-          <MultiSelect
-            label="Difficulties"
-            options={difficultyOptions}
-            selected={selectedDifficulties}
-            onChange={setSelectedDifficulties}
-          />
-          <MultiSelect
-            label="Patterns / Techniques"
-            options={techniquesOptions}
-            selected={selectedTechniques}
-            onChange={setSelectedTechniques}
-          />
-        </div>
-      </div>
-
-      {/* Content Area */}
+      {/* Virtualized Infinite Scroll Listing Area */}
       {problems.length > 0 ? (
-        <div className="space-y-12">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {problems.map((problem, index) => (
-              <ProblemCard 
-                key={`${problem.slug}-${index}`} 
-                problem={problem} 
-                index={index} 
-              />
-            ))}
-          </div>
-
-          {/* Sentinel for Infinite Scroll */}
-          {hasMore && (
-            <div ref={observerRef} className="flex justify-center p-12">
-              <div className="flex items-center gap-3 text-brand/60">
-                <div className="h-2 w-2 bg-brand rounded-full animate-bounce" />
-                <div className="h-2 w-2 bg-brand rounded-full animate-bounce [animation-delay:0.2s]" />
-                <div className="h-2 w-2 bg-brand rounded-full animate-bounce [animation-delay:0.4s]" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] ml-2">
-                  {loading ? "Discovering more problems..." : "Scroll for more catalog"}
-                </span>
-              </div>
-            </div>
-          )}
+        <div className="w-full">
+          <List<{}>
+            rowCount={totalRows}
+            rowHeight={340}
+            rowComponent={Row}
+            rowProps={rowProps}
+            className="custom-scrollbar"
+            onRowsRendered={({ stopIndex }) => {
+              // Trigger fetching of next paginated page when nearing list end
+              if (stopIndex >= totalRows - 2 && hasMore && !loading) {
+                const nextPage = (pagination?.currentPage || 1) + 1;
+                const filters: ProblemFilters = {
+                  search,
+                  difficulty: selectedDifficulties,
+                  categories: selectedSubCategories,
+                  techniques: selectedTechniques,
+                  page: nextPage,
+                };
+                dispatch(fetchProblems(filters));
+              }
+            }}
+            style={{ height: virtualListHeight }}
+          />
         </div>
       ) : (
         !loading && <EmptyState onReset={resetFilters} />

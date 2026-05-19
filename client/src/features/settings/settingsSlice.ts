@@ -6,9 +6,54 @@ import {
 import api from "../../services/api";
 import { addToast } from "../ui/uiSlice";
 
+export interface AccentThemeChannels {
+  brand: string;
+  easy_h: string; easy_s: string; easy_l: string;
+  medium_h: string; medium_s: string; medium_l: string;
+  hard_h: string; hard_s: string; hard_l: string;
+  strategy_h: string; strategy_s: string; strategy_l: string;
+  notes_h: string; notes_s: string; notes_l: string;
+}
+
+export const ACCENT_THEMES: Record<string, AccentThemeChannels> = {
+  default: {
+    brand: "#6366f1",
+    easy_h: "142", easy_s: "71%", easy_l: "45%",
+    medium_h: "38", medium_s: "92%", medium_l: "50%",
+    hard_h: "0", hard_s: "84%", hard_l: "60%",
+    strategy_h: "217", strategy_s: "91%", strategy_l: "60%",
+    notes_h: "215", notes_s: "16%", notes_l: "47%"
+  },
+  cyberpunk: {
+    brand: "#f43f5e",
+    easy_h: "180", easy_s: "100%", easy_l: "45%",
+    medium_h: "32", medium_s: "98%", medium_l: "50%",
+    hard_h: "325", hard_s: "90%", hard_l: "55%",
+    strategy_h: "280", strategy_s: "90%", strategy_l: "60%",
+    notes_h: "200", notes_s: "80%", notes_l: "50%"
+  },
+  dracula: {
+    brand: "#bd93f9",
+    easy_h: "115", easy_s: "80%", easy_l: "65%",
+    medium_h: "35", medium_s: "100%", medium_l: "70%",
+    hard_h: "355", hard_s: "100%", hard_l: "75%",
+    strategy_h: "191", strategy_s: "97%", strategy_l: "77%",
+    notes_h: "60", notes_s: "30%", notes_l: "70%"
+  },
+  frost: {
+    brand: "#38bdf8",
+    easy_h: "150", easy_s: "60%", easy_l: "55%",
+    medium_h: "45", medium_s: "85%", medium_l: "55%",
+    hard_h: "360", hard_s: "75%", hard_l: "65%",
+    strategy_h: "210", strategy_s: "90%", strategy_l: "65%",
+    notes_h: "220", notes_s: "20%", notes_l: "60%"
+  }
+};
+
 export interface SettingsState {
   theme: "light" | "dark";
   accentColor: string;
+  accentTheme: "default" | "cyberpunk" | "dracula" | "frost";
   syncWithSystem: boolean;
   terminalLayout: "sidebar" | "bottom";
   editorHighContrast: boolean;
@@ -33,6 +78,7 @@ export interface SettingsState {
 const initialState: SettingsState = {
   theme: (localStorage.getItem("theme") as "light" | "dark") || "dark",
   accentColor: localStorage.getItem("accent") || "#6366f1",
+  accentTheme: (localStorage.getItem("accentTheme") as SettingsState["accentTheme"]) || "default",
   syncWithSystem: localStorage.getItem("syncSystem") === "true",
   terminalLayout:
     (localStorage.getItem("terminalLayout") as "sidebar" | "bottom") ||
@@ -266,6 +312,22 @@ const settingsSlice = createSlice({
         });
       }
     },
+    setAccentTheme: (state, action: PayloadAction<SettingsState["accentTheme"]>) => {
+      if (state.accentTheme === action.payload) return;
+      state.accentTheme = action.payload;
+      localStorage.setItem("accentTheme", action.payload);
+      const activePreset = ACCENT_THEMES[action.payload];
+      if (activePreset) {
+        state.accentColor = activePreset.brand;
+        localStorage.setItem("accent", activePreset.brand);
+      }
+      if (settingsChannel) {
+        settingsChannel.postMessage({
+          type: "settings/setAccentTheme",
+          payload: action.payload,
+        });
+      }
+    },
     setSyncWithSystem: (state, action: PayloadAction<boolean>) => {
       if (state.syncWithSystem === action.payload) return;
       state.syncWithSystem = action.payload;
@@ -492,6 +554,7 @@ const settingsSlice = createSlice({
 export const {
   setTheme,
   setAccentColor,
+  setAccentTheme,
   setSyncWithSystem,
   setTerminalLayout,
   toggleTheme,

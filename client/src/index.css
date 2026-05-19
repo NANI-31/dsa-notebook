@@ -11,6 +11,20 @@
   --color-border-subtle: var(--border-subtle);
 
   --animate-rotate-180: rotate180 0.5s ease-in-out;
+
+  /* Fluid layout mappings for Tailwind v4 utility injection */
+  --spacing-container-padding: var(--container-padding);
+  --spacing-card-padding: var(--card-padding);
+  --size-container-max: var(--container-max-width);
+  --font-size-fluid-h1: var(--font-size-h1);
+  --font-size-fluid-h2: var(--font-size-h2);
+
+  /* Centralized Accent / Status HSL Colors */
+  --color-accent-easy: hsl(var(--accent-easy-h) var(--accent-easy-s) var(--accent-easy-l));
+  --color-accent-medium: hsl(var(--accent-medium-h) var(--accent-medium-s) var(--accent-medium-l));
+  --color-accent-hard: hsl(var(--accent-hard-h) var(--accent-hard-s) var(--accent-hard-l));
+  --color-accent-strategy: hsl(var(--accent-strategy-h) var(--accent-strategy-s) var(--accent-strategy-l));
+  --color-accent-notes: hsl(var(--accent-notes-h) var(--accent-notes-s) var(--accent-notes-l));
 }
 
 @keyframes rotate180 {
@@ -33,6 +47,34 @@
   --text-main: #0f172a;
   --text-muted: #64748b;
   --border-subtle: #e2e8f0;
+
+  /* Fluid Layout Constants & Typography */
+  --container-padding: clamp(1rem, 2vw + 0.5rem, 3rem);
+  --card-padding: clamp(1.25rem, 1.5vw + 0.75rem, 2.5rem);
+  --container-max-width: min(94vw, 1440px);
+  --font-size-h1: clamp(1.875rem, 4vw + 1rem, 3rem);
+  --font-size-h2: clamp(1.5rem, 2vw + 0.75rem, 2.25rem);
+
+  /* HSL Central Accent Tokens (Base Theme) */
+  --accent-easy-h: 142;
+  --accent-easy-s: 71%;
+  --accent-easy-l: 45%;
+
+  --accent-medium-h: 38;
+  --accent-medium-s: 92%;
+  --accent-medium-l: 50%;
+
+  --accent-hard-h: 0;
+  --accent-hard-s: 84%;
+  --accent-hard-l: 60%;
+
+  --accent-strategy-h: 217;
+  --accent-strategy-s: 91%;
+  --accent-strategy-l: 60%;
+
+  --accent-notes-h: 215;
+  --accent-notes-s: 16%;
+  --accent-notes-l: 47%;
 }
 
 :root.dark {
@@ -42,6 +84,34 @@
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
   --border-subtle: #373737;
+
+  /* Fluid Layout Constants & Typography */
+  --container-padding: clamp(1rem, 2vw + 0.5rem, 3rem);
+  --card-padding: clamp(1.25rem, 1.5vw + 0.75rem, 2.5rem);
+  --container-max-width: min(94vw, 1440px);
+  --font-size-h1: clamp(1.875rem, 4vw + 1rem, 3rem);
+  --font-size-h2: clamp(1.5rem, 2vw + 0.75rem, 2.25rem);
+
+  /* HSL Central Accent Tokens (Dark Mode Override if needed, defaults are responsive) */
+  --accent-easy-h: 142;
+  --accent-easy-s: 60%;
+  --accent-easy-l: 45%;
+
+  --accent-medium-h: 38;
+  --accent-medium-s: 80%;
+  --accent-medium-l: 50%;
+
+  --accent-hard-h: 0;
+  --accent-hard-s: 75%;
+  --accent-hard-l: 50%;
+
+  --accent-strategy-h: 217;
+  --accent-strategy-s: 80%;
+  --accent-strategy-l: 55%;
+
+  --accent-notes-h: 215;
+  --accent-notes-s: 14%;
+  --accent-notes-l: 60%;
 }
 
 body {
@@ -186,9 +256,18 @@ body {
 .transition-editor-all textarea,
 .transition-editor-all button,
 .transition-editor-all div {
-  transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1) !important
-    /* border-color 300ms cubic-bezier(0.4, 0, 0.2, 1) !important,
-    color 300ms cubic-bezier(0.4, 0, 0.2, 1) !important,
-    fill 300ms cubic-bezier(0.4, 0, 0.2, 1) !important,
-    stroke 300ms cubic-bezier(0.4, 0, 0.2, 1) !important; */
+  transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Fluid Accent and Global Spacing Micro-Animations */
+.bg-accent-easy, .text-accent-easy, .border-accent-easy,
+.bg-accent-medium, .text-accent-medium, .border-accent-medium,
+.bg-accent-hard, .text-accent-hard, .border-accent-hard,
+.bg-accent-strategy, .bg-accent-notes,
+.bg-brand, .text-brand, .border-brand,
+.bg-sidebar, .bg-app-bg, .text-text-main, .text-text-muted, .border-border-subtle {
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }

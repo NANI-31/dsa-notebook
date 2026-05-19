@@ -6,7 +6,10 @@ import techniquesReducer from '../features/techniques/techniquesSlice';
 import uiReducer from '../features/ui/uiSlice';
 import foldersReducer from '../features/folders/foldersSlice';
 import dragAuditReducer from '../features/dragAudit/dragAuditSlice';
+import aiReducer from '../features/ai/aiSlice';
 import { taxonomyListenerMiddleware } from '../middleware/taxonomyListener';
+import { optimisticSyncMiddleware } from '../middleware/optimisticSyncMiddleware';
+import { broadcastSyncMiddleware } from '../middleware/broadcastSyncMiddleware';
 
 // Add your reducers here
 export const store = configureStore({
@@ -18,9 +21,14 @@ export const store = configureStore({
     ui: uiReducer,
     folders: foldersReducer,
     dragAudit: dragAuditReducer,
+    ai: aiReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().prepend(taxonomyListenerMiddleware.middleware),
+    getDefaultMiddleware().prepend(
+      taxonomyListenerMiddleware.middleware, 
+      optimisticSyncMiddleware,
+      broadcastSyncMiddleware
+    ),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

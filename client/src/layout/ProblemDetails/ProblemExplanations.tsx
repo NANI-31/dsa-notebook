@@ -14,9 +14,9 @@ const ProblemExplanations: React.FC = () => {
       <section>
         <SectionHeader
           title="Execution Strategy"
-          colorClass="bg-blue-500"
+          colorClass="bg-accent-strategy"
         />
-        <div className="bg-sidebar border border-border-subtle p-6 md:p-10 rounded-3xl shadow-sm h-full">
+        <div className="bg-sidebar border border-border-subtle p-card-padding rounded-3xl shadow-sm h-full">
           <div className="max-w-none prose prose-invert prose-blue prose-p:font-medium text-text-main/80 leading-relaxed italic md:text-lg">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {explanation || "*No strategy provided.*"}
@@ -28,9 +28,9 @@ const ProblemExplanations: React.FC = () => {
       <section>
         <SectionHeader
           title="Post-Mortem Notes"
-          colorClass="bg-slate-500"
+          colorClass="bg-accent-notes"
         />
-        <div className="bg-sidebar border border-border-subtle p-6 md:p-10 rounded-3xl shadow-sm h-full">
+        <div className="bg-sidebar border border-border-subtle p-card-padding rounded-3xl shadow-sm h-full">
           <div className="max-w-none prose prose-invert prose-slate prose-p:font-medium text-text-main/80 leading-relaxed md:text-lg">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {notes || "*Initialization notes.*"}

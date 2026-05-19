@@ -4,8 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "../app/store";
 import { fetchFolders } from "../features/folders/foldersSlice";
 import { fetchCategories } from "../features/categories/categoriesSlice";
-import api from "../services/api";
-import type { Problem } from "../types/problem";
+import { fetchWorkspaceProblems } from "../features/problems/problemsSlice";
 
 // Sub-components
 import SidebarHeader from "./Sidebar/SidebarHeader";
@@ -28,9 +27,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const { list: categories } = useSelector(
     (state: RootState) => state.categories,
   );
+  const workspaceProblems = useSelector(
+    (state: RootState) => state.problems.workspaceProblems,
+  );
 
   // Local state for Workspace Problems & Resizing Width
-  const [allProblems, setAllProblems] = useState<Problem[]>([]);
   const [loadingProblems, setLoadingProblems] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(288);
   const isResizingRef = useRef(false);
@@ -86,16 +87,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   useEffect(() => {
     dispatch(fetchFolders());
     dispatch(fetchCategories());
-    fetchWorkspaceProblems();
+    fetchWorkspaceProblemsList();
   }, [dispatch]);
 
-  const fetchWorkspaceProblems = async () => {
+  const fetchWorkspaceProblemsList = async () => {
     try {
       setLoadingProblems(true);
-      const response = await api.get<{ data: Problem[] }>(
-        "/problems?limit=1000",
-      );
-      setAllProblems(response.data.data);
+      await dispatch(fetchWorkspaceProblems());
     } catch (err) {
       console.error("[Workspace Tree] Failed to load problems:", err);
     } finally {
@@ -131,10 +129,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <WorkspaceExplorer
             folders={folders}
             categories={categories}
-            allProblems={allProblems}
+            allProblems={workspaceProblems}
             loadingProblems={loadingProblems}
             onClose={onClose}
-            fetchWorkspaceProblems={fetchWorkspaceProblems}
+            fetchWorkspaceProblems={fetchWorkspaceProblemsList}
           />
         </div>
 

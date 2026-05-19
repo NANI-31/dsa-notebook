@@ -6,6 +6,8 @@ import categoryRoutes from "./categoryRoutes";
 import techniqueRoutes from "./techniqueRoutes";
 import folderRoutes from "./folderRoutes";
 import activityRoutes from "./activityRoutes";
+import telemetryRoutes from "./telemetryRoutes";
+import aiRoutes from "./aiRoutes";
 
 const router = Router();
 
@@ -20,5 +22,7 @@ router.use("/categories", categoryRoutes);
 router.use("/techniques", techniqueRoutes);
 router.use("/folders", folderRoutes);
 router.use("/activities", activityRoutes);
+router.use("/telemetry", telemetryRoutes);
+router.use("/ai", aiRoutes);
 
 export default router;

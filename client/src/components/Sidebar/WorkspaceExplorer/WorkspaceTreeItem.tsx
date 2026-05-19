@@ -38,7 +38,7 @@ interface WorkspaceTreeItemProps {
   onToggleExpand: (folderId: string) => void;
   onStartCreate: (parentFolder: string | null, type: "folder" | "file") => void;
   onDeleteFolder: (e: React.MouseEvent, id: string, name: string) => void;
-  onDeleteProblem: (e: React.MouseEvent, id: string, title: string) => void;
+  onDeleteProblem: (e: React.MouseEvent, slug: string, title: string) => void;
   onInlineSubmit: (e: React.FormEvent) => void;
   onInlineChange: (value: string) => void;
   onCancelCreate: () => void;
@@ -214,7 +214,7 @@ export const WorkspaceTreeItem: React.FC<WorkspaceTreeItemProps> = ({
           {/* Delete Problem Icon Shortcut */}
           <div className="flex-[0_0_10%] max-w-[10%] flex items-center justify-end opacity-0 group-hover:opacity-100 transition-opacity ml-2 shrink-0 z-10">
             <button
-              onClick={(e) => onDeleteProblem(e, problem._id, problem.title)}
+              onClick={(e) => onDeleteProblem(e, problem.slug, problem.title)}
               title="Delete Problem"
               className="p-1 rounded hover:bg-rose-500/10 text-text-muted hover:text-rose-500 transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-rose-500/40"
             >

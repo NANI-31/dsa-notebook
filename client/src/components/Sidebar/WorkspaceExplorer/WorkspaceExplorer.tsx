@@ -15,6 +15,7 @@ import {
   deleteFolder,
 } from "../../../features/folders/foldersSlice";
 import { addToast } from "../../../features/ui/uiSlice";
+import { deleteProblem } from "../../../features/problems/problemsSlice";
 import api from "../../../services/api";
 import type { Problem } from "../../../types/problem";
 import ConfirmDeleteModal from "../../modals/ConfirmDeleteModal";
@@ -54,7 +55,7 @@ const WorkspaceExplorer: React.FC<WorkspaceExplorerProps> = ({
     name: string;
   } | null>(null);
   const [problemToDelete, setProblemToDelete] = useState<{
-    id: string;
+    slug: string;
     title: string;
   } | null>(null);
   const [inlineName, setInlineName] = useState("");
@@ -321,40 +322,39 @@ const WorkspaceExplorer: React.FC<WorkspaceExplorerProps> = ({
 
   const handleDeleteProblem = (
     e: React.MouseEvent,
-    id: string,
+    slug: string,
     title: string
   ) => {
     e.stopPropagation();
     e.preventDefault();
-    setProblemToDelete({ id, title });
+    setProblemToDelete({ slug, title });
   };
 
   const handleConfirmDeleteProblem = async () => {
     if (!problemToDelete) return;
-    const { id, title } = problemToDelete;
+    const { slug, title } = problemToDelete;
     try {
-      const response = await api.delete(`/problems/${id}`);
-      if (response.status === 200 || response.status === 204) {
+      const action = await dispatch(deleteProblem(slug));
+      if (deleteProblem.fulfilled.match(action)) {
         dispatch(
           addToast({
-            message: `Problem "${title}" deleted.`,
+            message: `Problem "${title}" deleted successfully!`,
             type: "success",
-            duration: 3000,
           })
         );
-        await fetchWorkspaceProblems();
 
         // If we deleted the active problem, navigate to problems directory
-        if (location.pathname.includes(`/problems/`)) {
+        if (location.pathname.includes(`/problems/${slug}`)) {
           navigate("/problems");
         }
+      } else {
+        throw new Error("Deletion failed");
       }
-    } catch (err) {
+    } catch (err: any) {
       dispatch(
         addToast({
-          message: "Failed to delete problem",
+          message: err.message || "Failed to delete problem",
           type: "error",
-          duration: 3000,
         })
       );
     } finally {
@@ -473,8 +473,7 @@ const WorkspaceExplorer: React.FC<WorkspaceExplorerProps> = ({
         isOpen={!!problemToDelete}
         onClose={() => setProblemToDelete(null)}
         onConfirm={handleConfirmDeleteProblem}
-        title="Delete Problem"
-        description={`Are you absolutely sure you want to delete the problem "${problemToDelete?.title}"? This action cannot be undone.`}
+        problemTitle={problemToDelete?.title}
         itemType="file"
       />
     </div>

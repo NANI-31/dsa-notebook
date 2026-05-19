@@ -16,7 +16,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
       <div
         className={`w-1.5 h-8 rounded-full ${colorClass} shadow-lg shadow-brand/20`}
       />
-      <h2 className="text-2xl font-black text-text-main tracking-tight transition-all">
+      <h2 className="text-fluid-h2 font-black text-text-main tracking-tight transition-all">
         {title}
       </h2>
     </div>

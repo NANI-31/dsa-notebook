@@ -55,15 +55,15 @@ const ProblemHeader: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Bar: Badges and Action Buttons */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-2">
           <span
             className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${
               problem.difficulty === "Easy"
-                ? "bg-green-500/10 text-green-500 border border-green-500/20"
+                ? "bg-accent-easy/10 text-accent-easy border border-accent-easy/20"
                 : problem.difficulty === "Medium"
-                  ? "bg-amber-500/10 text-amber-500 border border-amber-500/20"
-                  : "bg-red-500/10 text-red-500 border border-red-500/20"
+                  ? "bg-accent-medium/10 text-accent-medium border border-accent-medium/20"
+                  : "bg-accent-hard/10 text-accent-hard border border-accent-hard/20"
             }`}
           >
             {problem.difficulty}
@@ -97,16 +97,18 @@ const ProblemHeader: React.FC = () => {
       </div>
 
       {/* Title Row */}
-      <h1 className="text-4xl md:text-5xl font-black text-text-main tracking-tight leading-none group flex items-center gap-4">
-        {problem.title}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 group">
+        <h1 className="text-fluid-h1 font-black text-text-main tracking-tight leading-tight">
+          {problem.title}
+        </h1>
         <button
           onClick={onSync}
           disabled={saving}
-          className={`text-[9px] px-3 py-1 rounded-lg border flex items-center gap-2 transition-all opacity-0 group-hover:opacity-100 italic ${
+          className={`text-[9px] px-3 py-1.5 rounded-lg border flex items-center gap-2 transition-all shrink-0 w-fit ${
             isSaved
               ? "border-green-500/20 text-green-500"
               : "border-brand/20 text-brand"
-          }`}
+          } opacity-100 sm:opacity-0 sm:group-hover:opacity-100`}
         >
           {saving ? (
             <LuLoader size={10} className="animate-spin" />
@@ -115,14 +117,13 @@ const ProblemHeader: React.FC = () => {
           )}
           {saving ? "Syncing..." : "Sync Changes"}
         </button>
-      </h1>
+      </div>
 
       {/* Complexity Card - Expandable Ribbon */}
       <div className="bg-sidebar/40 border border-white/15 rounded-2xl shadow-sm overflow-hidden transition-all duration-500">
-        {/* Clickable Header Row — keep original UI untouched */}
         <button
           onClick={() => setComplexityOpen(!complexityOpen)}
-          className="w-full p-4 flex flex-wrap items-center gap-8 md:gap-12 cursor-pointer hover:bg-white/2 transition-all duration-300"
+          className="w-full p-4 flex flex-wrap items-center gap-y-4 gap-x-8 md:gap-12 cursor-pointer hover:bg-white/2 transition-all duration-300"
         >
           <div className="flex items-center gap-3">
             <LuClock className="text-brand/60" size={16} />
@@ -142,7 +143,22 @@ const ProblemHeader: React.FC = () => {
               </span>
             </span>
           </div>
-          <div className="flex items-center gap-4 border-l border-white/5 pl-8 md:pl-12">
+
+          {/* Expand/Collapse Chevron (moved before Techniques for perfect mobile alignment) */}
+          <div className="ml-auto md:order-last flex items-center gap-2">
+            <span className="text-[9px] font-black uppercase tracking-widest text-text-muted/40 hidden sm:inline">
+              {complexityOpen ? "Collapse" : "Analysis"}
+            </span>
+            <LuChevronDown
+              size={16}
+              className={`text-text-muted/40 transition-transform duration-300 ${
+                complexityOpen ? "rotate-180" : ""
+              }`}
+            />
+          </div>
+
+          {/* Techniques (wraps beautifully below on mobile) */}
+          <div className="flex items-center gap-4 border-t border-white/5 pt-4 w-full md:w-auto md:border-t-0 md:pt-0 md:border-l md:border-white/5 md:pl-12">
             <LuTag className="text-brand/60" size={16} />
             <div className="flex flex-wrap gap-2">
               {problem.techniques?.map((tech: any) => (
@@ -154,19 +170,6 @@ const ProblemHeader: React.FC = () => {
                 </span>
               ))}
             </div>
-          </div>
-
-          {/* Expand/Collapse Chevron */}
-          <div className="ml-auto flex items-center gap-2">
-            <span className="text-[9px] font-black uppercase tracking-widest text-text-muted/40 hidden sm:inline">
-              {complexityOpen ? "Collapse" : "Analysis"}
-            </span>
-            <LuChevronDown
-              size={16}
-              className={`text-text-muted/40 transition-transform duration-300 ${
-                complexityOpen ? "rotate-180" : ""
-              }`}
-            />
           </div>
         </button>
 
@@ -230,6 +233,7 @@ const ProblemHeader: React.FC = () => {
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleDeleteConfirm}
         problemTitle={problem.title}
+        itemType="file"
       />
     </div>
   );

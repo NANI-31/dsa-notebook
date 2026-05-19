@@ -48,15 +48,17 @@ import {
   setEditorFontFamily,
   setShortcut,
   toggleTheme,
+  ACCENT_THEMES,
 } from "./features/settings/settingsSlice";
 import ToastContainer from "./components/ToastContainer";
+import { addToast } from "./features/ui/uiSlice";
 import { fetchCategories } from "./features/categories/categoriesSlice";
 import { fetchTechniques } from "./features/techniques/techniquesSlice";
 import { LuMenu, LuCode } from "react-icons/lu";
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
-  const { theme, accentColor, syncWithSystem, editorFontSize, shortcuts } = useSelector(
+  const { theme, syncWithSystem, editorFontSize, shortcuts, accentTheme } = useSelector(
     (state: RootState) => state.settings,
   );
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -185,6 +187,39 @@ function App() {
     };
   }, [dispatch]);
 
+  // Generic BroadcastChannel synchronizer for cross-tab local edits, preference toggles, and folder layouts
+  useEffect(() => {
+    if (typeof window === "undefined" || !("BroadcastChannel" in window)) return;
+    const channel = new BroadcastChannel("dsa-global-sync-channel");
+
+    const handleGlobalBroadcast = (event: MessageEvent) => {
+      const { type, payload, meta } = event.data;
+      console.log(`[Global Broadcast Sync] Received action across tab: ${type}`, payload);
+
+      // Dispatch the action to keep local Redux store in sync
+      dispatch({
+        type,
+        payload,
+        meta
+      });
+
+      // Show responsive feedback Toast for layout and problem state shifts
+      if (type.startsWith("problems/") || type.startsWith("folders/")) {
+        dispatch(addToast({
+          message: "Workspace layout and edits synced across tabs.",
+          type: "info",
+          duration: 2000
+        }));
+      }
+    };
+
+    channel.addEventListener("message", handleGlobalBroadcast);
+    return () => {
+      channel.removeEventListener("message", handleGlobalBroadcast);
+      channel.close();
+    };
+  }, [dispatch]);
+
   useEffect(() => {
     dispatch(fetchSettings());
     dispatch(fetchCategories());
@@ -238,8 +273,33 @@ function App() {
   }, [theme, syncWithSystem, applyTheme]);
 
   useEffect(() => {
-    document.documentElement.style.setProperty("--brand", accentColor);
-  }, [accentColor]);
+    // If the theme is set to 'default', 'cyberpunk', 'dracula', or 'frost', load pre-curated channels
+    const activePreset = ACCENT_THEMES[accentTheme || "default"] || ACCENT_THEMES.default;
+    
+    // Set root brand hex color
+    document.documentElement.style.setProperty("--brand", activePreset.brand);
+    
+    // Set HSL coordinate channels dynamically
+    document.documentElement.style.setProperty("--accent-easy-h", activePreset.easy_h);
+    document.documentElement.style.setProperty("--accent-easy-s", activePreset.easy_s);
+    document.documentElement.style.setProperty("--accent-easy-l", activePreset.easy_l);
+
+    document.documentElement.style.setProperty("--accent-medium-h", activePreset.medium_h);
+    document.documentElement.style.setProperty("--accent-medium-s", activePreset.medium_s);
+    document.documentElement.style.setProperty("--accent-medium-l", activePreset.medium_l);
+
+    document.documentElement.style.setProperty("--accent-hard-h", activePreset.hard_h);
+    document.documentElement.style.setProperty("--accent-hard-s", activePreset.hard_s);
+    document.documentElement.style.setProperty("--accent-hard-l", activePreset.hard_l);
+
+    document.documentElement.style.setProperty("--accent-strategy-h", activePreset.strategy_h);
+    document.documentElement.style.setProperty("--accent-strategy-s", activePreset.strategy_s);
+    document.documentElement.style.setProperty("--accent-strategy-l", activePreset.strategy_l);
+
+    document.documentElement.style.setProperty("--accent-notes-h", activePreset.notes_h);
+    document.documentElement.style.setProperty("--accent-notes-s", activePreset.notes_s);
+    document.documentElement.style.setProperty("--accent-notes-l", activePreset.notes_l);
+  }, [accentTheme]);
 
   return (
     <div className="flex h-screen bg-app-bg text-text-main overflow-hidden transition-all duration-300">
@@ -266,8 +326,8 @@ function App() {
         </header>
 
         {/* Page Content */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-8 lg:p-12">
-          <div className="max-w-7xl mx-auto">
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-container-padding">
+          <div className="max-w-container-max mx-auto">
             <ErrorBoundary>
               <Suspense fallback={<RouteLoader />}>
                 <Routes>

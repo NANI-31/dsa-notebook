@@ -3,14 +3,21 @@ import "./index.css";
 import App from "./App.tsx";
 import { Provider } from "react-redux";
 import { store } from "./app/store";
-
 import { BrowserRouter } from "react-router-dom";
+import ErrorBoundary from "./components/ErrorBoundary";
+import { initializePerformanceRecorder, initializeTelemetryUploader } from "./utils/performanceRecorder";
+
+// Initialize client performance telemetry loop
+initializePerformanceRecorder();
+initializeTelemetryUploader();
 
 createRoot(document.getElementById("root")!).render(
   // <StrictMode>
   <Provider store={store}>
     <BrowserRouter>
-      <App />
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
     </BrowserRouter>
   </Provider>,
   // {/* </StrictMode> */}

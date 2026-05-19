@@ -4,7 +4,7 @@ if (typeof workbox !== "undefined") {
   console.log("[Monaco Service Worker] Workbox loaded successfully.");
 
   // Force immediate activation
-  workbox.core.skipWaiting();
+  self.skipWaiting();
   workbox.core.clientsClaim();
 
   // Define precise Monaco Editor core CDN URLs for pre-caching

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../app/store";
-import { LuPalette, LuDatabase, LuLayers } from "react-icons/lu";
 import { SyncBadge } from "../components/settings/SyncBadge";
 import { InterfaceSettings } from "../components/settings/InterfaceSettings";
 import { TaxonomySettings } from "../components/settings/TaxonomySettings";
 import { SettingsProvider } from "../context/SettingsContext";
+import { SettingsTabNavigation } from "../components/settings/ui/SettingsTabNavigation";
 import TaxonomyExplorer from "./TaxonomyExplorer";
 
 const SettingsContent: React.FC = () => {
@@ -26,30 +26,7 @@ const SettingsContent: React.FC = () => {
         <SyncBadge syncStatus={syncStatus} isOnline={isOnline} />
       </header>
 
-      {/* Tab Navigation */}
-      <div className="flex items-center gap-2 mb-12 p-2 bg-sidebar/50 backdrop-blur-3xl rounded-3xl w-full sm:w-fit border border-border-subtle shadow-2xl">
-        <button
-          onClick={() => setActiveTab("general")}
-          className={`flex-1 sm:flex-none flex items-center justify-center gap-3 px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "general" ? "bg-brand text-white shadow-xl shadow-brand/30 scale-[1.02]" : "text-text-muted hover:text-text-main"}`}
-        >
-          <LuPalette size={18} />
-          <span>Interface</span>
-        </button>
-        <button
-          onClick={() => setActiveTab("data")}
-          className={`flex-1 sm:flex-none flex items-center justify-center gap-3 px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "data" ? "bg-brand text-white shadow-xl shadow-brand/30 scale-[1.02]" : "text-text-muted hover:text-text-main"}`}
-        >
-          <LuDatabase size={18} />
-          <span>Core Data</span>
-        </button>
-        <button
-          onClick={() => setActiveTab("taxonomy")}
-          className={`flex-1 sm:flex-none flex items-center justify-center gap-3 px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "taxonomy" ? "bg-brand text-white shadow-xl shadow-brand/30 scale-[1.02]" : "text-text-muted hover:text-text-main"}`}
-        >
-          <LuLayers size={18} />
-          <span>Taxonomy Insights</span>
-        </button>
-      </div>
+      <SettingsTabNavigation activeTab={activeTab} onTabSelect={setActiveTab} />
 
       <div className="min-h-[600px]">
         {activeTab === "general" ? (

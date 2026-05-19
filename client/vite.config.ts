@@ -30,6 +30,27 @@ export default defineConfig(({ mode }) => ({
   optimizeDeps: {
     include: ["decimal.js-light", "recharts"],
   },
+  build: {
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (id.includes("@monaco-editor") || id.includes("monaco-editor")) {
+              return "vendor-monaco";
+            }
+            if (id.includes("recharts") || id.includes("d3") || id.includes("decimal.js-light")) {
+              return "vendor-charts";
+            }
+            if (id.includes("react-icons") || id.includes("lucide")) {
+              return "vendor-icons";
+            }
+            return "vendor";
+          }
+        },
+      },
+    },
+  },
   server: {
     port: 5173,
     open: true,

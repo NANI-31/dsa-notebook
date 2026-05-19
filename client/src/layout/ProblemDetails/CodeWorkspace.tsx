@@ -15,6 +15,7 @@ import {
 import { Select, MenuItem, FormControl } from "@mui/material";
 const CustomMonaco = lazy(() => import("../../components/CustomMonaco/index"));
 import SectionHeader from "./SectionHeader";
+import AIAssistantDrawer from "../../components/AIAssistantDrawer";
 
 import { useProblemDetails } from "../../context/ProblemDetailsContext";
 
@@ -184,6 +185,8 @@ const CodeWorkspace: React.FC = () => {
   const [activeTerminalTab, setActiveTerminalTab] = useState<
     "terminal" | "performance"
   >("terminal");
+  const [isAIDrawerOpen, setIsAIDrawerOpen] = useState(false);
+  const { problem } = useProblemDetails();
   return (
     <section className="animate-in slide-in-from-bottom-8 duration-1000">
       <SectionHeader title="Code" colorClass="bg-indigo-500">
@@ -389,8 +392,8 @@ const CodeWorkspace: React.FC = () => {
             </div>
 
             {/* Stacked Terminal Output */}
-            {showTerminal && terminalLayout === "bottom" && (
-              <div className="animate-in slide-in-from-bottom-4 duration-500">
+            {showTerminal && (terminalLayout === "bottom" || terminalLayout === "sidebar") && (
+              <div className={`animate-in slide-in-from-bottom-4 duration-500 ${terminalLayout === "sidebar" ? "lg:hidden" : ""}`}>
                 <div className="bg-[#0c0e14] border border-border-subtle rounded-3xl overflow-hidden shadow-2xl">
                   <div className="flex items-center justify-between px-6 py-3 bg-white/5 border-b border-white/5 gap-4">
                     <div className="flex items-center gap-3">
@@ -573,6 +576,26 @@ const CodeWorkspace: React.FC = () => {
           )}
         </div>
       </div>
+      <AIAssistantDrawer
+        isOpen={isAIDrawerOpen}
+        onClose={() => setIsAIDrawerOpen(false)}
+        problemTitle={problem?.title || ""}
+        problemDescription={problem?.description || ""}
+        code={activeVariant?.code || ""}
+        language={activeVariant?.language || "typescript"}
+        onApplyCode={handleCodeChange}
+        problemId={problem?.id || problem?._id || "default"}
+      />
+
+      {/* Floating Action Button (FAB) for Gemini Assistant */}
+      <button
+        onClick={() => setIsAIDrawerOpen(true)}
+        className="fixed bottom-8 right-8 z-50 w-14 h-14 rounded-full bg-gradient-to-r from-brand to-indigo-500 hover:from-brand hover:to-indigo-600 text-white flex items-center justify-center shadow-2xl shadow-brand/35 hover:scale-110 active:scale-95 transition-all duration-300 group border border-white/10"
+        title="Ask Gemini Workspace Assistant"
+      >
+        <span className="absolute inset-0 rounded-full bg-brand/30 animate-ping -z-10 group-hover:bg-brand/50" />
+        <LuWand size={22} className="group-hover:rotate-12 transition-transform duration-300" />
+      </button>
     </section>
   );
 };

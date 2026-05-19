@@ -58,8 +58,19 @@ const Dashboard: React.FC<DashboardProps> = () => {
     (state: RootState) => state.problems
   );
 
+  const [activeTab, setActiveTab] = useState<"activity" | "telemetry">("activity");
   const [activities, setActivities] = useState<any[]>([]);
   const [activitiesLoading, setActivitiesLoading] = useState(true);
+  const [telemetryLogs, setTelemetryLogs] = useState<any[]>([]);
+  const [telemetryLoading, setTelemetryLoading] = useState(true);
+  const [averages, setAverages] = useState<Record<string, { value: number; rating: string }>>({
+    FCP: { value: 0, rating: "good" },
+    LCP: { value: 0, rating: "good" },
+    FID: { value: 0, rating: "good" },
+    CLS: { value: 0, rating: "good" },
+    TTFB: { value: 0, rating: "good" },
+  });
+
   const [categoryRef, categorySize] = useContainerSize();
   const [difficultyRef, difficultySize] = useContainerSize();
 
@@ -74,9 +85,29 @@ const Dashboard: React.FC<DashboardProps> = () => {
     }
   }, []);
 
+  const loadTelemetry = useCallback(async () => {
+    try {
+      const res = await api.get("/telemetry");
+      if (res.data) {
+        setTelemetryLogs(res.data.logs || []);
+        if (res.data.averages) {
+          setAverages((prev) => ({
+            ...prev,
+            ...res.data.averages,
+          }));
+        }
+      }
+    } catch (err) {
+      console.error("Failed to load telemetry performance records:", err);
+    } finally {
+      setTelemetryLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     dispatch(fetchProblems({}));
     loadActivities();
+    loadTelemetry();
 
     // Connect to WebSocket server for real-time telemetry stream!
     const socketUrl = import.meta.env.VITE_API_URL 
@@ -93,6 +124,25 @@ const Dashboard: React.FC<DashboardProps> = () => {
       setActivities((prev) => [newActivity, ...prev].slice(0, 15)); // prepend and cap at 15 items!
     });
 
+    socket.on("telemetry", (newReport: any) => {
+      console.log("[WebSocket Telemetry] Received performance telemetry event:", newReport);
+      setTelemetryLogs((prev) => [newReport, ...prev].slice(0, 15));
+      
+      setAverages((prev) => {
+        const prevMetric = prev[newReport.metric] || { value: 0, rating: "good" };
+        const newValue = prevMetric.value === 0 
+          ? newReport.value 
+          : parseFloat(((prevMetric.value * 9 + newReport.value) / 10).toFixed(3));
+        return {
+          ...prev,
+          [newReport.metric]: {
+            value: newValue,
+            rating: newReport.rating,
+          }
+        };
+      });
+    });
+
     socket.on("disconnect", () => {
       console.log("[WebSocket Telemetry] Disconnected from activities stream.");
     });
@@ -100,7 +150,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
     return () => {
       socket.disconnect();
     };
-  }, [dispatch, loadActivities]);
+  }, [dispatch, loadActivities, loadTelemetry]);
 
   // Compute dynamic stats based on real database records
   const totalProblemsCount = problems.length;
@@ -385,74 +435,189 @@ const Dashboard: React.FC<DashboardProps> = () => {
 
         {/* Right Column (Observability Telemetry Feed) */}
         <div className="xl:col-span-2 space-y-6">
-          <div className="flex items-center gap-3 px-2">
-            <div className="bg-brand/10 p-2 rounded-xl text-brand animate-pulse">
-              <LuActivity size={18} />
+          <div className="flex items-center justify-between px-2">
+            <div className="flex items-center gap-3">
+              <div className="bg-brand/10 p-2 rounded-xl text-brand animate-pulse">
+                <LuActivity size={18} />
+              </div>
+              <h2 className="text-2xl font-black text-text-main tracking-tight">
+                Observability
+              </h2>
             </div>
-            <h2 className="text-2xl font-black text-text-main tracking-tight">
-              Telemetry Stream
-            </h2>
+            
+            <div className="flex bg-sidebar border border-border-subtle p-0.5 rounded-xl text-[10px] font-black uppercase tracking-wider">
+              <button
+                onClick={() => setActiveTab("activity")}
+                className={`px-3 py-1.5 rounded-lg transition-all duration-200 ${
+                  activeTab === "activity"
+                    ? "bg-brand text-white shadow-md shadow-brand/15"
+                    : "text-text-muted hover:text-text-main"
+                }`}
+              >
+                Activities
+              </button>
+              <button
+                onClick={() => setActiveTab("telemetry")}
+                className={`px-3 py-1.5 rounded-lg transition-all duration-200 ${
+                  activeTab === "telemetry"
+                    ? "bg-brand text-white shadow-md shadow-brand/15"
+                    : "text-text-muted hover:text-text-main"
+                }`}
+              >
+                Vitals
+              </button>
+            </div>
           </div>
 
-          <div className="bg-sidebar/80 border border-border-subtle backdrop-blur-md rounded-3xl p-6 shadow-sm overflow-hidden h-[345px] flex flex-col">
-            <div className="overflow-y-auto pr-1 flex-1 space-y-4 custom-scrollbar">
-              {activitiesLoading ? (
-                [...Array(3)].map((_, i) => (
-                  <div key={i} className="flex gap-4 items-start p-3 bg-white/3 border border-white/5 rounded-2xl">
-                    <Skeleton className="h-10 w-10 rounded-xl" />
-                    <div className="space-y-2 flex-1">
-                      <Skeleton className="h-4 w-32" />
-                      <Skeleton className="h-3 w-48" />
+          <div className="bg-sidebar/80 border border-border-subtle backdrop-blur-md rounded-3xl p-6 shadow-sm overflow-hidden h-[360px] flex flex-col">
+            {activeTab === "activity" ? (
+              <div className="overflow-y-auto pr-1 flex-1 space-y-4 custom-scrollbar">
+                {activitiesLoading ? (
+                  [...Array(3)].map((_, i) => (
+                    <div key={i} className="flex gap-4 items-start p-3 bg-white/3 border border-white/5 rounded-2xl animate-pulse">
+                      <div className="h-10 w-10 bg-white/10 rounded-xl" />
+                      <div className="space-y-2 flex-1">
+                        <div className="h-4 w-32 bg-white/10 rounded" />
+                        <div className="h-3 w-48 bg-white/10 rounded" />
+                      </div>
                     </div>
-                  </div>
-                ))
-              ) : activities.length > 0 ? (
-                activities.map((activity, i) => {
-                  let badgeBg = "bg-green-500/10 text-green-400 border-green-500/20";
-                  let Icon = LuPlus;
-                  
-                  if (activity.action === "update") {
-                    badgeBg = "bg-blue-500/10 text-blue-400 border-blue-500/20";
-                    Icon = LuPencil;
-                  } else if (activity.action === "delete") {
-                    badgeBg = "bg-red-500/10 text-red-400 border-red-500/20";
-                    Icon = LuTrash;
-                  }
+                  ))
+                ) : activities.length > 0 ? (
+                  activities.map((activity, i) => {
+                    let badgeBg = "bg-green-500/10 text-green-400 border-green-500/20";
+                    let Icon = LuPlus;
+                    
+                    if (activity.action === "update") {
+                      badgeBg = "bg-blue-500/10 text-blue-400 border-blue-500/20";
+                      Icon = LuPencil;
+                    } else if (activity.action === "delete") {
+                      badgeBg = "bg-red-500/10 text-red-400 border-red-500/20";
+                      Icon = LuTrash;
+                    }
 
-                  return (
-                    <div
-                      key={activity._id || i}
-                      className="flex gap-4 items-start p-3 hover:bg-white/3 border border-transparent hover:border-white/5 rounded-2xl transition-all duration-300 animate-in slide-in-from-right-3"
-                    >
-                      <div className={`p-2 rounded-xl border shrink-0 ${badgeBg}`}>
-                        <Icon size={16} />
-                      </div>
-                      
-                      <div className="min-w-0 flex-1">
-                        <div className="flex justify-between items-start gap-2">
-                          <span className="text-xs font-black uppercase tracking-widest text-text-main truncate">
-                            {activity.action} problem
-                          </span>
-                          <span className="text-[10px] text-text-muted/60 flex items-center gap-1 font-bold whitespace-nowrap">
-                            <LuClock size={10} />
-                            {getRelativeTime(activity.timestamp)}
-                          </span>
+                    return (
+                      <div
+                        key={activity._id || i}
+                        className="flex gap-4 items-start p-3 hover:bg-white/3 border border-transparent hover:border-white/5 rounded-2xl transition-all duration-300 animate-in slide-in-from-right-3"
+                      >
+                        <div className={`p-2 rounded-xl border shrink-0 ${badgeBg}`}>
+                          <Icon size={16} />
                         </div>
-                        <p className="text-xs text-text-muted mt-1 leading-relaxed break-all font-medium">
-                          {activity.details || `Problem "${activity.itemName}" was ${activity.action}d.`}
-                        </p>
+                        
+                        <div className="min-w-0 flex-1">
+                          <div className="flex justify-between items-start gap-2">
+                            <span className="text-xs font-black uppercase tracking-widest text-text-main truncate">
+                              {activity.action} problem
+                            </span>
+                            <span className="text-[10px] text-text-muted/60 flex items-center gap-1 font-bold whitespace-nowrap">
+                              <LuClock size={10} />
+                              {getRelativeTime(activity.timestamp)}
+                            </span>
+                          </div>
+                          <p className="text-xs text-text-muted mt-1 leading-relaxed break-all font-medium">
+                            {activity.details || `Problem "${activity.itemName}" was ${activity.action}d.`}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })
-              ) : (
-                <div className="h-full flex flex-col items-center justify-center text-center text-text-muted py-12">
-                  <LuActivity size={24} className="text-text-muted/40 mb-3 animate-pulse" />
-                  <p className="text-xs font-black uppercase tracking-widest">Awaiting events</p>
-                  <p className="text-[10px] mt-1 text-text-muted/60">No recent workspace actions captured.</p>
+                    );
+                  })
+                ) : (
+                  <div className="h-full flex flex-col items-center justify-center text-center text-text-muted py-12">
+                    <LuActivity size={24} className="text-text-muted/40 mb-3 animate-pulse" />
+                    <p className="text-xs font-black uppercase tracking-widest">Awaiting events</p>
+                    <p className="text-[10px] mt-1 text-text-muted/60">No recent workspace actions captured.</p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex flex-col h-full overflow-hidden">
+                {/* 5-Column Core Web Vitals Summary Row */}
+                <div className="grid grid-cols-5 gap-1.5 mb-4 shrink-0">
+                  {Object.keys(averages).map((metric) => {
+                    const data = averages[metric];
+                    const ratingColor =
+                      data.rating === "good"
+                        ? "text-green-400 border-green-500/20 bg-green-500/5"
+                        : data.rating === "needs-improvement"
+                          ? "text-yellow-400 border-yellow-500/20 bg-yellow-500/5"
+                          : "text-red-400 border-red-500/20 bg-red-500/5";
+
+                    return (
+                      <div
+                        key={metric}
+                        className={`border rounded-xl p-2 text-center transition-all duration-300 ${ratingColor}`}
+                      >
+                        <div className="text-[8px] font-black uppercase opacity-65 tracking-wider">
+                          {metric}
+                        </div>
+                        <div className="text-xs font-black mt-1 leading-none tracking-tight">
+                          {data.value === 0 ? "—" : `${data.value}${metric === "CLS" ? "" : "ms"}`}
+                        </div>
+                        <div className="text-[7px] font-black uppercase mt-1 leading-none opacity-80 scale-90">
+                          {data.rating || "good"}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              )}
-            </div>
+
+                {/* Telemetry Log Feed */}
+                <div className="overflow-y-auto pr-1 flex-1 space-y-2 custom-scrollbar">
+                  {telemetryLoading ? (
+                    [...Array(3)].map((_, i) => (
+                      <div key={i} className="flex gap-4 items-start p-2.5 bg-white/3 border border-white/5 rounded-xl animate-pulse">
+                        <div className="h-8 w-8 bg-white/10 rounded-lg" />
+                        <div className="space-y-1.5 flex-1">
+                          <div className="h-3 w-24 bg-white/10 rounded" />
+                          <div className="h-2 w-36 bg-white/10 rounded" />
+                        </div>
+                      </div>
+                    ))
+                  ) : telemetryLogs.length > 0 ? (
+                    telemetryLogs.map((log, i) => {
+                      const ratingColor =
+                        log.rating === "good"
+                          ? "bg-green-500/10 text-green-400 border-green-500/20"
+                          : log.rating === "needs-improvement"
+                            ? "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
+                            : "bg-red-500/10 text-red-400 border-red-500/20";
+
+                      return (
+                        <div
+                          key={log._id || i}
+                          className="flex gap-3 items-center p-2 hover:bg-white/3 border border-transparent hover:border-white/5 rounded-xl transition-all duration-300 animate-in slide-in-from-right-3"
+                        >
+                          <div className={`text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded border shrink-0 ${ratingColor}`}>
+                            {log.metric}
+                          </div>
+
+                          <div className="min-w-0 flex-1 flex justify-between items-center">
+                            <div>
+                              <span className="text-[10px] font-black text-text-main">
+                                {log.value}{log.metric === "CLS" ? "" : " ms"}
+                              </span>
+                              <span className="text-[8px] font-bold text-text-muted/65 uppercase tracking-wide ml-2">
+                                rating: {log.rating}
+                              </span>
+                            </div>
+                            <span className="text-[8px] text-text-muted/60 flex items-center gap-1 font-bold whitespace-nowrap">
+                              <LuClock size={8} />
+                              {getRelativeTime(log.timestamp)}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="h-full flex flex-col items-center justify-center text-center text-text-muted py-6">
+                      <LuActivity size={20} className="text-text-muted/40 mb-2 animate-pulse" />
+                      <p className="text-[10px] font-black uppercase tracking-widest">Awaiting Vitals</p>
+                      <p className="text-[8px] mt-1 text-text-muted/60">No Core Web Vitals telemetry received yet.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
